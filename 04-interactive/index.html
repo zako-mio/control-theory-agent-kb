@@ -17,6 +17,96 @@
 <div class="main-content">
 <header class="topic"><div class="crumb">五大核心环控制回路</div><h1>知识库总览</h1></header>
 
+<!-- 签名元素: 五环控制回路信号图 -->
+<div class="signal">
+  <div class="signal-head">
+    <span class="label">System Loop · 控制回路</span>
+    <span class="tag">v1.1 · 6 framework + 14 premium</span>
+  </div>
+  <svg viewBox="0 0 900 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="五环控制回路">
+    <defs>
+      <marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" fill="#7E8CA5"/>
+      </marker>
+    </defs>
+    <path d="M60 170 L210 170 L330 170 L420 170" stroke="#3B4B66" stroke-width="1.5" fill="none" marker-end="url(#arr2)"/>
+    <path d="M420 170 L420 90 L540 90" stroke="#3B4B66" stroke-width="1.5" fill="none" marker-end="url(#arr2)"/>
+    <path d="M540 90 L780 90" stroke="#3B4B66" stroke-width="1.5" fill="none" marker-end="url(#arr2)"/>
+    <path d="M780 90 L780 170 L660 170" stroke="#3B4B66" stroke-width="1.5" fill="none" marker-end="url(#arr2)"/>
+    <path d="M660 170 L420 170" stroke="#3B4B66" stroke-width="1.5" fill="none" marker-end="url(#arr2)"/>
+    <path d="M240 170 L240 90" stroke="#C77700" stroke-width="1.5" stroke-dasharray="4 4" fill="none" marker-end="url(#arr2)"/>
+    <g font-family="var(--font-mono)" font-size="12" fill="#E6EAF2">
+      <rect x="210" y="150" width="120" height="40" rx="7" fill="#1E5AA8"/><text x="270" y="175" text-anchor="middle">P 规划/分层</text>
+      <rect x="420" y="70" width="120" height="40" rx="7" fill="#5B4B9B"/><text x="480" y="95" text-anchor="middle">T 工具/执行</text>
+      <rect x="660" y="150" width="120" height="40" rx="7" fill="#B23A2F"/><text x="720" y="175" text-anchor="middle">E 评估/传感</text>
+      <rect x="420" y="150" width="120" height="40" rx="7" fill="#1F7A52"/><text x="480" y="175" text-anchor="middle">M 记忆/状态</text>
+      <rect x="540" y="150" width="120" height="40" rx="7" fill="#C77700"/><text x="600" y="175" text-anchor="middle">R 反思/反馈</text>
+      <text x="60" y="176" fill="#7E8CA5" font-size="11">目标 r</text>
+    </g>
+  </svg>
+  <div class="signal-legend">
+    <span><i style="background:#1E5AA8"></i>P 规划</span><span><i style="background:#5B4B9B"></i>T 执行</span>
+    <span><i style="background:#B23A2F"></i>E 评估</span><span><i style="background:#1F7A52"></i>M 记忆</span>
+    <span><i style="background:#C77700"></i>R 反思</span>
+  </div>
+</div>
+
+<span class="kicker">Agent Systems · 控制理论视角</span>
+<h1 class="display">把 Agent 当成一架被控的无人机。</h1>
+<p class="lead">不是会聊天的搜索引擎——它是装了<b>传感器</b>、<b>执行器</b>、<b>逻辑决断器</b>的闭环系统。控制理论是解决 Agent 工程问题的工具库。</p>
+
+<h2><span class="idx">01</span>核心洞察 · 6 框架对比</h2>
+<div class="grid cols-2">
+  <div class="card"><span class="num">T RING</span><h3>T 环是共同的「最强环」</h3><p>看门狗/限幅/沙箱是 Agent 工程最成熟环节，<strong class="state-green">无一例外</strong>每产品都做到硬约束。</p></div>
+  <div class="card"><span class="num">E RING</span><h3>E 环分化两派</h3><p><strong>hermes</strong>（独立 Critic）、<strong>codex</strong>（双评审器）E 环变强；opencode/dsh/PRIME/claude-code 仍弱。</p></div>
+</div>
+<table>
+  <thead><tr><th>产品</th><th>最弱环</th><th>独立 Critic</th><th>整体范式</th></tr></thead>
+  <tbody>
+    <tr><td class="mono">opencode</td><td><span class="badge weak"><strong>E</strong>评估</span></td><td>—</td><td>前馈-执行 + 局部反馈</td></tr>
+    <tr><td class="mono">deepseek-harness</td><td><span class="badge weak"><strong>E</strong>评估</span></td><td>—</td><td>MPC 滚动 + 强约束执行</td></tr>
+    <tr><td class="mono">PRIME</td><td><span class="badge weak"><strong>E</strong>评估</span></td><td>gates 空</td><td>自适应/自整定</td></tr>
+    <tr><td class="mono">hermes</td><td><span class="badge neutral"><strong>P</strong>规划</span></td><td><span class="badge strong"><strong>✅</strong>有</span></td><td>鲁棒控制 + 多传感器</td></tr>
+    <tr><td class="mono">claude-code</td><td><span class="badge weak"><strong>E</strong>评估</span></td><td><span class="badge neutral"><strong>外挂</strong>贴片</span></td><td>外挂 Critic + 执行限幅</td></tr>
+    <tr><td class="mono">codex</td><td><span class="badge neutral"><strong>P</strong>规划</span></td><td><span class="badge strong"><strong>✅</strong>双评审</span></td><td>重执行 + 硬安全阀</td></tr>
+  </tbody>
+</table>
+
+<h2><span class="idx">02</span>精装房全景 · 声称 vs 实际（v1.1）</h2>
+<div class="grid cols-2">
+  <div class="card"><span class="num">PREMIUM</span><h3>14 款主流「精装房」Agent</h3><p>精装度 0-5 主轴 × 一手/二手标签 × 4 大类，用源码级/文档级实证鉴别真实精装程度。</p></div>
+  <div class="card"><span class="num">EVIDENCE</span><h3>实证发现：声称 ≠ 实际</h3><p><strong class="state-green">二手被高估</strong>：CC-Router/QCode 实为封装中转；<strong class="state-green">一手被低估</strong>：CodeWhale/OpenClaude 实为自研底层。</p></div>
+</div>
+<div class="grid cols-2" style="margin-top:var(--space-3)">
+  <a class="portal-card" href="premium-map.html" style="background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);padding:var(--space-4);text-decoration:none">
+    <span class="num">PREMIUM MAP</span><h3 style="margin:0 0 6px">精装房全景地图</h3><p style="margin:0">精装度主轴 + 四大类 + 声称vs实际 + 框架对照</p>
+  </a>
+  <a class="portal-card" href="premium-cyto.html" style="background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);padding:var(--space-4);text-decoration:none">
+    <span class="num">PREMIUM DAG</span><h3 style="margin:0 0 6px">精装房 DAG</h3><p style="margin:0">14 节点：精装度着色 + 一手/二手形状</p>
+  </a>
+</div>
+
+<h2><span class="idx">03</span>五大核心环</h2>
+<table>
+  <thead><tr><th>环</th><th>控制理论对应</th><th>Agent 工程问题</th></tr></thead>
+  <tbody>
+    <tr><td><span class="ring-tag M">M</span> 记忆/状态</td><td>状态估计/卡尔曼滤波</td><td>长上下文取舍、工作记忆蒸馏、观测噪声过滤</td></tr>
+    <tr><td><span class="ring-tag P">P</span> 规划/分层</td><td>分层控制/慢快双速</td><td>任务分解、里程碑设定、慢规划器+快执行器</td></tr>
+    <tr><td><span class="ring-tag R">R</span> 反思/反馈</td><td>反馈闭环/误差收敛</td><td>自我反思、错误回馈、长期偏航补偿</td></tr>
+    <tr><td><span class="ring-tag T">T</span> 工具/执行</td><td>执行器/容错/鲁棒</td><td>工具调用失败、冗余仲裁、看门狗限幅</td></tr>
+    <tr><td><span class="ring-tag E">E</span> 评估/传感</td><td>传感器/验证器/信噪比</td><td>Critic 模块、验证器、反馈信号质量</td></tr>
+  </tbody>
+</table>
+
+<div class="insight"><strong>闭环方向</strong>：E 决定反馈信号质量 → R 决定纠偏量 → P/T 决定轨迹 → M 决定"我以为我在哪"。任一环失效，闭环即破。</div>
+<h2><span class="idx">04</span>进入</h2>
+<div class="grid cols-2">
+  <a class="portal-card" href="index_cyto.html" style="background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);padding:var(--space-4);text-decoration:none">
+    <span class="num">INTERACT</span><h3 style="margin:0 0 6px">交互 DAG 总览</h3><p style="margin:0">五环 × 控制概念可点击下钻（cytoscape）</p>
+  </a>
+  <div class="card"><span class="num">SOURCE</span><h3>数据源</h3><p>09-src-data/five-ring-dag.json · 31 知识点 · 契约 00-contract</p></div>
+</div>
+
 <div class="pager"><span></span><a class="next" href="framework.html">框架</a></div>
 <footer class="footer">
 <span>控制理论 ⊗ Agent 设计知识库 · v1.1 精装房全景版（6 框架 + 14 精装房）</span>

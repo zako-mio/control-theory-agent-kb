@@ -308,7 +308,7 @@ def gen_overview():
   <div class="card"><span class="num">SOURCE</span><h3>数据源</h3><p>09-src-data/five-ring-dag.json · 31 知识点 · 契约 00-contract</p></div>
 </div>
 """
-    return page("知识库总览","五大核心环控制回路","","index",None,"framework")
+    return page("知识库总览","五大核心环控制回路",body,"index",None,"framework")
 
 def gen_framework():
     md = read("02-framework/framework.md")

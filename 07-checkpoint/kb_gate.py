@@ -8,6 +8,7 @@
 
 7 层检查（用 --layers 选择，默认全开）:
     structure : 文件存在性 / 0 字节 / 编码纯净(无 U+FFFD) / HTML 标签平衡
+                / 空正文检测(主内容区可见文本过短，--min-content-chars)
     links     : 内部 href/src 断链（解析相对路径，排除 JS 模板拼接假阳性）
     nav       : 导航完整性（读 nav 数据源，校验每条目在所有页面齐全）★关键
     cascade   : 级联一致性（品牌口径/页脚版本/索引条目覆盖/旧报告历史标注）
@@ -186,9 +187,71 @@ def is_js_template(s):
 # 第 1 层: structure
 # ============================================================
 
+# --- 空正文检测 ---------------------------------------------------------
+# 缺陷背景: 0907 总览页 (04-interactive/index.html) 曾因 gen_overview() 漏传
+# body 而正文为空，只剩标题/翻页器/页脚；渲染层只查「加载无错」，未查
+# 「内容是否为空」，故漏检并交付给用户。structure 层补此检查。
+#
+# 主内容区定义: </header> 之后 → <div class="pager"> 或 <footer class="footer">
+# 之前；无 </header> 时回退 <body ...> 之后（兼容门户/报告/cyto 模板）。
+# 可见文本 = 剥离 script/style/svg、HTML 注释与标签后的非空白文本。
+#
+# 豁免规则: 页面（主内容区）含 canvas / cytoscape 渲染时跳过——纯 canvas 页
+# 正文以 canvas 呈现，静态文本天然稀少（index_cyto.html / premium-cyto.html），
+# 仅凭文本长度判空会误伤。
+#
+# 阈值校准（0907 全库 39 个在范围 HTML 实测，2026-09-09；--exclude 与 README
+# 复现命令一致）:
+#   - 合法 header 页主内容区可见文本最小 = 1245 字符 (04-interactive/index.html)
+#   - body 回退页最小 = 1647 (根 index.html)，报告页 2604 / 6504
+#   - 纯 canvas 页 = 657 / 727 字符（豁免，不参与阈值判定）
+#   - 缺陷样例（git fac6427 总览页正文缺失）= 0 字符
+#   → 默认阈值 400：约合法最小值的 1/3，与 0 之间留出充足间隔，且远高于
+#     纯 canvas 页文本量（即使不豁免也不误伤，豁免为双重保险）。
+#   → --min-content-chars 可覆盖，0 表示关闭该检查。
+DEFAULT_MIN_CONTENT_CHARS = 400
+
+# canvas / 动态图渲染指纹（用于豁免，避免仅凭文本长度误判纯 canvas 页）
+CANVAS_RENDER_RE = re.compile(
+    r"<canvas\b|cytoscape\s*\(|getElementById\(\s*['\"]cy|id\s*=\s*['\"]cy['\"]",
+    re.I)
+
+
+def _html_main_region(html):
+    """抽取主内容区；返回 (文本, mode) 或 (None, reason)。"""
+    i = html.find("</header>")
+    if i >= 0:
+        rest = html[i + len("</header>"):]
+        mode = "header"
+    else:
+        m = re.search(r"<body\b[^>]*>", html, re.I)
+        if not m:
+            return None, "no-body"
+        rest = html[m.end():]
+        mode = "body"
+    cut = len(rest)
+    for mm in (re.search(r'<div\s+class="pager"', rest),
+               re.search(r'<footer\s+class="footer"', rest)):
+        if mm:
+            cut = min(cut, mm.start())
+    return rest[:cut], mode
+
+
+def _visible_text(seg):
+    """剥离 script/style/svg、注释与标签，返回压缩后的可见文本。"""
+    seg = re.sub(r"<(script|style|svg)\b[^>]*>.*?</\1>", " ", seg,
+                 flags=re.S | re.I)
+    seg = re.sub(r"<!--.*?-->", " ", seg, flags=re.S)
+    seg = re.sub(r"<[^>]+>", " ", seg)
+    seg = (seg.replace("&nbsp;", " ").replace("&amp;", "&")
+              .replace("&lt;", "<").replace("&gt;", ">").replace("&quot;", '"'))
+    return re.sub(r"\s+", " ", seg).strip()
+
+
 def layer_structure(root, args, ctx):
     issues, warnings = [], []
     checked = 0
+    min_chars = getattr(args, "min_content_chars", DEFAULT_MIN_CONTENT_CHARS)
     files = walk_files(root)
     for fp in files:
         checked += 1
@@ -211,6 +274,19 @@ def layer_structure(root, args, ctx):
                 if opens != closes:
                     issues.append("HTML 标签不平衡 <%s>: %s (开=%d 闭=%d)"
                                   % (tag, r, opens, closes))
+            if min_chars and min_chars > 0:
+                region, mode = _html_main_region(text)
+                if region is None:
+                    warnings.append("空正文检测跳过(%s): %s" % (mode, r))
+                elif CANVAS_RENDER_RE.search(region):
+                    # 纯 canvas 页豁免（正文由 canvas 动态呈现）
+                    pass
+                else:
+                    n = len(_visible_text(region))
+                    if n < min_chars:
+                        issues.append(
+                            "主内容区可见文本过短(疑似空正文): %s (%d < %d 字符)"
+                            % (r, n, min_chars))
     return _result("structure", issues, warnings, checked)
 
 
@@ -1199,6 +1275,11 @@ def main(argv=None):
     ap.add_argument("--quiet", action="store_true", help="只打印汇总，不打印逐条问题")
     ap.add_argument("--exclude", action="append", default=[],
                     help="排除目录名或相对路径前缀（可重复），用于排除外部抓取快照等非交付物")
+    # structure
+    ap.add_argument("--min-content-chars", type=int,
+                    default=DEFAULT_MIN_CONTENT_CHARS,
+                    help="structure 层空正文阈值：HTML 主内容区可见文本少于此值报 "
+                         "issue（默认 %d；0=关闭）" % DEFAULT_MIN_CONTENT_CHARS)
     # nav
     ap.add_argument("--nav-source", help="导航数据源 (.json 或 nav_data.py)")
     ap.add_argument("--nav-exempt", action="append", default=[],
