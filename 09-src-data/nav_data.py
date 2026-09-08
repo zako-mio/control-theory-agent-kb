@@ -14,12 +14,15 @@ NAV = [
     ("理论:鲁棒控制", "theory-robust", "theory"),
     ("理论:分层控制", "theory-hierarchical", "theory"),
     ("案例:opencode", "case-opencode", "cases"),
+    ("案例:opencode-custom", "case-opencode-custom", "cases"),
+    ("对照:官方vs自改造", "compare-opencode", "cases"),
     ("案例:dsh", "case-dsh", "cases"),
     ("案例:PRIME", "case-prime", "cases"),
     ("案例:hermes", "case-hermes", "cases"),
     ("案例:claude-code", "case-claude-code", "cases"),
     ("案例:codex", "case-codex", "cases"),
     ("实验:opencode", "exp-opencode", "exp"),
+    ("实验:opencode-custom", "exp-opencode-custom", "exp"),
     ("实验:dsh", "exp-dsh", "exp"),
     ("实验:PRIME", "exp-prime", "exp"),
     ("实验:hermes", "exp-hermes", "exp"),
@@ -73,5 +76,5 @@ def sidebar_brand():
     return f"""
 <div class="sidebar-brand">
   <div class="mark"><span class="dot"></span><h1>控制理论 ⊗ Agent</h1></div>
-  <p>五大核心环 · 6 框架 + 14 精装房 · 6 实验组</p>
+  <p>五大核心环 · 6 框架 + 14 精装房 + 自改造 opencode · 6 实验组</p>
 </div>"""

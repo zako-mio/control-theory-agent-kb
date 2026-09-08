@@ -72,12 +72,15 @@ PAGES = [
     ("理论:鲁棒控制", "theory-robust", "theory"),
     ("理论:分层控制", "theory-hierarchical", "theory"),
     ("案例:opencode", "case-opencode", "cases"),
+    ("案例:opencode-custom", "case-opencode-custom", "cases"),
+    ("对照:官方vs自改造", "compare-opencode", "cases"),
     ("案例:dsh", "case-dsh", "cases"),
     ("案例:PRIME", "case-prime", "cases"),
     ("案例:hermes", "case-hermes", "cases"),
     ("案例:claude-code", "case-claude-code", "cases"),
     ("案例:codex", "case-codex", "cases"),
     ("实验:opencode", "exp-opencode", "exp"),
+    ("实验:opencode-custom", "exp-opencode-custom", "exp"),
     ("实验:dsh", "exp-dsh", "exp"),
     ("实验:PRIME", "exp-prime", "exp"),
     ("实验:hermes", "exp-hermes", "exp"),
@@ -171,7 +174,7 @@ def page(title, crumb, body, active_file, prev=None, nxt=None):
 {body}
 <div class="pager">{p}{n}</div>
 <footer class="footer">
-<span>控制理论 ⊗ Agent 设计知识库 · v1.1 精装房全景版（6 框架 + 14 精装房）</span>
+<span>控制理论 ⊗ Agent 设计知识库 · v1.2 自改造 opencode 变体版（6 框架 + 14 精装房 + opencode-custom）</span>
 <span class="fbrand">data: 09-src-data · contract: 00-contract</span>
 </footer>
 </div></div></div></body></html>"""
@@ -222,7 +225,7 @@ def gen_overview():
 <div class="signal">
   <div class="signal-head">
     <span class="label">System Loop · 控制回路</span>
-    <span class="tag">v1.1 · 6 framework + 14 premium</span>
+    <span class="tag">v1.2 · 6 framework + 14 premium + opencode-custom</span>
   </div>
   <svg viewBox="0 0 900 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="五环控制回路：目标 r 指令 → P 规划 → T 执行 → 世界/环境 → E 评估 → M 记忆 → R 反思，修正量回馈 P/T">
     <defs>
@@ -327,6 +330,17 @@ def gen_overview():
     <span class="num">INTERACT</span><h3 style="margin:0 0 6px">交互 DAG 总览</h3><p style="margin:0">五环 × 控制概念可点击下钻（cytoscape）</p>
   </a>
   <div class="card"><span class="num">SOURCE</span><h3>数据源</h3><p>09-src-data/five-ring-dag.json · 31 知识点 · 契约 00-contract</p></div>
+</div>
+
+<h2><span class="idx">05</span>opencode 自改造专题</h2>
+<p class="lead">官方 opencode 的衍生变体 · 装配层补强 E/R 弱环 · 精装度 2.9→3.9</p>
+<div class="grid cols-2">
+  <a class="portal-card" href="case-opencode-custom.html" style="background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);padding:var(--space-4);text-decoration:none">
+    <span class="num">VARIANT</span><h3 style="margin:0 0 6px">opencode-custom 控制论画像</h3><p style="margin:0">内核继承 + 装配层增强：GATE/契约/专职 worker/Reflection 把前馈主导内核改造为跨会话自演化闭环</p>
+  </a>
+  <a class="portal-card" href="compare-opencode.html" style="background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);padding:var(--space-4);text-decoration:none">
+    <span class="num">COMPARE</span><h3 style="margin:0 0 6px">官方 vs 自改造对照</h3><p style="margin:0">五环雷达叠加 + 逐环 delta + 精装度 8 维对比，量化 2.9→3.9 的跃升来源</p>
+  </a>
 </div>
 """
     return page("知识库总览","五大核心环控制回路",body,"index",None,"framework")
@@ -498,6 +512,169 @@ def gen_premium_case(fname,title,md_file,prev,nxt):
     body = rc.render_case(md, md_file.replace('.md','').replace('premium-',''))
     return page(title,"精装房控制论画像","<p class='breadcrumb'><a href='index.html'>总览</a> › <a href='premium-map.html'>精装房全景</a> › 画像</p>"+body,fname,prev,nxt)
 
+def gen_compare_opencode():
+    """官方 opencode vs opencode-custom 对照页：五环雷达叠加 + 逐环 delta + 精装度 8 维对比。"""
+    import math
+    import opencode_custom_scores as ocs
+    OFF, CUS = "opencode-official", "opencode-custom"
+    order, n = ocs.RING_ORDER, len(ocs.RING_ORDER)
+    cx, cy, RAD = 240, 210, 150
+
+    def pt(i, val):
+        ang = math.radians(-90 + i * 360.0 / n)
+        r = RAD * val / 5.0
+        return cx + r * math.cos(ang), cy + r * math.sin(ang)
+
+    grids = []
+    for lvl in range(1, 6):
+        pts = " ".join("%.1f,%.1f" % pt(i, lvl) for i in range(n))
+        grids.append(f'<polygon points="{pts}" fill="none" stroke="#DFE5EC" stroke-width="1"/>')
+    spokes = []
+    for i in range(n):
+        x, y = pt(i, 5)
+        spokes.append(f'<line x1="{cx}" y1="{cy}" x2="{x:.1f}" y2="{y:.1f}" stroke="#E4E9F0" stroke-width="1"/>')
+
+    def poly(key, fill, stroke):
+        pts = " ".join("%.1f,%.1f" % pt(i, ocs.RING_SCORES[key][rid]) for i, rid in enumerate(order))
+        return f'<polygon points="{pts}" fill="{fill}" stroke="{stroke}" stroke-width="2.4" stroke-linejoin="round"/>'
+
+    def dots(key, color):
+        out = []
+        for i, rid in enumerate(order):
+            x, y = pt(i, ocs.RING_SCORES[key][rid])
+            out.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="3.2" fill="{color}"/>')
+        return "".join(out)
+
+    labels = []
+    for i, rid in enumerate(order):
+        x, y = pt(i, 5.62)
+        labels.append(f'<text x="{x:.1f}" y="{y:.1f}" text-anchor="middle" dominant-baseline="middle" '
+                      f'font-size="13" font-weight="700" fill="#0B1220">{rid} {ocs.RING_META[rid]["label"]}</text>')
+
+    radar_svg = ("\n<svg viewBox=\"0 0 480 420\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" "
+                 "aria-label=\"五环雷达图：官方 opencode 内核与自改造综合分值叠加对比\">\n"
+                 "  <g>" + "".join(grids) + "".join(spokes) + "</g>\n"
+                 "  <g>" + poly(OFF, "rgba(90,107,133,.20)", "#5A6B85")
+                 + poly(CUS, "rgba(199,119,0,.22)", "#C77700") + "</g>\n"
+                 "  <g>" + "".join(labels) + dots(OFF, "#5A6B85") + dots(CUS, "#C77700") + "</g>\n"
+                 "</svg>")
+
+    # 逐环 delta 卡片
+    cards = []
+    for rid in order:
+        o, c, d, tag = ocs.ring_delta(rid)
+        m = ocs.RING_META[rid]
+        badge_cls = "weak" if tag == "反转" else "strong"
+        dstr = ("+%.1f" % d) if d >= 0 else ("%.1f" % d)
+        cards.append(f"""
+<div class="card" style="border-left:4px solid {m['color']}">
+  <span class="num" style="color:{m['color']}">{rid} RING · {m['ctrl']}</span>
+  <h3 style="margin:2px 0 10px;color:var(--ink)">{m['label']} <span class="badge {badge_cls}">{tag}</span></h3>
+  <div style="display:flex;align-items:baseline;flex-wrap:wrap;gap:10px;font-family:var(--font-mono);margin-bottom:8px">
+    <span style="color:var(--muted);font-size:12.5px">官方内核</span><b style="font-size:20px;color:#5A6B85">{o}</b>
+    <span style="color:var(--muted-2)">→</span>
+    <span style="color:var(--muted);font-size:12.5px">自改造综合</span><b style="font-size:22px;color:{m['color']}">{c}</b>
+    <span style="color:var(--muted);font-size:12.5px">Δ{dstr}</span>
+  </div>
+  <p style="margin:0;font-size:13.5px;color:var(--muted)">{m['change']}</p>
+</div>""")
+
+    # 精装度 8 维对比表（数值唯一来源 opencode_custom_scores.SCORES）
+    dim_rows = []
+    for dim, label, w in ps.DIMS:
+        o = ocs.SCORES[OFF]["dims"][dim]
+        c = ocs.SCORES[CUS]["dims"][dim]
+        d = c - o
+        dstr = ("+%d" % d) if d > 0 else ("%d" % d)
+        col = "var(--state-green)" if d > 0 else "var(--muted-2)"
+        ev = ocs.SCORES[CUS]["evidence"][dim]
+        dim_rows.append(f'<tr><td>{label}</td><td class="mono">{w}%</td><td class="mono">{o}</td>'
+                        f'<td class="mono" style="font-weight:700">{c}</td>'
+                        f'<td class="mono" style="color:{col};font-weight:700">{dstr}</td>'
+                        f'<td style="font-size:12.5px;color:var(--muted)">{ev}</td></tr>')
+
+    # 8 类改造清单（来自 03-cases/opencode-custom-diff.md §2）
+    changes = [
+        ("Agent 扩展", "新增 5 个专职 worker：pdf / drawio / vision / reflection / search（hidden subagent，subagent_depth=2）", "P 主 + T", "P：双速→分层编排平台；T：工具能力按 worker 隔离授权"),
+        ("协议层", "auto-mode.md（GATE/COMPLEXITY/variant/委派/留档）+ search-behavior.md（外部信息实证）+ agent-protocol.md（委派/Reflection 自检/MCP 路由）", "P / E / R 跨环", "P：目标物化+推理档分层；E：信源分级+用户确认；R：反思启动即触发"),
+        ("Skill 库", "28 个 skills（cytoscape / kb-construction / openspec 系列等）+ 11 个 legacy skill", "T + E", "T：能力密度大幅提升；E：grill-me 收敛 + 方法论 skill 提供评估范式"),
+        ("MCP 集成", "6 个 MCP：vscode / amap / pdf-reader / drawio / drawio-local / headroom（多传输，部分启用）", "T", "T：外部工具生态可插拔，pdf/drawio 仅授权对应 worker"),
+        ("Reflection 自演化系统", "MEMORY.md 跨会话记忆 + pending.json 结构化状态机 + reflection-worker + /reflection 命令", "R（核心）", "R：半开环→跨会话闭环自演化（核心反转）；M：补齐长期记忆"),
+        ("Provider 扩展", "3 个 provider 预设：opencode-go / deepseek / zhipu，含多模型与 Daily/Deep variant", "T（基建）", "T：模型接入面扩大，支撑专职 worker 与视觉降级路径"),
+        ("Compaction / variant 调优", "tail_turns=4、preserve_recent_tokens=16384、reserved=10000；Daily/Deep 推理档分档", "M（基建）", "M：状态估计更新预算精细可控；P：推理档随复杂度动态分配"),
+        ("Permission 规则", "external_directory 白名单 + read auth.json deny + bash 危险命令 deny/ask + edit 分层授权", "T（安全）", "T：执行器最小授权与越权收口，仍非完整沙箱"),
+    ]
+    ch_rows = "".join(f'<tr><td><b>{a}</b></td><td>{b}</td><td class="mono">{c}</td><td>{d}</td></tr>'
+                      for a, b, c, d in changes)
+
+    findings = [
+        ("发现一 · 弱环反转", "官方两大最弱环 E/R 被装配层补齐并反转。",
+         "E 环 2.0→4.0（信源分级 + search-worker 证据包 + 用户传感器）；R 环 2.0→4.5（pending.json 状态机 + reflection-worker + /reflection 签名门禁）。补强方式不是改引擎，而是协议 + 专职 worker + 记忆系统。"),
+        ("发现二 · 精装度跃升", f"{ps.fmt(ocs.final(OFF))} → {ps.fmt(ocs.final(CUS))}（Δ+%.1f），主要来自记忆与 skill 两维。" % (ocs.final(CUS) - ocs.final(OFF)),
+         "8 维中 6 维提升：记忆 +2（达满分 5）、skill +2，多Agent/工作流/模型/MCP 各 +1；仅一键部署与沙箱未提升——个人装配层无分发渠道、无完整沙箱，是精装度封顶的主因。"),
+        ("发现三 · 编排升级", "从单体双速控制器到分层编排平台。",
+         "官方是 plan/build 双速 + task 委派的单体结构；自改造叠加 5 个专职 worker，形成「主 Agent 编排 + 专职 worker 执行 + Reflection 自演化」三层平台，P 环与 T 环均升至 5.0。代价：编排拓扑仍靠协议文本而非 DAG 画布，闭环反思仍需人工确认。"),
+    ]
+    find_cards = "".join(f'<div class="card"><span class="num">{t.split(" · ")[0]}</span>'
+                         f'<h3 style="margin:0 0 6px">{t.split(" · ", 1)[1]}</h3>'
+                         f'<p style="margin:0 0 8px;color:var(--ink);font-size:14px">{lead}</p>'
+                         f'<p style="margin:0;color:var(--muted);font-size:13.5px">{body}</p></div>'
+                         for t, lead, body in findings)
+
+    signal = f"""
+<div class="signal">
+  <div class="signal-head"><span class="label">Compare · 官方基线 ⊗ 自改造装配层</span>
+    <span class="tag">opencode {ps.fmt(ocs.final(OFF))} → {ps.fmt(ocs.final(CUS))}</span></div>
+  <span class="kicker" style="font-family:var(--font-mono);letter-spacing:.12em;color:#7E8CA5;font-size:11px">COMPARE</span>
+  <h1 style="font-size:26px;margin:8px 0 10px;color:#fff;letter-spacing:-.02em">官方 opencode ⊗ opencode-custom</h1>
+  <p style="color:#CBD4E2;max-width:760px;line-height:1.7;font-size:15px;margin:0 0 14px">核心命题三线：<b>弱环定向补强</b>（不改引擎，仅在配置/协议/skill/MCP/记忆五层补 E/R）· <b>精装度跃升 {ps.fmt(ocs.final(OFF))}→{ps.fmt(ocs.final(CUS))}</b>（8 维中 6 维提升，记忆达满分）· <b>编排升级</b>（plan/build 双速 → 三层分层编排平台）。</p>
+  <div class="signal-legend">
+    <span><i style="background:#5A6B85"></i>官方内核</span>
+    <span><i style="background:#C77700"></i>自改造综合</span>
+    <span><i style="width:22px;height:0;border-radius:0;border-top:2px solid #C77700"></i>增强 / 反转环</span>
+  </div>
+</div>"""
+
+    body = signal + f"""
+<h2><span class="idx">01</span>五环雷达 · 官方内核 vs 自改造综合</h2>
+<div class="ring-section" style="padding:var(--space-4)">
+  <div style="display:flex;flex-wrap:wrap;gap:var(--space-4);align-items:center">
+    <div style="flex:1 1 420px;min-width:300px;max-width:560px">{radar_svg}</div>
+    <div style="flex:1 1 260px;min-width:240px">
+      <table>
+        <thead><tr><th>环</th><th>官方</th><th>自改造</th><th>Δ</th></tr></thead>
+        <tbody>
+        {''.join(f'<tr><td><span class="ring-tag" style="background:{ocs.RING_META[r]["color"]}">{r}</span> {ocs.RING_META[r]["label"]}</td><td class="mono">{ocs.RING_SCORES[OFF][r]}</td><td class="mono" style="font-weight:700;color:{ocs.RING_META[r]["color"]}">{ocs.RING_SCORES[CUS][r]}</td><td class="mono">+{ocs.RING_SCORES[CUS][r]-ocs.RING_SCORES[OFF][r]:.1f}</td></tr>' for r in order)}
+        </tbody>
+      </table>
+      <p style="font-size:12.5px;color:var(--muted);margin:0">分值 0–5，取自 <code>09-src-data/opencode_custom_scores.py</code>（RING_SCORES）。E/R 两环为「反转」，其余为「增强」。</p>
+    </div>
+  </div>
+</div>
+
+<h2><span class="idx">02</span>逐环 delta 卡片</h2>
+<div class="grid cols-3">{''.join(cards)}</div>
+
+<h2><span class="idx">03</span>精装度 8 维对比</h2>
+<table>
+  <thead><tr><th>维度</th><th>权重</th><th>官方</th><th>自改造</th><th>Δ</th><th>依据</th></tr></thead>
+  <tbody>{''.join(dim_rows)}</tbody>
+</table>
+<p style="font-size:12.5px;color:var(--muted)">数值唯一来源：<code>opencode_custom_scores.py</code> 的 <code>SCORES</code> / <code>WEIGHTS</code>；官方加权 {ocs.weighted(OFF):.2f}→{ps.fmt(ocs.final(OFF))}，自改造加权 {ocs.weighted(CUS):.2f}→{ps.fmt(ocs.final(CUS))}，均过端到端硬门槛、无一票否决。</p>
+
+<h2><span class="idx">04</span>8 类改造清单</h2>
+<table>
+  <thead><tr><th>类别</th><th>改造内容</th><th>五环权重</th><th>对环影响</th></tr></thead>
+  <tbody>{ch_rows}</tbody>
+</table>
+
+<h2><span class="idx">05</span>三大核心发现</h2>
+<div class="grid cols-3">{find_cards}</div>
+"""
+    return page("官方 vs 自改造对照", "opencode 官方基线 ⊗ opencode-custom 装配层",
+                "<p class='breadcrumb'><a href='index.html'>总览</a> › 官方 vs 自改造对照</p>" + body,
+                "compare-opencode", prev="case-opencode-custom", nxt="case-dsh")
+
 # 生成
 pages={}
 pages["index"]=gen_overview()
@@ -507,17 +684,20 @@ for i,(fn,ti,mf) in enumerate(THEORY_META):
     nxt = "theory-state-est" if fn=="theory-closed-loop" else (THEORY_META[i+1][0] if i+1<len(THEORY_META) else "case-opencode")
     pages[fn]=gen_theory(fn,ti,mf,prev,nxt)
 
-CASES=[("case-opencode","案例：opencode","opencode.md"),("case-dsh","案例：deepseek-harness","deepseek-harness.md"),("case-prime","案例：PRIME","prime.md"),("case-hermes","案例：hermes","hermes.md"),("case-claude-code","案例：claude-code","claude-code.md"),("case-codex","案例：codex","codex.md")]
+CASES=[("case-opencode","案例：opencode","opencode.md"),("case-opencode-custom","案例：opencode-custom（自改造）","opencode-custom.md"),("case-dsh","案例：deepseek-harness","deepseek-harness.md"),("case-prime","案例：PRIME","prime.md"),("case-hermes","案例：hermes","hermes.md"),("case-claude-code","案例：claude-code","claude-code.md"),("case-codex","案例：codex","codex.md")]
 for i,(fn,ti,mf) in enumerate(CASES):
     prev="theory-hierarchical" if i==0 else CASES[i-1][0]
     nxt=CASES[i+1][0] if i+1<len(CASES) else "exp-opencode"
     pages[fn]=gen_case(fn,ti,mf,prev,nxt)
 
-EXPS=[("exp-opencode","实验：opencode","opencode.md"),("exp-dsh","实验：dsh","deepseek-harness.md"),("exp-prime","实验：PRIME","prime.md"),("exp-hermes","实验：hermes","hermes.md"),("exp-claude-code","实验：claude-code","claude-code.md"),("exp-codex","实验：codex","codex.md")]
+EXPS=[("exp-opencode","实验：opencode","opencode.md"),("exp-opencode-custom","实验：opencode-custom","opencode-custom.md"),("exp-dsh","实验：dsh","deepseek-harness.md"),("exp-prime","实验：PRIME","prime.md"),("exp-hermes","实验：hermes","hermes.md"),("exp-claude-code","实验：claude-code","claude-code.md"),("exp-codex","实验：codex","codex.md")]
 for i,(fn,ti,mf) in enumerate(EXPS):
     prev="case-codex" if i==0 else EXPS[i-1][0]
     nxt=EXPS[i+1][0] if i+1<len(EXPS) else None
     pages[fn]=gen_exp(fn,ti,mf,prev,nxt)
+
+# 官方 vs 自改造对照页
+pages["compare-opencode"]=gen_compare_opencode()
 
 # 精装房全景页
 pages["premium-map"]=gen_premium_map()

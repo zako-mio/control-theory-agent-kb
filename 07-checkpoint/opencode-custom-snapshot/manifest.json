@@ -1,0 +1,62 @@
+{
+  "source": "~/.config/opencode",
+  "note": "脱敏快照；opencode.env 不拷贝",
+  "files": [
+    {
+      "path": "~/.config/opencode/opencode.jsonc",
+      "bytes": 42203,
+      "sha256_16": "c620520a0dcf72e3",
+      "snapshot": "opencode.jsonc",
+      "redacted_occurrences": 0
+    },
+    {
+      "path": "~/.config/opencode/MEMORY.md",
+      "bytes": 10013,
+      "sha256_16": "17581ee40ddf4fe9",
+      "snapshot": "MEMORY.md",
+      "redacted_occurrences": 0
+    },
+    {
+      "path": "~/.config/opencode/command/reflection.md",
+      "bytes": 7242,
+      "sha256_16": "16e94df9f229dd95",
+      "snapshot": "command__reflection.md",
+      "redacted_occurrences": 0
+    },
+    {
+      "path": "~/.config/opencode/instructions/auto-mode.md",
+      "bytes": 14320,
+      "sha256_16": "1b076184a7d680e5",
+      "snapshot": "instructions__auto-mode.md",
+      "redacted_occurrences": 0
+    },
+    {
+      "path": "~/.config/opencode/instructions/search-behavior.md",
+      "bytes": 1873,
+      "sha256_16": "71769f67704264b3",
+      "snapshot": "instructions__search-behavior.md",
+      "redacted_occurrences": 0
+    },
+    {
+      "path": "~/.config/opencode/instructions/agent-protocol.md",
+      "bytes": 8879,
+      "sha256_16": "e660d50b2e083d71",
+      "snapshot": "instructions__agent-protocol.md",
+      "redacted_occurrences": 0
+    },
+    {
+      "path": "~/.config/opencode/instructions/browser-management.md",
+      "bytes": 1299,
+      "sha256_16": "057bbedf2843e279",
+      "snapshot": "instructions__browser-management.md",
+      "redacted_occurrences": 0
+    },
+    {
+      "path": "~/.config/opencode/instructions/downloads.md",
+      "bytes": 746,
+      "sha256_16": "e935532c15d4c696",
+      "snapshot": "instructions__downloads.md",
+      "redacted_occurrences": 0
+    }
+  ]
+}

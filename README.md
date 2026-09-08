@@ -1,6 +1,6 @@
 # 控制理论 ⊗ Agent 设计知识库
 
-> **版本**：v1.1.0（6 框架 + 14 精装房全景版）｜创建：2026-09-07｜v1.1 扩展：2026-09-08
+> **版本**：v1.2.0（6 框架 + 14 精装房全景 + 自改造 opencode 变体）｜创建：2026-09-07｜v1.1 扩展：2026-09-08｜v1.2 自改造 opencode 变体专题：2026-09-09
 > **定位**：以 Agent 设计构建为业务核心，控制理论作为解决 Agent 工程问题的**技术工具库**引入。
 > **核心命题**：把 Agent 当作一架装了传感器、执行器、逻辑决断器的无人机去建模与控制，拒绝把它当成会聊天的搜索引擎。
 
@@ -11,6 +11,8 @@
 | 想做什么 | 去哪 |
 |---------|------|
 | **人类可读入口**（推荐从这里看） | [`index.html`](index.html) |
+| 官方 vs 自改造对照页 | [`04-interactive/compare-opencode.html`](04-interactive/compare-opencode.html) |
+| 自改造 opencode 画像 | [`04-interactive/case-opencode-custom.html`](04-interactive/case-opencode-custom.html) |
 | 精装房全景（14 款产品谱系） | [`04-interactive/premium-map.html`](04-interactive/premium-map.html) |
 | 精装房交互 DAG | [`04-interactive/premium-cyto.html`](04-interactive/premium-cyto.html) |
 | 五环框架总览 | [`04-interactive/framework.html`](04-interactive/framework.html) |
@@ -51,6 +53,7 @@ cd 04-interactive && python3 -m http.server 8321
 2. **E 环（评估）从样板三产品「一致最弱」分化为两派**——hermes/codex 有独立 Critic 体系（E 环强），opencode/dsh/PRIME/claude-code 仍偏弱
 3. **各产品最弱环分化**——opencode/dsh/PRIME/claude-code 最弱环=E，hermes/codex 最弱环=P
 4. **M 环普遍缺置信度（P 协方差）**——记忆多记事实不记「我有多确定」
+5. **装配层可定向补齐内核弱环**——官方 opencode E/R 弱，经自改造（reflection/grill-me/search-worker/门控）E/R 反转，精装度 2.9→3.9（+1.0）
 
 ---
 
@@ -87,7 +90,7 @@ cd 04-interactive && python3 -m http.server 8321
 ├── 00-contract/          # 契约（命名/信源分级/L1-L7 门控/精装房专题约定）
 ├── 01-theory/            # 5 分区理论证据包（31 知识点，≥2 权威源交叉验证）
 ├── 02-framework/         # 五大核心环映射框架
-├── 03-cases/             # 6 框架画像 + 14 精装房画像（premium-*.md，含证据来源区块）
+├── 03-cases/             # 6 框架画像 + 自改造变体（opencode-custom*.md）+ 14 精装房画像（premium-*.md，含证据来源区块）
 ├── 04-interactive/       # 人类端交互 HTML 集群（36 页）
 ├── 05-md/                # AI 友好 MD 镜像 + 索引
 ├── 06-experiments/       # 6 框架标准实验组记录

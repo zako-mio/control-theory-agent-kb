@@ -24,3 +24,6 @@ Thumbs.db
 
 # === 门控中间输出（结果文件保留，JSON 明细排除）===
 07-checkpoint/gate-result.json
+
+# === 个人记忆系统快照（仅本地证据，不公开）===
+07-checkpoint/opencode-custom-snapshot/MEMORY.md

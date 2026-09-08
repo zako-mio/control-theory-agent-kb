@@ -2,7 +2,7 @@
 
 > 本文件是本知识库的**宪法级硬约束**。所有子Agent 必须以本文件为唯一契约来源，禁止在 prompt 中复制本文件全文（避免长 prompt 截断），只允许引用其短路径 `00-contract/contract.md`。
 >
-> 版本：`v1.1.0`　创建：2026-09-07　v1.1 扩展：2026-09-08（精装房全景专题）　负责人：主Agent
+> 版本：`v1.2.0`　创建：2026-09-07　v1.1 扩展：2026-09-08（精装房全景专题）　v1.2 扩展：2026-09-09（自改造 opencode 变体专题）　负责人：主Agent
 
 ---
 
@@ -56,6 +56,18 @@
 
 ---
 
+## 2.6 自改造 opencode 变体专题约定（v1.2 新增）
+
+本专题分析**官方 opencode 的衍生变体**（个人装配层）——不重造引擎，仅在配置/协议/skill/MCP/记忆系统五层做定向补强。
+
+- **基线**：官方 opencode 默认 + 最小常规装配（四 agent + 官方内置 skills + 基础 provider），基线口径见 `03-cases/opencode.md`。
+- **评分方法**：五环**双层评分**（内核层 + 装配层增量 Δ）+ 复用精装度 **v2.0**（硬门槛 + 8 维加权 + 一票否决，见 `07-checkpoint/premium-scoring-model.md`）。
+- **口径**（已定结论）：官方精装度 2.9 → 自改造 3.9（Δ+1.0）；五环双层 SP 3.5→4.5、M 3.5→4.0、P 4.5→5.0、R 2.0→4.5（反转）、T 4.5→5.0、E 2.0→4.0（反转）。
+- **排名约定**：变体**不参与 14 产品市售精装度排名**（个人装配层无分发渠道，不与市售产品同轴比较）。
+- **证据**：脱敏快照 `07-checkpoint/opencode-custom-snapshot/`（opencode.jsonc / instructions / command / inventory.json），评分单一数据源 `09-src-data/opencode_custom_scores.py`。
+
+---
+
 ## 3. 目录结构（本知识库全量）
 
 ```
@@ -102,6 +114,8 @@
 - **产品 ID**：`agent-{short}` short ∈ `{prime, dsh, opencode, hermes, claudecode, codex}`（原 6）
 - **精装房产品 ID**（v1.1 新增）：`premium-{short}` short ∈ `{cursor, windsurf, copilot, devin, workbuddy, codewhale, ccrouter, qcode, dify, coze, openhands, gptresearcher, ...}`
   - 案例页：`04-interactive/premium-{short}.html`；画像 MD：`03-cases/premium-{short}.md`
+- **衍生变体产品 ID**（v1.2 新增）：`opencode-custom`（官方 opencode 的衍生变体，案例 ID `KT-case-007`）
+  - 画像 MD：`03-cases/opencode-custom.md`；案例页：`04-interactive/case-opencode-custom.html`；对照页：`04-interactive/compare-opencode.html`
 
 ---
 

@@ -1,7 +1,7 @@
 # AI 索引 — 控制理论 ⊗ Agent 设计知识库 (00-index.md)
 
 > **AI 友好镜像**，检索优先走本目录（`05-md/`）。人类可读版在 `04-interactive/` + `03-cases/`。
-> 版本：v1.1.0（6 框架 + 14 精装房全景版）　创建：2026-09-07　v1.1 扩展：2026-09-08
+> 版本：v1.2.0（6 框架 + 14 精装房全景 + 自改造 opencode 变体）　创建：2026-09-07　v1.1 扩展：2026-09-08　v1.2 扩展：2026-09-09（自改造 opencode 变体专题）
 
 ## 知识库定位
 
@@ -87,6 +87,7 @@
 | 产品 | 类型 | 整体范式 | 最强环 | 最弱环 | 独立 Critic | 源码 |
 |------|------|---------|-------|-------|:---:|:---:|
 | **opencode** v1.18.29 | monorepo+装配层 | 前馈-执行+局部反馈（Plan-and-Execute） | P/T | E | ❌ | 本地 |
+| **opencode-custom** | 官方 opencode 衍生变体·装配层 | 分层编排+跨会话自演化闭环 | P/T | 已补齐（原 E/R） | ✅ 装配层有（reflection-worker/grill-me） | 本地 |
 | **deepseek-harness** v0.1.1-rc.2 | cordis 插件 | MPC 滚动规划+强约束执行器 | T | E | ❌ | 本地 |
 | **PRIME** (RLM) | RLM+Continual Harness | 自适应/自整定负反馈 | R | E | ❌(gates空) | clone |
 | **hermes** | NousResearch | 鲁棒控制+多传感器+观测器型 | M/T | P | ✅ | clone |
@@ -99,6 +100,7 @@
 2. **T 环（执行器）是 6 框架共同「最强环」**——看门狗/限幅/沙箱是 Agent 工程最成熟环节（无一例外）。
 3. **各产品最弱环分化**——opencode/dsh/PRIME/claude-code = E，hermes/codex = P。
 4. **M 环普遍缺置信度（P 协方差）**——记忆多记事实不记"我有多确定"（PRIME 带版本/hermes 带离散标记相对最好）。
+5. **装配层可定向补齐内核弱环**——官方 opencode E/R 弱，经自改造（reflection/grill-me/search-worker/门控）E/R 反转，精装度 2.9→3.9（+1.0）。
 
 ## 精装房全景专题（v1.1，14 产品）
 
@@ -136,8 +138,8 @@
 | `00-contract/contract.md` | 契约（命名/信源分级/破坏性范围/门控 + 精装房专题） |
 | `01-theory/` | 5 分区理论证据包（31 知识点，≥2 权威源） |
 | `02-framework/framework.md` | 五环映射框架 |
-| `03-cases/` | 6 框架画像 + 14 精装房画像（premium-*.md） |
-| `04-interactive/` | 人类端 36 页（总览/理论/案例/实验/精装房全景+DAG） |
+| `03-cases/` | 6 框架画像 + 1 自改造变体（opencode-custom*.md）+ 14 精装房画像（premium-*.md） |
+| `04-interactive/` | 人类端 39 页（总览/理论/案例/实验/对照/精装房全景+DAG） |
 | `06-experiments/` | 6 产品标准实验组记录 |
 | `07-checkpoint/` | 中间产物/门控脚本 + 精装房实证证据 |
 | `08-drawio/` | drawio 图表 |
@@ -149,13 +151,14 @@
 - 人类可读版入口：`04-interactive/index.html`
 - 精装房全景入口：`04-interactive/premium-map.html`
 
-## 人类可读页索引（04-interactive/，36 页）
+## 人类可读页索引（04-interactive/，39 页）
 
 | 分组 | 页面 | 说明 |
 |------|------|------|
 | 概览 | `index.html` / `index_cyto.html` | 文档总览 / 交互 DAG |
 | 核心 | `framework.html` | 五环映射框架 |
 | 理论 | `theory-closed-loop.html` / `theory-state-est.html` / `theory-pid.html` / `theory-robust.html` / `theory-hierarchical.html` | 5 分区理论页 |
-| 案例 | `case-opencode.html` / `case-dsh.html` / `case-prime.html` / `case-hermes.html` / `case-claude-code.html` / `case-codex.html` | 6 框架画像 |
-| 实验 | `exp-opencode.html` / `exp-dsh.html` / `exp-prime.html` / `exp-hermes.html` / `exp-claude-code.html` / `exp-codex.html` | 6 实验组记录 |
+| 案例 | `case-opencode.html` / `case-opencode-custom.html` / `case-dsh.html` / `case-prime.html` / `case-hermes.html` / `case-claude-code.html` / `case-codex.html` | 6 框架画像 + 自改造变体 |
+| 实验 | `exp-opencode.html` / `exp-opencode-custom.html` / `exp-dsh.html` / `exp-prime.html` / `exp-hermes.html` / `exp-claude-code.html` / `exp-codex.html` | 6 实验组 + 自改造变体记录 |
+| 对照 | `compare-opencode.html` | 官方 opencode vs 自改造变体对照 |
 | 精装房 | `premium-map.html` / `premium-cyto.html` / `premium-cursor.html` / `premium-devin.html` / `premium-workbuddy.html` / `premium-windsurf.html` / `premium-copilot.html` / `premium-dify.html` / `premium-openhands.html` / `premium-coze.html` / `premium-openclaude.html` / `premium-codewhale.html` / `premium-gptresearcher.html` / `premium-qcode.html` / `premium-ccrouter.html` / `premium-crewai.html` | 全景/ DAG / 14 案例页 |

@@ -1,0 +1,128 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>任务完成报告 — 自改造 opencode 变体专题 v1.2</title>
+<style>
+:root{--bg:#f8fafc;--panel:#fff;--ink:#1e293b;--muted:#64748b;--accent:#0ea5e9;--border:#e2e8f0;--blue:#1d4ed8;--gold:#b45309}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--ink);line-height:1.75;font-size:15px}
+.wrap{max-width:920px;margin:0 auto;padding:32px 24px 64px}
+.hero{background:linear-gradient(135deg,#0f172a,#1e3a8a);color:#fff;border-radius:12px;padding:28px 30px;margin-bottom:24px}
+.hero h1{font-size:23px;margin-bottom:10px;line-height:1.4}
+.hero blockquote{background:rgba(255,255,255,.08);border-left:3px solid #7dd3fc;color:#cbd5e1;margin:4px 0}
+h2{font-size:20px;color:var(--blue);border-bottom:2px solid var(--accent);padding-bottom:6px;margin:30px 0 14px}
+h3{font-size:16px;color:var(--gold);margin:20px 0 8px}
+h4{font-size:15px;color:var(--ink);margin:14px 0 6px}
+p{margin:8px 0}
+table{border-collapse:collapse;width:100%;margin:14px 0;font-size:13.5px}
+th,td{border:1px solid var(--border);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:#f1f5f9;font-weight:600}
+code{background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:ui-monospace,monospace;font-size:.9em}
+blockquote{border-left:3px solid var(--accent);background:#eff6ff;padding:8px 14px;border-radius:0 6px 6px 0;margin:8px 0;color:#334155;font-size:13.5px}
+ul{margin:8px 0 8px 22px}
+li{margin:4px 0}
+hr{border:none;border-top:1px solid var(--border);margin:24px 0}
+.footer{margin-top:40px;padding-top:14px;border-top:1px solid var(--border);color:var(--muted);font-size:12px;text-align:center}
+</style></head>
+<body><div class="wrap">
+<h1>任务完成报告 — 控制理论 ⊗ Agent 设计知识库 v1.2「自改造 opencode」变体专题</h1>
+<blockquote>AI 友好留档版（人类可读版见同目录 <code>report.html</code>）</blockquote>
+<blockquote>版本：v1.2.0　完成日期：2026-09-09　负责人：主Agent</blockquote>
+<blockquote>任务路径：<code>archive/Mission-file/2026-09/0907-控制理论Agent设计知识库/</code></blockquote>
+<hr>
+<h2>1. 当时情况</h2>
+<h3>1.1 任务背景</h3>
+<p>既有知识库中，<code>03-cases/opencode.md</code> 评估的是<strong>官方 opencode v1.18.29 内核</strong>（结论：E/R 环弱、P/T 最强）。而本机 <code>~/.config/opencode</code> 已被用户长期改造为一套<strong>重装配层</strong>：9 个 agent（+5 专职 worker）、6 个 MCP、28+11 skills、Reflection 自演化系统、auto-mode/agent-protocol/search-behavior 协议层。用户要求<strong>增量新增对「自改造 opencode」的评估，便于与官方原版区分</strong>。</p>
+<h3>1.2 用户原始需求</h3>
+<ul>
+<li>- 增量（不推翻既有库），在现有知识库内新增「自改造 opencode」评估；</li>
+<li>- 核心诉求：<strong>便于官方原版 opencode 区分</strong>；</li>
+<li>- 最终追加要求：留档到 KB 的 <code>archive/0909-自改造opencode评估/</code>，并<strong>推送 GitHub + 更新 Pages</strong>。</li>
+</ul>
+<h3>1.3 环境状态</h3>
+<ul>
+<li>- 运行环境：WSL2（Linux），工作目录 <code>/home/zako-mio/opencode</code>；opencode <code>1.18.29</code>（<code>/home/zako-mio/.opencode/bin/opencode</code>）；</li>
+<li>- 配置源：<code>~/.config/opencode/</code>（<code>opencode.jsonc</code> 用 <code>{env:XXX}</code> 引用密钥，无硬编码；<code>opencode.env</code> 含真实密钥）；</li>
+<li>- 渲染环境：系统 chromium 可用（snap 沙箱无法写 <code>/tmp</code>）；playwright Python 模块未装；</li>
+<li>- 仓库：<code>https://github.com/zako-mio/control-theory-agent-kb.git</code>，分支 <code>main</code>；GitHub Pages 源=<code>main</code> 根目录（<code>https://zako-mio.github.io/control-theory-agent-kb/</code>）。</li>
+</ul>
+<hr>
+<h2>2. 制定计划</h2>
+<h3>2.1 grill-me 收敛的 14 项决策</h3>
+<table><thead><tr><th>#</th><th>决策</th></tr></thead><tr><td>1</td><td>定位 = 独立案例 + diff 对照 + 交互对照页（全量三产物）</td></tr><tr><td>2</td><td>标尺 = 五环双层评分 + 复用精装度 v2.0 加权模型</td></tr><tr><td>3</td><td>粒度 = 全量 8 类改造 + 每项五环权重标注</td></tr><tr><td>4</td><td>基线 = 官方默认 + 最小常规装配（四 agent + 官方内置 skills + 基础 provider）</td></tr><tr><td>5</td><td>核心命题 = 三线并列（主：弱环定向补强；副：精装度跃升；副：编排升级）</td></tr><tr><td>6</td><td>实验 = 完整实机实验组（<code>/tmp/opencode</code> 隔离区）</td></tr><tr><td>7</td><td>对照页形态 = 五环雷达图叠加 + 逐环 delta 卡片</td></tr><tr><td>8</td><td>交付物 = 七件套（案例+diff+两 HTML+实验+实验 HTML+索引）</td></tr><tr><td>9</td><td>整合 = 全量整合 + 变体单独标注（不进 6 框架原生排名）</td></tr><tr><td>10</td><td>证据策略 = 脱敏快照 + 路径引用</td></tr><tr><td>11</td><td>命名 = <code>opencode-custom</code>（自改造），案例 ID <code>KT-case-007</code></td></tr><tr><td>12</td><td>精装度 = 实算分数 + 变体标注不排名</td></tr><tr><td>13</td><td>门控 = L1-L7 全开</td></tr><tr><td>14</td><td>实验组配独立人类端 HTML（实为七件）</td></tr></table>
+<blockquote>复杂度门控：<code>[GATE] 范围=4 深度=4 操作=5 风险=3 → 16 → Deep</code>（[COMPLEXITY: 16/20]，Deep 推理）。</blockquote>
+<h3>2.2 执行阶段划分</h3>
+<table><thead><tr><th>Phase</th><th>内容</th><th>委派</th><th>产出</th></tr></thead><tr><td><strong>0</strong></td><td>脱敏证据快照 + 精装度 8 维评分固化</td><td>主Agent</td><td><code>07-checkpoint/opencode-custom-snapshot/</code> + <code>09-src-data/opencode_custom_scores.py</code></td></tr><tr><td><strong>1</strong></td><td>独立画像 + 官方 vs 自改造 diff</td><td>general 子Agent</td><td><code>03-cases/opencode-custom.md</code>、<code>opencode-custom-diff.md</code></td></tr><tr><td><strong>2</strong></td><td>隔离区实机实验组（6 实验）</td><td>general 子Agent</td><td><code>06-experiments/opencode-custom.md</code></td></tr><tr><td><strong>3</strong></td><td>3 个 HTML 生成 + nav 注册</td><td>general 子Agent</td><td><code>case/compare/exp-*.html</code> + <code>nav_data.py</code>/<code>gen_html.py</code></td></tr><tr><td><strong>4</strong></td><td>索引/README/契约 v1.2</td><td>general 子Agent</td><td><code>05-md/00-index.md</code>、<code>README.md</code>、<code>contract.md</code></td></tr><tr><td><strong>5</strong></td><td>L1-L7 门控 + L4 视觉</td><td>主Agent + vision-worker</td><td>门控 7/7 PASS</td></tr><tr><td><strong>6</strong></td><td>留档 + GitHub 推送 + Pages</td><td>主Agent</td><td>本报告</td></tr></table>
+<h3>2.3 红线约束</h3>
+<ul class="num">
+<li>1. 严禁修改 <code>~/.config/opencode/MEMORY.md</code> 与 <code>Reflection/pending.json</code>（记忆系统硬门禁）；</li>
+<li>2. 实机实验仅 <code>/tmp/opencode</code> 隔离区，实验前后校验记忆系统文件 sha256；</li>
+<li>3. 证据留档脱敏：<code>opencode.env</code> 不拷贝，密钥 <code>&lt;REDACTED&gt;</code>；</li>
+<li>4. 变体不污染 14 产品市售排名（独立评分文件 <code>opencode_custom_scores.py</code>）。</li>
+</ul>
+<hr>
+<h2>3. 执行情况</h2>
+<h3>3.1 Phase 0 — 证据与评分（主Agent）</h3>
+<ul>
+<li>- 写 <code>07-checkpoint/snapshot_opencode_custom.py</code>：脱敏快照 8 文件（<code>opencode.jsonc</code>/<code>MEMORY.md</code>/<code>reflection.md</code>/5 份 instructions）+ <code>inventory.json</code>（9 agents / 6 MCP / 28 skills + 11 legacy / 3 scripts / 1 command）。</li>
+<li>- 首版提取正则在嵌套花括号处截断（只得到 1 agent）→ 改为 <strong>JSONC 去注释 + 去尾逗号 + json.loads</strong> 解析，修正为 9 agents / 6 MCP。</li>
+<li>- 固化评分 <code>09-src-data/opencode_custom_scores.py</code>：官方 <strong>2.88→2.9</strong>、自改造 <strong>3.85→3.9</strong>（Δ+1.0）。</li>
+</ul>
+<h3>3.2 Phase 1-2 — 画像 / diff / 实验（子Agent）</h3>
+<ul>
+<li>- 画像 MD：6 环（SP/E/T/M/P/R）+ 精装度评估 + 总评 + 总结 + 9 条 SRC 证据；<code>render_case.py</code> 解析通过（6 环、3.9/5、8 维表）。</li>
+<li>- diff MD：8 类改造清单 + 五环双层 delta + 8 维对比 + 三大发现 + 9 条 SRC。</li>
+<li>- 实验 MD：6 个实验（基线 / 专职 worker 委派+嵌套 depth=2 / Reflection 只读 / GATE / MCP 连通 / Skill 加载）；<code>render_exp.py</code> 解析通过。</li>
+</ul>
+<h3>3.3 Phase 3-4 — HTML 与整合（子Agent）</h3>
+<ul>
+<li>- 3 新页：<code>case-opencode-custom.html</code>、<code>compare-opencode.html</code>（五环雷达 SVG + delta 卡片）、<code>exp-opencode-custom.html</code>；<code>nav_data.py</code> NAV 39→40 条；<code>gen_html.py</code> 注册新页 + 新增 <code>gen_compare_opencode()</code>。</li>
+<li>- 索引/README/契约升至 <strong>v1.2.0</strong>：新增 §2.6 变体专题约定 + <code>opencode-custom</code> ID 规则 + 核心洞察「装配层可定向补齐内核弱环」。</li>
+</ul>
+<h3>3.4 Phase 5 — 门控与问题应对</h3>
+<table><thead><tr><th>层</th><th>结果</th><th>备注</th></tr></thead><tr><td>L1 生成自验证</td><td>PASS</td><td>py_compile + 解析器实跑</td></tr><tr><td>L2 全量审计</td><td>PASS</td><td>quality-gate 0 issue；14 产品一致性 PASS（未污染排名）</td></tr><tr><td>L3 结构/断链/NAV</td><td>PASS</td><td>structure 176 / links 1816 / nav 40</td></tr><tr><td>L4 视觉层</td><td>PASS</td><td>vision-worker 三图质检（雷达 6 辐条+双多边形闭合）</td></tr><tr><td>L5 渲染层</td><td>PASS</td><td>headless chromium 43 项</td></tr><tr><td>L6 覆盖度层</td><td>PASS</td><td>coverage 7 项（<code>--require</code> 新交付物）</td></tr><tr><td>L7 信源层</td><td>PASS</td><td>sources 22 项</td></tr></table>
+<p><strong>遇到的问题与应对</strong>：</p>
+<ul class="num">
+<li>1. <strong>快照正则截断</strong> → 改 JSONC 解析（见 3.1）。</li>
+<li>2. <strong>snap chromium 无法写 <code>/tmp</code></strong> → 截图输出改到项目 <code>07-checkpoint/</code>。</li>
+<li>3. <strong>VLM 标签幻觉</strong>：vision-worker 将 <code>R 反思</code> 读作“D 部署”、编造“排名17-3” → 用 DOM/源码真值复核（<code>RING_ORDER=[&#x27;SP&#x27;,&#x27;M&#x27;,&#x27;P&#x27;,&#x27;R&#x27;,&#x27;T&#x27;,&#x27;E&#x27;]</code>）校正，确认渲染无误。</li>
+<li>4. <strong>并发写 pending.json</strong>：实验子Agent 与 reflection-worker 并行，导致实验窗口内 <code>pending.json</code> sha256 变化 → 日志归因确认为 reflection-worker 写入（非实验行为），<code>MEMORY.md</code> sha256 全程不变，实验记录如实标注。</li>
+<li>5. <strong>页脚版本漂移</strong>：3 个非 <code>gen_html</code> 产物（<code>index_cyto</code>/<code>premium-cyto</code>/门户 <code>index.html</code>）仍 v1.1 → 双轨修正（生成脚本 + 生成物）至 v1.2。</li>
+</ul>
+<hr>
+<h2>4. 完成情况</h2>
+<h3>4.1 交付物清单（七件套 + 支撑）</h3>
+<table><thead><tr><th>类型</th><th>文件</th></tr></thead><tr><td>画像</td><td><code>03-cases/opencode-custom.md</code></td></tr><tr><td>diff</td><td><code>03-cases/opencode-custom-diff.md</code></td></tr><tr><td>案例页</td><td><code>04-interactive/case-opencode-custom.html</code></td></tr><tr><td>对照页</td><td><code>04-interactive/compare-opencode.html</code></td></tr><tr><td>实验 MD</td><td><code>06-experiments/opencode-custom.md</code></td></tr><tr><td>实验页</td><td><code>04-interactive/exp-opencode-custom.html</code></td></tr><tr><td>索引整合</td><td><code>05-md/00-index.md</code>、<code>README.md</code>、<code>00-contract/contract.md</code>(v1.2)、<code>09-src-data/nav_data.py</code>、<code>gen_html.py</code></td></tr><tr><td>证据/评分</td><td><code>07-checkpoint/opencode-custom-snapshot/</code>、<code>07-checkpoint/snapshot_opencode_custom.py</code>、<code>09-src-data/opencode_custom_scores.py</code></td></tr></table>
+<h3>4.2 核心结论</h3>
+<ul>
+<li>- <strong>弱环反转</strong>：官方内核 E 环 2.0→4.0、R 环 2.0→4.5；装配层以 search-behavior+search-worker+grill-me 补 E、以 pending.json+reflection-worker+/reflection 补 R。</li>
+<li>- <strong>精装度跃升</strong>：官方 2.9（需装修档）→ 自改造 3.9（成品化受限档），Δ+1.0；主要来自记忆（3→5）与 Skill 库（2→4）。</li>
+<li>- <strong>编排升级</strong>：从「plan/build 双速 + task 委派」单体，升级为「主 Agent 编排 + 5 专职 worker + Reflection 自演化」三层平台。</li>
+<li>- <strong>封顶因素</strong>：一键部署（3）与沙箱（3）未提升——个人配置无分发渠道、无完整沙箱，是精装度未达 4.5 的主因。</li>
+</ul>
+<h3>4.3 门控与推送</h3>
+<ul>
+<li>- L1-L7 <strong>7/7 PASS</strong>；L2 审计 0 issue；14 产品市售排名一致性 PASS（变体未污染）。</li>
+<li>- GitHub：提交并推送 <code>main</code>；GitHub Pages 源=<code>main</code> 根目录，推送后自动重建。</li>
+</ul>
+<hr>
+<h2>5. 反思 / 分析 / 建议</h2>
+<h3>5.1 过程反思</h3>
+<ul>
+<li>- <strong>装配层是「定向补环」而非「换引擎」</strong>：自改造的控制论价值在于，不改 opencode 内核，仅通过协议 + 专职 worker + 记忆系统，就把内核最弱的两环（E/R）反转。这为「框架如何低成本升级为可用系统」提供了可复制范式。</li>
+<li>- <strong>VLM 不可全信</strong>：深底密小字区域转写易幻读，须以 DOM/源码真值兜底（与库内既有经验一致）。</li>
+<li>- <strong>并行共享状态需哈希门控</strong>：多子Agent 并行时，凡涉及共享状态文件（pending.json），必须前后哈希 + 日志归因，否则误判实验污染。</li>
+</ul>
+<h3>5.2 收获认知</h3>
+<ul>
+<li>- 精装度 v2.0 模型可迁移到「个人变体」评估，但须标注「不参与市售排名」，否则口径混淆。</li>
+<li>- 门控 coverage 层需显式 <code>--require</code> 才有意义，否则静默跳过。</li>
+</ul>
+<h3>5.3 未来建议</h3>
+<ul class="num">
+<li>1. 若要提升自改造精装度上限：方向是<strong>装配层可分发化</strong>（一键安装脚本）与<strong>沙箱化</strong>；</li>
+<li>2. Reflection 闭环仍依赖 <code>/reflection</code> 人工确认，可考虑半自动门控（低风险条目自动入池）；</li>
+<li>3. 建议为「变体类」条目在契约中固化「不排名」标注规则，避免后续维护漂移。</li>
+</ul>
+<blockquote>⚠️ 契约遵守确认：证据快照已脱敏（<code>opencode.env</code> 未拷贝、密钥 <code>&lt;REDACTED&gt;</code>）；实验仅在 <code>/tmp/opencode</code> 隔离区，<code>MEMORY.md</code> sha256 全程不变；变体未进入 14 产品市售排名。</blockquote>
+<div class="footer">控制理论 ⊗ Agent 设计知识库 · v1.2 自改造 opencode 变体专题 · 2026-09-09</div>
+</div></body></html>

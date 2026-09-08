@@ -1,2 +1,3 @@
 ISSUES=0
-WARNINGS=0
+WARNINGS=1
+WARN: 01-theory/README.md: 知识点KT数=0 但证据区块数=1 (应相等)
