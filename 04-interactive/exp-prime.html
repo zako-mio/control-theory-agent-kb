@@ -1,0 +1,60 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>实验：PRIME — 控制理论⊗Agent知识库</title>
+<link rel="stylesheet" href="assets/design-tokens.css"></head>
+<body><div class="shell">
+<aside class="sidebar">
+ 
+<div class="sidebar-brand">
+  <div class="mark"><span class="dot"></span><h1>控制理论 ⊗ Agent</h1></div>
+  <p>五大核心环 · 6 框架 + 14 精装房 · 6 实验组</p>
+</div>
+ <nav class="sidebar-nav"><div class="grp">入门</div><a class="" href="../index.html"><span class="mag">00</span>门户入口</a><div class="grp">概览</div><a class="" href="index.html"><span class="mag">01</span>总览</a><a class="" href="index_cyto.html"><span class="mag">02</span>交互DAG</a><div class="grp">核心</div><a class="" href="framework.html"><span class="mag">03</span>框架</a><div class="grp">理论</div><a class="" href="theory-closed-loop.html"><span class="mag">04</span>理论:闭环反馈</a><a class="" href="theory-state-est.html"><span class="mag">05</span>理论:状态估计</a><a class="" href="theory-pid.html"><span class="mag">06</span>理论:PID</a><a class="" href="theory-robust.html"><span class="mag">07</span>理论:鲁棒控制</a><a class="" href="theory-hierarchical.html"><span class="mag">08</span>理论:分层控制</a><div class="grp">案例</div><a class="" href="case-opencode.html"><span class="mag">09</span>案例:opencode</a><a class="" href="case-dsh.html"><span class="mag">10</span>案例:dsh</a><a class="" href="case-prime.html"><span class="mag">11</span>案例:PRIME</a><a class="" href="case-hermes.html"><span class="mag">12</span>案例:hermes</a><a class="" href="case-claude-code.html"><span class="mag">13</span>案例:claude-code</a><a class="" href="case-codex.html"><span class="mag">14</span>案例:codex</a><div class="grp">实验</div><a class="" href="exp-opencode.html"><span class="mag">15</span>实验:opencode</a><a class="" href="exp-dsh.html"><span class="mag">16</span>实验:dsh</a><a class="active" href="exp-prime.html"><span class="mag">17</span>实验:PRIME</a><a class="" href="exp-hermes.html"><span class="mag">18</span>实验:hermes</a><a class="" href="exp-claude-code.html"><span class="mag">19</span>实验:claude-code</a><a class="" href="exp-codex.html"><span class="mag">20</span>实验:codex</a><div class="grp">精装房全景</div><a class="" href="premium-map.html"><span class="mag">21</span>精装房全景</a><a class="" href="premium-cyto.html"><span class="mag">22</span>精装房DAG</a><a class="" href="premium-cursor.html"><span class="mag">23</span>精装:Cursor</a><a class="" href="premium-devin.html"><span class="mag">24</span>精装:Devin</a><a class="" href="premium-workbuddy.html"><span class="mag">25</span>精装:WorkBuddy</a><a class="" href="premium-windsurf.html"><span class="mag">26</span>精装:Windsurf</a><a class="" href="premium-copilot.html"><span class="mag">27</span>精装:Copilot</a><a class="" href="premium-dify.html"><span class="mag">28</span>精装:Dify</a><a class="" href="premium-openhands.html"><span class="mag">29</span>精装:OpenHands</a><a class="" href="premium-coze.html"><span class="mag">30</span>精装:Coze</a><a class="" href="premium-openclaude.html"><span class="mag">31</span>精装:OpenClaude</a><a class="" href="premium-codewhale.html"><span class="mag">32</span>精装:CodeWhale</a><a class="" href="premium-gptresearcher.html"><span class="mag">33</span>精装:GPT-Researcher</a><a class="" href="premium-qcode.html"><span class="mag">34</span>精装:QCode</a><a class="" href="premium-ccrouter.html"><span class="mag">35</span>精装:CC-Router</a><a class="" href="premium-crewai.html"><span class="mag">36</span>精装:CrewAI</a>
+ </nav>
+</aside>
+<div class="main">
+<div class="main-topbar"><div class="crumb"><b>实验：PRIME</b> · 控制理论 ⊗ Agent</div></div>
+<div class="main-content">
+<header class="topic"><div class="crumb">标准实验组</div><h1>实验：PRIME</h1></header>
+<p class='breadcrumb'><a href='index.html'>总览</a> › 实验</p>
+<div class="signal">
+  <div class="signal-head"><span class="label">Experiment · 标准实验组</span><span class="tag">prime</span></div>
+  <span class="kicker" style="font-family:var(--font-mono);letter-spacing:.12em;color:#7E8CA5;font-size:11px">EXPERIMENT</span>
+  <h1 style="font-size:26px;margin:8px 0 12px;color:#fff;letter-spacing:-.02em">实验记录：PRIME（RLM coding agent）— 标准实验组</h1>
+  <div class="exp-meta-list"><div class="exp-meta">产品：PRIME（<code>best-radar/bradar-prime-agent</code>，TypeScript monorepo）</div><div class="exp-meta">实验日期：2026-09-07　实验方式：<strong>源码级可逆故障注入点分析</strong>（不实机破坏）</div><div class="exp-meta">契约约束：仅分析可逆注入点，不改源码，不实机运行破坏实验</div></div>
+</div>
+
+<div class="ring-section exp-card">
+  <div class="ring-head">
+    <span class="ring-tag" style="background:#1E5AA8">场景1</span>
+    <div class="ring-title"><h2>场景1 正常模式（基线）</h2></div>
+  </div>
+  <div class="exp-field"><div class="exp-field-tag" style="border-color:#1E5AA8;color:#1E5AA8">关键证据</div><ul><li>核心：常驻 Python REPL（<code>packages/agent</code> + <code>core/tools/ipython.ts</code>）+ <code>/goal</code> 持久目标 + <code>rlm()</code> 递归子代</li><li>控制论：设定值 r 由 <code>/goal</code> 持久化，RLM 执行</li></ul></div>
+</div>
+<div class="ring-section exp-card">
+  <div class="ring-head">
+    <span class="ring-tag" style="background:#1E5AA8">场景2</span>
+    <div class="ring-title"><h2>场景2 故障注入 — 递归深度超限（T 环限幅，<strong>可逆注入点</strong>）</h2></div>
+  </div>
+  <div class="exp-field"><div class="exp-field-tag" style="border-color:#1E5AA8;color:#1E5AA8">注入点</div><ul><li>环境变量 <code>RLM_DEPTH</code>/<code>RLM_MAX_DEPTH</code>，测试源码 <code>file-operations.test.ts:163-168</code> 严格校验非负整数，非法值抛 <code>&quot;RLM_DEPTH must be a non-negative integer&quot;</code>。</li></ul></div><div class="exp-field"><div class="exp-field-tag" style="border-color:#1E5AA8;color:#1E5AA8">触发行为</div><ul><li><code>RLM_DEPTH &lt; RLM_MAX_DEPTH</code>（默认 2）；超深度 host 拒绝 <code>rlm.run</code> 并 raise 到 Python——<strong>执行器硬约束 u_sat</strong>。</li></ul></div><div class="exp-field"><div class="exp-field-tag" style="border-color:#1E5AA8;color:#1E5AA8">控制论</div><ul><li>KT-ctrl-034 安全边际/硬约束限幅——深度限幅防递归爆炸。</li></ul></div><div class="exp-field"><div class="exp-field-tag" style="border-color:#1E5AA8;color:#1E5AA8">回滚</div><ul><li>改回 <code>RLM_MAX_DEPTH=2</code>。</li></ul></div>
+</div>
+<div class="ring-section exp-card">
+  <div class="ring-head">
+    <span class="ring-tag" style="background:#1E5AA8">场景3</span>
+    <div class="ring-title"><h2>场景3 上下文污染（M 环信息滤波，<strong>可逆注入点</strong>）</h2></div>
+  </div>
+  <div class="exp-field"><div class="exp-field-tag" style="border-color:#1E5AA8;color:#1E5AA8">注入点</div><ul><li>compaction <code>keepRecentTokens=20k</code>，<code>contextTokens &gt; contextWindow - reserveTokens</code> 触发。</li></ul></div><div class="exp-field"><div class="exp-field-tag" style="border-color:#1E5AA8;color:#1E5AA8">触发行为</div><ul><li>向后找 cut point 保留近期 token，生成结构化 summary（读/改文件累计跟踪），<code>CompactionEntry</code> 含 <code>firstKeptEntryId</code>；重复 compaction 从上次边界起算。</li></ul></div><div class="exp-field"><div class="exp-field-tag" style="border-color:#1E5AA8;color:#1E5AA8">控制论</div><ul><li>KT-ctrl-011 卡尔曼更新 + KT-ctrl-014 信息降维（只保留增量信息）。</li></ul></div><div class="exp-field"><div class="exp-field-tag" style="border-color:#1E5AA8;color:#1E5AA8">回滚</div><ul><li>调回 20k。</li></ul></div>
+</div>
+<div class="ring-section exp-card">
+  <div class="ring-head">
+    <span class="ring-tag" style="background:#1E5AA8">场景4</span>
+    <div class="ring-title"><h2>场景4 超长循环 — Autonomous bounded continuation（R 环误差回灌，<strong>可逆注入点</strong>）</h2></div>
+  </div>
+  <div class="exp-field"><div class="exp-field-tag" style="border-color:#1E5AA8;color:#1E5AA8">注入点</div><ul><li>autonomous <code>maxContinuations=3/maxTurns=12/maxTokens=80k/timeoutMs=30min</code> + gate 配置。</li></ul></div><div class="exp-field"><div class="exp-field-tag" style="border-color:#1E5AA8;color:#1E5AA8">触发行为</div><ul><li><code>shouldAutonomouslyContinue</code> 根据 gateResult/limitReason 决定；gate 失败时 <code>buildAutonomousGateFailureContinuation</code> 将失败命令/输出/bounded 提示注入下一轮（&quot;Fix the failure, then produce terminal evidence&quot;）——<strong>负反馈误差 e 直接回灌执行器</strong>。</li></ul></div><div class="exp-field"><div class="exp-field-tag" style="border-color:#1E5AA8;color:#1E5AA8">控制论</div><ul><li>KT-ctrl-044 MPC 滚动时域（前瞻一组、只进一步、根据门重算）。</li></ul></div><div class="exp-field"><div class="exp-field-tag" style="border-color:#1E5AA8;color:#1E5AA8">回滚</div><ul><li>改回 maxContinuations=3。</li><li>| 场景 | 控制论环节 | 可逆注入点 | 行为 | 强弱项 |</li><li>|------|-----------|-----------|------|-------|</li><li>| 1 正常 | 设定值+执行 | 默认 | RLM REPL 运行 | 基线 |</li><li>| 2 超深递归 | T 环限幅 | RLM_DEPTH/MAX_DEPTH | host 拒绝 rlm.run | 强（防爆炸） |</li><li>| 3 上下文污染 | M 环信息滤波 | compaction keepRecentTokens | 压力压缩| 强（只留增量） |</li><li>| 4 超长循环 | R 环误差回灌 | maxContinuations+gate | gate 失败注入下一轮 | 强（MPC 式） |</li></ul></div><div class="exp-field"><div class="exp-field-tag" style="border-color:#1E5AA8;color:#1E5AA8">整体控制论结论</div><ul><li>PRIME 的<strong>可逆注入点高度集中在 R 环（/refine + gate + autonomous）与 M 环（continual harness）</strong>——它把「自我改进」做成持久可撤销的状态（snapshot rollback），比 opencode/dsh 更有「自整定」色彩。但 E 环默认 gate 为空（<code>commands:[]</code> = 开环），<code>/refine</code> 与 auto-refine review 仍是同一 LLM 自评（共模偏置）。印证 phase3 画像：<strong>R 环最强、E 环最弱</strong>。 &gt; ⚠️ 契约遵守确认：本次实验为<strong>纯源码分析</strong>（未实机运行、未修改任何源码/配置文件、无破坏）。可逆注入点为理论定位，实际注入需在隔离环境执行且可回滚。</li></ul></div>
+</div>
+<div class="pager"><a href="exp-dsh.html">← 实验:dsh</a><a class="next" href="exp-hermes.html">实验:hermes</a></div>
+<footer class="footer">
+<span>控制理论 ⊗ Agent 设计知识库 · v1.1 精装房全景版（6 框架 + 14 精装房）</span>
+<span class="fbrand">data: 09-src-data · contract: 00-contract</span>
+</footer>
+</div></div></div></body></html>

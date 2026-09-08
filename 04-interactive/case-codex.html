@@ -1,0 +1,97 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>案例：codex — 控制理论⊗Agent知识库</title>
+<link rel="stylesheet" href="assets/design-tokens.css"></head>
+<body><div class="shell">
+<aside class="sidebar">
+ 
+<div class="sidebar-brand">
+  <div class="mark"><span class="dot"></span><h1>控制理论 ⊗ Agent</h1></div>
+  <p>五大核心环 · 6 框架 + 14 精装房 · 6 实验组</p>
+</div>
+ <nav class="sidebar-nav"><div class="grp">入门</div><a class="" href="../index.html"><span class="mag">00</span>门户入口</a><div class="grp">概览</div><a class="" href="index.html"><span class="mag">01</span>总览</a><a class="" href="index_cyto.html"><span class="mag">02</span>交互DAG</a><div class="grp">核心</div><a class="" href="framework.html"><span class="mag">03</span>框架</a><div class="grp">理论</div><a class="" href="theory-closed-loop.html"><span class="mag">04</span>理论:闭环反馈</a><a class="" href="theory-state-est.html"><span class="mag">05</span>理论:状态估计</a><a class="" href="theory-pid.html"><span class="mag">06</span>理论:PID</a><a class="" href="theory-robust.html"><span class="mag">07</span>理论:鲁棒控制</a><a class="" href="theory-hierarchical.html"><span class="mag">08</span>理论:分层控制</a><div class="grp">案例</div><a class="" href="case-opencode.html"><span class="mag">09</span>案例:opencode</a><a class="" href="case-dsh.html"><span class="mag">10</span>案例:dsh</a><a class="" href="case-prime.html"><span class="mag">11</span>案例:PRIME</a><a class="" href="case-hermes.html"><span class="mag">12</span>案例:hermes</a><a class="" href="case-claude-code.html"><span class="mag">13</span>案例:claude-code</a><a class="active" href="case-codex.html"><span class="mag">14</span>案例:codex</a><div class="grp">实验</div><a class="" href="exp-opencode.html"><span class="mag">15</span>实验:opencode</a><a class="" href="exp-dsh.html"><span class="mag">16</span>实验:dsh</a><a class="" href="exp-prime.html"><span class="mag">17</span>实验:PRIME</a><a class="" href="exp-hermes.html"><span class="mag">18</span>实验:hermes</a><a class="" href="exp-claude-code.html"><span class="mag">19</span>实验:claude-code</a><a class="" href="exp-codex.html"><span class="mag">20</span>实验:codex</a><div class="grp">精装房全景</div><a class="" href="premium-map.html"><span class="mag">21</span>精装房全景</a><a class="" href="premium-cyto.html"><span class="mag">22</span>精装房DAG</a><a class="" href="premium-cursor.html"><span class="mag">23</span>精装:Cursor</a><a class="" href="premium-devin.html"><span class="mag">24</span>精装:Devin</a><a class="" href="premium-workbuddy.html"><span class="mag">25</span>精装:WorkBuddy</a><a class="" href="premium-windsurf.html"><span class="mag">26</span>精装:Windsurf</a><a class="" href="premium-copilot.html"><span class="mag">27</span>精装:Copilot</a><a class="" href="premium-dify.html"><span class="mag">28</span>精装:Dify</a><a class="" href="premium-openhands.html"><span class="mag">29</span>精装:OpenHands</a><a class="" href="premium-coze.html"><span class="mag">30</span>精装:Coze</a><a class="" href="premium-openclaude.html"><span class="mag">31</span>精装:OpenClaude</a><a class="" href="premium-codewhale.html"><span class="mag">32</span>精装:CodeWhale</a><a class="" href="premium-gptresearcher.html"><span class="mag">33</span>精装:GPT-Researcher</a><a class="" href="premium-qcode.html"><span class="mag">34</span>精装:QCode</a><a class="" href="premium-ccrouter.html"><span class="mag">35</span>精装:CC-Router</a><a class="" href="premium-crewai.html"><span class="mag">36</span>精装:CrewAI</a>
+ </nav>
+</aside>
+<div class="main">
+<div class="main-topbar"><div class="crumb"><b>案例：codex</b> · 控制理论 ⊗ Agent</div></div>
+<div class="main-content">
+<header class="topic"><div class="crumb">产品控制论画像</div><h1>案例：codex</h1></header>
+<p class='breadcrumb'><a href='index.html'>总览</a> › 案例</p>
+<div class="signal">
+  <div class="signal-head"><span class="label">Product Portrait · 控制论画像</span><span class="tag">codex</span></div>
+  <span class="kicker" style="font-family:var(--font-mono);letter-spacing:.12em;color:#7E8CA5;font-size:11px">CASE</span>
+  <h1 style="font-size:26px;margin:8px 0 10px;color:#fff;letter-spacing:-.02em">Codex CLI 控制论画像（OpenAI Codex CLI，Rust 实现）</h1>
+  <p style="color:#CBD4E2;max-width:720px;line-height:1.7;font-size:15px;margin:0">设定值不是&quot;预写死目标&quot;，而是<strong>用户意图的轻量包装 + 按岗注入的 AGENTS.md 约束</strong>；正式子目标靠 <code>goal</code> 工具显式写入，但默认不主动推断。</p>
+</div>
+
+<div class="ring-section" id="ring-SP">
+  <div class="ring-head">
+    <span class="ring-tag" style="background:#1E5AA8">SP</span>
+    <div class="ring-title"><h2>设定值（SP）— 用户意图如何分解为可验证子目标</h2><span class="ring-ctrl">用户意图 → 可验证子目标</span></div>
+  </div>
+  <div class="ring-loc"><strong>承担角色：</strong>设定值不是&quot;预写死目标&quot;，而是<strong>用户意图的轻量包装 + 按岗注入的 AGENTS.md 约束</strong>；正式子目标靠 <code>goal</code> 工具显式写入，但默认不主动推断。</div>
+  <h3>关键机制</h3><ul><li><strong>AGENTS.md / AGENTS.override.md 三档注入</strong>：<code>codex-rs/codex-home/src/instructions/mod.rs</code> 定义 <code>UserInstructionsProvider</code>，按 <code>[AGENTS.override.md, AGENTS.md]</code> 顺序加载。<code>core/src/context/</code> 下每个 fragment 实现 <code>ContextualUserFragment</code> trait，受 AGENTS.md 硬性约束（无 unbounded items / 无 &gt;10K tokens 项）。</li><li><strong>goals 系统（显式目标）</strong>：<code>codex-rs/ext/goal/src/spec.rs</code> 定义 <code>create_goal</code>/<code>update_goal</code>/<code>get_goal</code> 工具。description 明确要求&quot;Create a goal only when explicitly requested; do not infer goals from ordinary tasks&quot;——设定值只在显式请求时确立，带 token_budget。</li><li><strong>plan 工具（TODO/checklist）</strong>：<code>core/src/tools/handlers/plan.rs</code> 的 <code>update_plan</code>，在 <code>ModeKind::Plan</code> 下被禁用。</li><li><strong>orchestrator 角色模板</strong>：<code>core/templates/agents/orchestrator.md</code> 要求先给&quot;quick plan with goal, constraints, next steps&quot;。</li><li><strong>执行性验证约束</strong>：无独立&quot;子目标验证器&quot;——设定值分解主要靠模型 + 评审器（E 环）事后校验。</li></ul>
+  <div class="mapping-box"><strong>控制论映射：</strong>KT-ctrl-045（规划-执行解耦的契约接口）；设定值对应 KT-ctrl-002（负反馈结构中的 r）。</div>
+  <div class='ring-sw'>强——AGENTS.md 分档注入保证设定值有明确权威来源与硬上限；goal 工具支持带预算的显式目标。弱——目标分解纵深浅（单模型驱动&quot;一条链&quot;，不提供独立高层慢规划器产出里程碑）；默认不推断目标。</div>
+</div>
+<div class="ring-section" id="ring-E">
+  <div class="ring-head">
+    <span class="ring-tag" style="background:#B23A2F">E</span>
+    <div class="ring-title"><h2>传感器 / 评估（E 环）— 靠什么测&quot;执行达标&quot;</h2><span class="ring-ctrl">评估/传感器</span></div>
+  </div>
+  <div class="ring-loc"><strong>承担角色：</strong>Codex 在 E 环上有两套独立的&quot;非主模型评审器&quot;——<strong>Guardian 评审器（审批决策）</strong> 与 <strong>Review Task 评审器（代码审查）</strong>，都输出结构化 JSON 含置信度，是真正意义上的独立 Critic 传感器。</div>
+  <h3>关键机制</h3><ul><li><strong>Guardian 评审器</strong>：<code>core/src/guardian/mod.rs</code>——独立评审 session，对 <code>on-request approval</code> 自动研判。产出 <code>GuardianAssessment</code>（allow/deny + 置信度），&quot;Fail closed on timeout, execution failure, or malformed output&quot;。评审超时 90s，可重试 3 次。</li><li><strong>Review Task 评审器（代码审查 Critic）</strong>：<code>core/src/tasks/review.rs</code> + <code>core/templates/review/rubric.md</code>。评审器输出严格 JSON schema：<code>findings[]</code>（含 confidence_score、priority 0-3、code_location）+ <code>overall_correctness</code> + <code>overall_confidence_score</code>。rubric 详细定义&quot;何时算 bug&quot;判定准则（8 条）与严重度分级（P0-P3）。</li><li><strong>工具返回即观测</strong>：<code>tools/executed_tool_calls.rs</code> 记录每次工具执行往返。</li><li><strong>exec 命令可验证性</strong>：<code>core/src/exec.rs</code> 捕获 stdout，超时退出码 124。</li><li><strong>Guardian 证据留存</strong>：<code>core/src/context/guardian_review_evidence.rs</code> 保留最近 8 条已完成评审（<code>MAX_RETAINED_REVIEWS = 8</code>），供反思环复用。</li></ul>
+  <div class="mapping-box"><strong>控制论映射：</strong>KT-ctrl-006（反馈灵敏度/鲁棒性）+ KT-ctrl-012（观测噪声 R）。矛盾点：codex 的 E 环是<strong>安全走廊的 E 环</strong>，而非&quot;任务目标达成度&quot;的 E 环——它测的是&quot;这一步动作是否安全/正确&quot;，而非&quot;整体目标是否达成&quot;。</div>
+  <div class='ring-sw'>强——E 环是 codex 最强的设计：Guardian + Review 评审器都是独立模型 + 独立 session，输出带 confidence_score/priority/overall_correctness 的结构化 JSON，是&quot;Critic 即传感器 + 低通滤波&quot;理论的最佳实现。弱——E 环只管&quot;单步正确/安全&quot;（微观），不管&quot;长程目标达标&quot;（宏观）；Review 评审器默认仅在用户显式请求时触发。</div>
+</div>
+<div class="ring-section" id="ring-T">
+  <div class="ring-head">
+    <span class="ring-tag" style="background:#5B4B9B">T</span>
+    <div class="ring-title"><h2>执行器 / 工具（T 环）— 容错机制</h2><span class="ring-ctrl">工具调用/执行器</span></div>
+  </div>
+  <div class="ring-loc"><strong>承担角色：</strong>Codex 的 T 环是<strong>全产品最重的一环</strong>——多层 OS 级沙箱 + 审批策略 + 硬限幅 + 超时看门狗 + 并发限流 + 电路断路器，堪称&quot;执行器 + 安全阀 + 仲裁器&quot;的教科书级实现。</div>
+  <h3>关键机制</h3><ul><li><strong>多平台 OS 级沙箱</strong>：<code>sandboxing/src/manager.rs</code> 定义 <code>SandboxType::{None, MacosSeatbelt, LinuxSeccomp, WindowsRestrictedToken}</code>；Linux 用 bwrap + Landlock，macOS 用 Seatbelt（.sbpl 策略文件），Windows 用 Restricted Token + WFP。硬安全边际。</li><li><strong>exec 超时看门狗</strong>：<code>core/src/exec.rs</code>——<code>DEFAULT_EXEC_COMMAND_TIMEOUT_MS = 10_000</code>；<code>ExecExpiration::{Timeout, DefaultTimeout, Cancellation, TimeoutOrCancellation}</code>；<code>IO_DRAIN_TIMEOUT_MS = 2_000</code> 防孙子进程挂死；<code>EXEC_OUTPUT_MAX_BYTES</code> 输出硬上限。</li><li><strong>审批策略管线（安全阀）</strong>：<code>core/src/tools/approvals.rs</code> + <code>exec_policy/executable_identity.rs</code> + <code>tools/network_approval.rs</code> + <code>command_canonicalization.rs</code>。命令先 canonicalize（解析别名/脚本），shell 命令被拆解成内层命令评估。</li><li><strong>sandbox violation 检测</strong>：<code>sandboxing/src/violation.rs</code> + <code>denial.rs</code>——被沙箱拦截的请求作为反馈回灌。</li><li><strong>并发受限</strong>：<code>core/src/agent/control/execution.rs</code> 的 <code>AgentExecutionLimiter</code>/<code>AgentExecutionGuard</code>（RAII 持有 max_threads）。</li><li><strong>重试/退避</strong>：<code>core/src/responses_retry.rs</code>（INITIAL_CONNECTION_RETRY_DELAY = 5s）＋ <code>util.rs</code> 的 <code>backoff()</code>（指数退避 + 抖动）。</li><li><strong>MCP 工具</strong>：<code>codex-mcp/src/</code>，受审批与沙箱约束。</li></ul>
+  <div class="mapping-box"><strong>控制论映射：</strong>KT-ctrl-034（饱和/看门狗/anti-windup）+ KT-ctrl-031（鲁棒稳定性）+ KT-ctrl-030（模型不确定性降级路径）。</div>
+  <div class='ring-sw'>强——T 环是全产品最强：OS 级沙箱×审批策略管线×超时看门狗×输出限幅×并发限制×指数退避。弱——单一模型主循环的&quot;容错&quot;主要靠拦截/超时（被动安全），而非异质冗余表决（主动仲裁）——T 环重&quot;安全阀&quot;轻&quot;冗余&quot;。</div>
+</div>
+<div class="ring-section" id="ring-M">
+  <div class="ring-head">
+    <span class="ring-tag" style="background:#1F7A52">M</span>
+    <div class="ring-title"><h2>记忆 / 状态估计（M 环）— 会话/上下文管理</h2><span class="ring-ctrl">记忆/状态估计</span></div>
+  </div>
+  <div class="ring-loc"><strong>承担角色：</strong>Codex 的 M 环是<strong>&quot;增量上下文 + 硬 token 预算 + 分层压缩/远程压缩&quot;的 Kalman 式记忆</strong>，注意力高度放在&quot;什么该进上下文&quot;。</div>
+  <h3>关键机制</h3><ul><li><strong>上下文 fragment 体系（ContextualUserFragment）</strong>：<code>core/src/context/mod.rs</code>——所有注入 model 的片段实现 trait，AGENTS.md 硬约束&quot;everything injected must have bounded size &amp; hard cap / No items &gt; 10K tokens&quot;。按&quot;信息增量&quot;而非&quot;全量&quot;组织。</li><li><strong>上下文窗口/压缩触发</strong>：<code>core/src/session/context_window.rs</code> 计算 <code>ContextWindowTokenStatus</code>；<code>state/auto_compact_window.rs</code> 追踪压缩窗口。</li><li><strong>分层压缩</strong>：<code>core/src/compact.rs</code>（本地）+ <code>compact_remote.rs</code>/<code>compact_remote_v2.rs</code>（远程）+ <code>compact_token_budget.rs</code>；<code>SUMMARIZATION_PROMPT</code>，<code>COMPACT_USER_MESSAGE_MAX_TOKENS = 20_000</code>。</li><li><strong>持久化</strong>：<code>thread-store/src/local/</code>（SQLite，rollout_lineage.rs/writer_lock.rs）、<code>state/src/sqlite.rs</code>。</li><li><strong>会话级共享状态</strong>：<code>core/src/rollout_budget.rs</code>（weighted tokens 的 record_usage）+ <code>state/session.rs</code>；<code>context/rollout_budget.rs</code> 把剩余 token 作为 developer 片段回灌模型。</li><li><strong>World State 渲染</strong>：<code>core/src/context/world_state/</code>——把当前环境/权限/协作模式渲染成有界上下文片段。</li></ul>
+  <div class="mapping-box"><strong>控制论映射：</strong>KT-ctrl-010/011（状态估计/Kalman 预测-更新）+ KT-ctrl-014（信息滤波）+ KT-ctrl-012（Q/R 权重）。&quot;No items &gt; 10K tokens + bounded hard cap&quot; 是信息增量预算的直接落地。</div>
+  <div class='ring-sw'>强——上下文信息增量预算纪律严格（bounded/hard-cap/trait 化）；分层压缩 + 远程压缩 + token 预算配套齐全；记忆有 SQLite 持久化。弱——<strong>M 环缺显式&quot;置信度/P 协方差&quot;</strong>：guardian_review_evidence 保留了 confidence_score，但主对话上下文不维护&quot;我对某事实多确信&quot;的状态分布；记忆是&quot;事实串&quot;而非&quot;带不确定度的信念状态&quot;。</div>
+</div>
+<div class="ring-section" id="ring-P">
+  <div class="ring-head">
+    <span class="ring-tag" style="background:#1E5AA8">P</span>
+    <div class="ring-title"><h2>规划 / 分层（P 环）— 慢/快双速规划</h2><span class="ring-ctrl">规划/分层控制</span></div>
+  </div>
+  <div class="ring-loc"><strong>承担角色：</strong>Codex 的 P 环是<strong>&quot;单一模型主循环 + plan 工具轻规划 + 多 Agent 委派&quot;的扁平架构</strong>，不是严格意义上的 MPC 滚动重规划。</div>
+  <h3>关键机制</h3><ul><li><strong>plan 工具（TODO/checklist）</strong>：<code>core/src/tools/handlers/plan.rs</code> 的 <code>update_plan</code>，输出 <code>PlanUpdate</code> 事件。orchestrator 模板指示&quot;Use the plan tool to explain... Only use it for more complex tasks&quot;——计划是前瞻性清单，非滚动重规划。</li><li><strong>多 Agent 委派（V1/V2）</strong>：<code>core/src/agent/control/*</code>（spawn.rs/residency.rs）+ <code>tools/handlers/multi_agents_v2/*</code>。提供 <code>spawn_agent</code>/<code>send_input</code>/<code>wait_agent</code>/<code>interrupt_agent</code>/<code>followup_task</code> 等工具。</li><li><strong>agent 分层/角色</strong>：<code>core/src/agent/role.rs</code> + <code>agent_graph_store/src/</code>（记录 agent 树）。<code>MultiAgentMode::{ExplicitRequestOnly, Proactive}</code>。有 thread spawn depth 限制。</li><li><strong>Agent 执行限制</strong>：<code>agent/control/execution.rs</code>、<code>residency.rs</code>。</li><li><strong>skills 抽象（options）</strong>：<code>ext/skills/</code>（SkillMetadata/SkillPolicy/SkillInterface，selection.rs 动态选择）。</li></ul>
+  <div class="mapping-box"><strong>控制论映射：</strong>KT-ctrl-045（规划-执行解耦，这层是真的：高层 Planner 产 milestone + 低层 Executor 单步执行）+ KT-ctrl-046（options/skill 时序抽象）。但<strong>不是 KT-ctrl-044（MPC 滚动）的实现</strong>——codex 没有&quot;前瞻 N 步、只走 1 步、重解&quot;的显式滚动优化器，plan 是一次性 checklist。</div>
+  <div class='ring-sw'>强——多 Agent 委派是 P 环亮点（父 Agent 协调、子 Agent 独立求解，spawn/wait/interrupt/followup 一应俱全，有 depth limit + execution limiter 防失控）。弱——P 环缺 MPC 式滚动重规划；update_plan 是 TODO 清单，模型填一份计划后自行推进；规划时域 N≈整任务；成本/频率 ε 意识弱。</div>
+</div>
+<div class="ring-section" id="ring-R">
+  <div class="ring-head">
+    <span class="ring-tag" style="background:#C77700">R</span>
+    <div class="ring-title"><h2>反思 / 反馈闭环（R 环）— 多轮自我纠偏</h2><span class="ring-ctrl">反思/反馈闭环</span></div>
+  </div>
+  <div class="ring-loc"><strong>承担角色：</strong>Codex 的 R 环是<strong>&quot;评审结果回灌 + 拒绝电路断路器（anti-windup）+ 重试&quot;的纠偏机制</strong>，偏向&quot;安全纠偏&quot;而非&quot;任务收敛纠偏&quot;。</div>
+  <h3>关键机制</h3><ul><li><strong>Guardian 拒绝回灌</strong>：<code>core/src/guardian/review.rs</code>——评审 deny 后注入 <code>GUARDIAN_REJECTION_INSTRUCTIONS</code>：&quot;agent must not attempt to achieve the same outcome via workaround, indirect execution, or policy circumvention&quot;——明确禁止策略性绕过（anti-windup）。</li><li><strong>Guardian 电路断路器</strong>：<code>core/src/guardian/mod.rs</code> 的 <code>GuardianRejectionCircuitBreaker</code>——标准策略 3 次连续拒绝即 <code>InterruptTurn</code>，Cyber 模型 1 次即中断；<code>record_denial</code>/<code>record_non_denial</code> 维护连续拒绝计数。防&quot;反复申请同被拒动作&quot;的 windup 限幅。</li><li><strong>评审失败反馈（离线）</strong>：<code>core/src/guardian/feedback.rs</code>——<code>record_failed_review</code> 把失败评审作为 json feedback 落盘。</li><li><strong>超时重试指令</strong>：<code>GUARDIAN_TIMEOUT_INSTRUCTIONS</code>：超时&quot;not assume unsafe based on timeout alone; you may retry once, or ask for guidance&quot;。</li><li><strong>执行失败反馈</strong>：<code>response_debug-context</code> + <code>feedback_tags!</code> 宏。 ## Codex 控制论画像总结</li></ul>
+  <div class="mapping-box"><strong>控制论映射：</strong>KT-ctrl-002（负反馈结构）+ KT-ctrl-020~023（PID）+ 尤其 KT-ctrl-022（I 累积 + anti-windup）+ KT-ctrl-025（超调——断路器强制中断 = 防 overshoot）。</div>
+  <div class='ring-sw'>强——R 环有显式 anti-windup 设计（连续拒绝计数 + 中断 + 禁止绕过指令）；评审 error 回灌完善；&quot;重试但最多 3 次/1 次&quot;是有界纠偏。弱——反思偏向&quot;安全纠偏&quot;而非&quot;任务质量纠偏&quot;——主回路没有&quot;任务目标达成度误差 e&quot;的显式计算与回收；不含&quot;随时间累积偏航补偿（I）&quot;意义上的长期任务反思。</div>
+</div>
+<div class="ring-section summary-block">
+  <div class="ring-head"><span class="ring-tag" style="background:#C77700">★</span><div class="ring-title"><h2>控制论画像总结</h2></div></div>
+  <div class="case-verdict"><strong>整体范式：</strong><strong>整体控制范式</strong>：Codex 是<strong>&quot;重执行器 + 硬安全阀 + 独立双评审器&quot;的鲁棒闭环系统</strong>，而非典型 MPC 或 PID 型规划 Agent。闭环的&quot;负反馈主信号&quot;来自 Guardian/Review 两个独立评审器（E 环），但这两把尺测的是单步动作的安全/正确性，不是长程目标达成度——因此 Codex 的闭环在<strong>微观（单步正确性）很强</strong>，在<strong>宏观（目标收敛）偏开环</strong>。</div>
+  
+</div>
+<div class="pager"><a href="case-claude-code.html">← 案例:claude-code</a><a class="next" href="exp-opencode.html">实验:opencode</a></div>
+<footer class="footer">
+<span>控制理论 ⊗ Agent 设计知识库 · v1.1 精装房全景版（6 框架 + 14 精装房）</span>
+<span class="fbrand">data: 09-src-data · contract: 00-contract</span>
+</footer>
+</div></div></div></body></html>

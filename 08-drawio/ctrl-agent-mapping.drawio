@@ -1,0 +1,118 @@
+<mxfile host="drawio" modified="2026-09-07T00:00:00.000Z" agent="drawio-worker" version="24.7.8" type="device">
+  <diagram id="ctrl-agent-mapping" name="控制概念到Agent映射">
+    <mxGraphModel dx="1200" dy="860" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1160" pageHeight="830" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="&lt;b&gt;控制概念 → Agent 映射表&lt;/b&gt;（五环 M/P/R/T/E · KT 编号取自 01-theory 证据包）" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#2c3e50;" vertex="1" parent="1">
+          <mxGeometry x="40" y="12" width="1080" height="36" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend" value="&lt;i&gt;KT-ctrl-xxx 为知识点 ID，全部真实来自 01-theory（KT-ctrl-001~046）&lt;/i&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=Microsoft YaHei;fontSize=11;fontColor=#7f8c8d;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="40" y="52" width="1080" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="tbl" style="shape=table;childLayout=tableLayout;startSize=0;collapsible=0;strokeColor=#bdc3c7;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="40" y="90" width="1080" height="710" as="geometry"/>
+        </mxCell>
+        <mxCell id="r0" style="shape=tableRow;horizontal=0;startSize=0;collapsible=0;" vertex="1" parent="tbl">
+          <mxGeometry width="1080" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="h0" value="&lt;b&gt;五环&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#ffffff;fillColor=#34495e;strokeColor=#2c3e50;" vertex="1" parent="r0">
+          <mxGeometry width="200" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="h1" value="&lt;b&gt;核心控制概念 → Agent 实现要点&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#ffffff;fillColor=#34495e;strokeColor=#2c3e50;" vertex="1" parent="r0">
+          <mxGeometry x="200" width="880" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="rM" style="shape=tableRow;horizontal=0;startSize=0;collapsible=0;" vertex="1" parent="tbl">
+          <mxGeometry y="60" width="1080" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="aM" value="&lt;b&gt;M 记忆/状态估计&lt;/b&gt;&lt;br&gt;&lt;span style=&#39;font-size:11px&#39;&gt;状态估计/观测/卡尔曼&lt;br&gt;(ch-memory, 02-state-est)&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#ffffff;fillColor=#16a085;strokeColor=#12876f;" vertex="1" parent="rM">
+          <mxGeometry width="200" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="m1" value="&lt;b&gt;KT-ctrl-010 状态估计&lt;/b&gt;&lt;br&gt;→ Agent 推断隐藏信念" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Microsoft YaHei;fontSize=11;fillColor=#e8f5e9;strokeColor=#16a085;" vertex="1" parent="rM">
+          <mxGeometry x="200" width="220" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="m2" value="&lt;b&gt;KT-ctrl-011 卡尔曼滤波&lt;/b&gt;&lt;br&gt;→ 预测-更新两阶段记忆&lt;br&gt;K 增益=记忆置信度" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Microsoft YaHei;fontSize=11;fillColor=#e8f5e9;strokeColor=#16a085;" vertex="1" parent="rM">
+          <mxGeometry x="420" width="220" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="m3" value="&lt;b&gt;KT-ctrl-012 观测/过程噪声&lt;/b&gt;&lt;br&gt;→ 通道可信度加权&lt;br&gt;R/Q 比值定信源权重" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Microsoft YaHei;fontSize=11;fillColor=#e8f5e9;strokeColor=#16a085;" vertex="1" parent="rM">
+          <mxGeometry x="640" width="220" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="m4" value="&lt;b&gt;KT-ctrl-014 信息过滤/降维&lt;/b&gt;&lt;br&gt;→ 记忆蒸馏 / 上下文压缩" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Microsoft YaHei;fontSize=11;fillColor=#e8f5e9;strokeColor=#16a085;" vertex="1" parent="rM">
+          <mxGeometry x="860" width="220" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="rP" style="shape=tableRow;horizontal=0;startSize=0;collapsible=0;" vertex="1" parent="tbl">
+          <mxGeometry y="190" width="1080" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="aP" value="&lt;b&gt;P 规划/分层控制&lt;/b&gt;&lt;br&gt;&lt;span style=&#39;font-size:11px&#39;&gt;分层/慢快双速&lt;br&gt;(ch-planning, 05-hierarchical)&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#ffffff;fillColor=#2980b9;strokeColor=#1f6390;" vertex="1" parent="rP">
+          <mxGeometry width="200" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="p1" value="&lt;b&gt;KT-ctrl-041 分层控制结构&lt;/b&gt;&lt;br&gt;&lt;span style=&#39;font-size:10px&#39;&gt;(含 043 时间尺度分离)&lt;/span&gt;&lt;br&gt;→ 慢 Planner / 快 Executor" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Microsoft YaHei;fontSize=11;fillColor=#eaf2f8;strokeColor=#2980b9;" vertex="1" parent="rP">
+          <mxGeometry x="200" width="220" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2" value="&lt;b&gt;KT-ctrl-044 MPC (RHC)&lt;/b&gt;&lt;br&gt;→ 只想一步再重算&lt;br&gt;≈ ReAct 规划-反思循环" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Microsoft YaHei;fontSize=11;fillColor=#eaf2f8;strokeColor=#2980b9;" vertex="1" parent="rP">
+          <mxGeometry x="420" width="220" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="p3" value="&lt;b&gt;KT-ctrl-045 规划-执行解耦&lt;/b&gt;&lt;br&gt;→ Plan &amp;&amp; Replan 契约&lt;br&gt;观察回调→重规划" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Microsoft YaHei;fontSize=11;fillColor=#eaf2f8;strokeColor=#2980b9;" vertex="1" parent="rP">
+          <mxGeometry x="640" width="220" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="p4" value="&lt;b&gt;KT-ctrl-042 递阶/多层控制&lt;/b&gt;&lt;br&gt;→ 上层施约束/下层自主&lt;br&gt;父 Agent 委派子 Agent" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Microsoft YaHei;fontSize=11;fillColor=#eaf2f8;strokeColor=#2980b9;" vertex="1" parent="rP">
+          <mxGeometry x="860" width="220" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="rR" style="shape=tableRow;horizontal=0;startSize=0;collapsible=0;" vertex="1" parent="tbl">
+          <mxGeometry y="320" width="1080" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="aR" value="&lt;b&gt;R 反思/反馈闭环&lt;/b&gt;&lt;br&gt;&lt;span style=&#39;font-size:11px&#39;&gt;反馈/误差收敛&lt;br&gt;(ch-reflection, 03-pid)&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#ffffff;fillColor=#f39c12;strokeColor=#d68910;" vertex="1" parent="rR">
+          <mxGeometry width="200" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="r1" value="&lt;b&gt;KT-ctrl-020 PID 三通道&lt;/b&gt;&lt;br&gt;&lt;span style=&#39;font-size:10px&#39;&gt;(021 P 即时 / 022 I 累积 / 023 D 预判)&lt;/span&gt;&lt;br&gt;→ 三通道反思" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Microsoft YaHei;fontSize=11;fillColor=#fef9e7;strokeColor=#f39c12;" vertex="1" parent="rR">
+          <mxGeometry x="200" width="220" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="r2" value="&lt;b&gt;KT-ctrl-025 误差收敛/稳态误差&lt;/b&gt;&lt;br&gt;→ 收敛判定 / 防超调&lt;br&gt;瞬态震荡→稳态带" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Microsoft YaHei;fontSize=11;fillColor=#fef9e7;strokeColor=#f39c12;" vertex="1" parent="rR">
+          <mxGeometry x="420" width="220" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="r3" value="&lt;b&gt;KT-ctrl-024 PID 整定/Z-N&lt;/b&gt;&lt;br&gt;→ 校准反思力度阈值&lt;br&gt;试探至临界震荡再回退" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Microsoft YaHei;fontSize=11;fillColor=#fef9e7;strokeColor=#f39c12;" vertex="1" parent="rR">
+          <mxGeometry x="640" width="220" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="r4" value="&lt;b&gt;KT-ctrl-026 状态反馈 LQR&lt;/b&gt;&lt;br&gt;→ 状态空间全局最优修正&lt;br&gt;成本函数权衡/限幅" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Microsoft YaHei;fontSize=11;fillColor=#fef9e7;strokeColor=#f39c12;" vertex="1" parent="rR">
+          <mxGeometry x="860" width="220" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="rT" style="shape=tableRow;horizontal=0;startSize=0;collapsible=0;" vertex="1" parent="tbl">
+          <mxGeometry y="450" width="1080" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="aT" value="&lt;b&gt;T 工具调用/执行器&lt;/b&gt;&lt;br&gt;&lt;span style=&#39;font-size:11px&#39;&gt;容错/鲁棒&lt;br&gt;(ch-tool, 04-robust)&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#ffffff;fillColor=#8e44ad;strokeColor=#6c2f8b;" vertex="1" parent="rT">
+          <mxGeometry width="200" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="t1" value="&lt;b&gt;KT-ctrl-034 看门狗/限幅&lt;/b&gt;&lt;br&gt;&lt;span style=&#39;font-size:10px&#39;&gt;(输入饱和/积分 windup/anti-windup)&lt;/span&gt;&lt;br&gt;→ 硬限幅+降级" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Microsoft YaHei;fontSize=11;fillColor=#f4ecf7;strokeColor=#8e44ad;" vertex="1" parent="rT">
+          <mxGeometry x="200" width="220" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="t2" value="&lt;b&gt;KT-ctrl-033 冗余与仲裁&lt;/b&gt;&lt;br&gt;&lt;span style=&#39;font-size:10px&#39;&gt;(TMR/异质冗余)&lt;/span&gt;&lt;br&gt;→ 多 LLM 互校验/仲裁" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Microsoft YaHei;fontSize=11;fillColor=#f4ecf7;strokeColor=#8e44ad;" vertex="1" parent="rT">
+          <mxGeometry x="420" width="220" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="t3" value="&lt;b&gt;KT-ctrl-032 鲁棒控制 (H∞/μ/滑模)&lt;/b&gt;&lt;br&gt;→ worst-case 兜底&lt;br&gt;滑模→强制切容错态" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Microsoft YaHei;fontSize=11;fillColor=#f4ecf7;strokeColor=#8e44ad;" vertex="1" parent="rT">
+          <mxGeometry x="640" width="220" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="t4" value="&lt;b&gt;KT-ctrl-030 模型不确定性&lt;/b&gt;&lt;br&gt;→ 预留稳定裕度&lt;br&gt;置信度阈值/降级路径" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Microsoft YaHei;fontSize=11;fillColor=#f4ecf7;strokeColor=#8e44ad;" vertex="1" parent="rT">
+          <mxGeometry x="860" width="220" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="rE" style="shape=tableRow;horizontal=0;startSize=0;collapsible=0;" vertex="1" parent="tbl">
+          <mxGeometry y="580" width="1080" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="aE" value="&lt;b&gt;E 评估/传感器&lt;/b&gt;&lt;br&gt;&lt;span style=&#39;font-size:11px&#39;&gt;验证器/信噪比&lt;br&gt;(ch-eval, 01-closed-loop)&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#ffffff;fillColor=#e74c3c;strokeColor=#c0392b;" vertex="1" parent="rE">
+          <mxGeometry width="200" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" value="&lt;b&gt;KT-ctrl-035 干扰观测器 (DOB)&lt;/b&gt;&lt;br&gt;→ 在线感知偏差补偿&lt;br&gt;低通 Q(s) 滤波" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Microsoft YaHei;fontSize=11;fillColor=#fdedec;strokeColor=#e74c3c;" vertex="1" parent="rE">
+          <mxGeometry x="200" width="220" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" value="&lt;b&gt;KT-ctrl-030 模型不确定性&lt;/b&gt;&lt;br&gt;→ 信噪比/留误差裕度&lt;br&gt;评估阈值不临界" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Microsoft YaHei;fontSize=11;fillColor=#fdedec;strokeColor=#e74c3c;" vertex="1" parent="rE">
+          <mxGeometry x="420" width="220" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="e3" value="&lt;b&gt;KT-ctrl-031 鲁棒稳定性&lt;/b&gt;&lt;br&gt;→ 评估器防线：输入漂移不失控&lt;br&gt;‖W_s S‖&lt;1 类比" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Microsoft YaHei;fontSize=11;fillColor=#fdedec;strokeColor=#e74c3c;" vertex="1" parent="rE">
+          <mxGeometry x="640" width="220" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="e4" value="&lt;b&gt;KT-ctrl-001/004 闭环&nbsp;&amp;&nbsp;误差收敛&lt;/b&gt;&lt;br&gt;→ 评估器测量误差反哺修正&lt;br&gt;开环→闭环 Agent" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Microsoft YaHei;fontSize=11;fillColor=#fdedec;strokeColor=#e74c3c;" vertex="1" parent="rE">
+          <mxGeometry x="860" width="220" height="130" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

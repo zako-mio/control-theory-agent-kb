@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>任务完成报告 — 控制理论 ⊗ Agent 设计知识库（完整 6 产品版）</title>
+<style>
+:root{--bg:#f8fafc;--panel:#fff;--ink:#1e293b;--muted:#64748b;--accent:#0ea5e9;--border:#e2e8f0;--gold:#b45309;--green:#047857;--red:#b91c1c;--blue:#1d4ed8;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC',sans-serif;background:var(--bg);color:var(--ink);line-height:1.75;font-size:15px}
+.hero{background:linear-gradient(135deg,#0f172a,#1e3a8a);color:#fff;padding:36px 28px;text-align:center}
+.hero h1{font-size:25px;margin-bottom:8px}
+.hero p{color:#cbd5e1;font-size:14px}
+.wrap{max-width:980px;margin:0 auto;padding:26px 22px 60px}
+h2{font-size:19px;margin:30px 0 12px;color:var(--blue);border-bottom:2px solid var(--border);padding-bottom:8px}
+h3{font-size:16px;margin:16px 0 8px;color:var(--gold)}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin:14px 0}
+table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px}
+th,td{border:1px solid var(--border);padding:9px 12px;text-align:left;vertical-align:top}
+th{background:#f1f5f9}
+.strong{color:var(--green);font-weight:600}.weak{color:var(--red);font-weight:600}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600}
+.badge.strong{background:#dcfce7;color:var(--green)}
+.badge.weak{background:#fee2e2;color:var(--red)}
+code{background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;font-size:.9em}
+.gate{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px;margin:10px 0}
+.gate.fail{background:#fef2f2;border-color:#fecaca}
+ul{margin:8px 0 8px 20px}
+footer{margin-top:40px;color:var(--muted);font-size:12px;border-top:1px solid var(--border);padding-top:14px;text-align:center}
+</style>
+</head>
+<body>
+<div class="hero">
+<h1>任务完成报告（历史版本 v1.0.0）</h1>
+<p>控制理论 ⊗ Agent 设计知识库 · 完整 6 产品版 v1.0.0 · 2026-09-07</p>
+<p style="margin-top:10px;font-size:13px;opacity:.85">⚠️ 本报告为 v1.0.0 历史记录。当前有效报告见 <b>07-checkpoint/report-v1.1.html</b>（v1.1 精装房全景版）。</p>
+</div>
+<div class="wrap">
+
+<h2>1. 当时情况</h2>
+<div class="card">
+<p>用户提出将<strong>控制理论核心思想</strong>深度融入 Agent 设计与开发，形成系统知识库。用户描述从「调参工程师」进化为「系统架构师」，用负反馈闭环/状态估计/PID/鲁棒控制/分层控制五个维度重新定义 Agent 设计。</p>
+<p>要求联网检索权威知识（官方优先、多源交叉验证），分析 <strong>6 个真实 Agent 产品</strong>（opencode/deepseek-harness/PRIME/hermes/claude-code/codex）作为应用案例，形成「人类可读 + AI 友好」双线知识库，最后完成一轮自审阅。</p>
+</div>
+
+<h2>2. 制定计划</h2>
+<div class="card">
+<p><b>核心决策（grill-me 收敛，11 项全对齐）</b>：</p>
+<ul>
+<li>业务需求驱动（控制理论作技术工具库，非理论全集灌输）</li>
+<li>价值主张 = Agent 系统设计框架 + 大规模实验落地</li>
+<li>框架骨架 = 五大核心环全覆盖（M记忆/P规划/R反思/T工具调用/E评估）</li>
+<li>权威策略 = 分类型差异化（理论 ≥2 权威源；案例一手观察+源码）</li>
+<li>实验主线 = 全产品标准实验组（正常/故障注入/上下文污染/超长循环）</li>
+<li>交付形态 = 双线（人类端交互 HTML + AI 端结构化 MD + 契约）</li>
+<li>自审 = L1-L7 分层门控全验；实操授权 = 完全授权 + 破坏性前置问（最小必要范围）</li>
+</ul>
+<p><b>推进节奏</b>：先 3 样板打通 → 验证形态 → 铺开 3 产品 → 完整 6 产品终态。</p>
+</div>
+
+<h2>3. 执行情况</h2>
+<div class="card">
+<p><b>委派情况</b>（核心方法 = 主 Agent 编排 + 子 Agent 执行）：</p>
+<ul>
+<li><b>Phase 1</b>：5 路 search-worker 并行检索 31 知识点；补强 3 个 S1 弱项（LQR/反饱和/分层控制）+ 回源纠正 2 处可疑 DOI（Zames/Doyle）</li>
+<li><b>Phase 2</b>：Software Architect 角色 general 子 Agent 构建五环映射框架</li>
+<li><b>Phase 3</b>：6 路 explore 并行做控制论画像（3 本地源码 + 3 clone）</li>
+<li><b>Phase 4</b>：opencode 实机受控实验 + 5 产品源码可逆注入点分析</li>
+<li><b>Phase 5</b>：主 Agent 构建双线交付（根 index + 19 页 HTML 集群 + AI 索引 + 2 drawio 图）</li>
+<li><b>Phase 6</b>：三层门控（结构脚本 + VLM 视觉 + headless 渲染）</li>
+</ul>
+<p><b>遇到的问题及应对</b>：GitHub API 限流→改用 git ls-remote；PRIME 仓库定位困难→webfetch 定位；/tmp 混入检索残留→清理+备份；opencode 装配层干扰→用 --pure；1 个非法临时 JSON→清理后门控通过。</p>
+</div>
+
+<h2>4. 完成情况</h2>
+<div class="card">
+<p><b>交付物清单</b>（知识库根目录，约 30+ 交付文件）：</p>
+<table>
+<tr><th>目录</th><th>内容</th><th>验证</th></tr>
+<tr><td>00-contract/</td><td>契约（命名/信源分级/破坏性范围三清单/三层门控）</td><td>✅</td></tr>
+<tr><td>01-theory/</td><td>31 知识点理论证据包（≥2 权威源）</td><td>✅ 证据区块 6/6/7/6/6</td></tr>
+<tr><td>02-framework/</td><td>五环映射框架</td><td>✅ KT 互引一致</td></tr>
+<tr><td>03-cases/</td><td>6 产品控制论画像</td><td>✅</td></tr>
+<tr><td>04-interactive/</td><td>人类端高可读 HTML 集群（19 页）+ 交互 DAG</td><td>✅ headless+VLM</td></tr>
+<tr><td>05-md/</td><td>AI 端索引 + 31 知识点清单</td><td>✅</td></tr>
+<tr><td>05-source/</td><td>6 产品源码留档（3 clone + 3 链接）</td><td>✅</td></tr>
+<tr><td>06-experiments/</td><td>6 产品标准实验组记录</td><td>✅</td></tr>
+<tr><td>08-drawio/</td><td>五环控制回路图 + 映射表</td><td>✅ VLM</td></tr>
+</table>
+<p><b>核心成果/洞察（6 产品对比）</b>：</p>
+<ul>
+<li><span class="strong">T 环（执行器）是 6 产品共同最强环</span>——看门狗/限幅/沙箱是 Agent 工程最成熟环节</li>
+<li><span class="strong">E 环（评估）从样板三产品「一致最弱」分化为两派</span>——hermes 有独立 Critic、codex 有双评审器，E 环变强；opencode/dsh/PRIME/claude-code 仍弱</li>
+<li><span class="strong">「E 环最弱」是早期产品共性，非 Agent 普遍规律</span>——成熟产品已把独立评审器作为一等公民</li>
+<li>各产品最弱环分化：opencode/dsh/PRIME/claude-code = E；hermes/codex = P</li>
+<li>M 环普遍缺置信度（P 协方差）——记忆多记事实不记"我有多确定"</li>
+</ul>
+</div>
+
+<h2>5. 反思/分析/建议</h2>
+<div class="card">
+<p><b>过程反思</b>：委派协议显著提效（6 路并行检索/画像，31 知识点 + 6 画像在有限轮次完成）；契约先行（contract.md）后后续子 Agent 引用短路径，避免长 prompt 截断，KT 互引校验全部通过。</p>
+<p><b>收获认知</b>：分类型差异化权威策略正确——理论类（≥2 权威源）+ 案例类（一手观察/源码）分离，高危数据强制回源（Zames/Doyle DOI 回源纠正是关键动作）。三样板「E 环最弱」结论在补齐 3 产品后被修正为「分化两派」，说明<strong>单一样本结论易过拟合，需跨样本验证</strong>。</p>
+<p><b>未来改进建议</b>：</p>
+<ul>
+<li>E 环「达标评估」是最大设计缺口——建议专题研究如何为 Agent 设计独立 Critic/验证器（理论支撑 KT-ctrl-006/035）</li>
+<li>M 环置信度建模——引入「状态 + 置信度」双量（P 协方差类比）</li>
+<li>hermes/codex 的独立评审器（Guardian/Review + confidence_score）是最佳实践模板</li>
+</ul>
+</div>
+
+<h2>门控结果</h2>
+<div class="gate">✅ <b>结构层通过</b>：JSON 合法 / HTML 断链 0 / 证据区块齐 / 覆盖度 20+ 交付物全</div>
+<div class="gate">✅ <b>视觉层通过</b>：VLM 验证 drawio 图表 + HTML 集群中文完整无截断、配色正确</div>
+<div class="gate">✅ <b>渲染层通过</b>：headless 验证交互总览 + 高可读集群渲染正常（cytoscape 加载/canvas 生成/无 JS 错误）</div>
+
+<footer>控制理论 ⊗ Agent 设计知识库 · 完整 6 产品版 v1.0.0 · 数字/路径以实际交付物为准</footer>
+</div>
+</body>
+</html>

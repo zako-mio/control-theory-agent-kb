@@ -1,0 +1,67 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>理论：鲁棒控制与不确定性 — 控制理论⊗Agent知识库</title>
+<link rel="stylesheet" href="assets/design-tokens.css"></head>
+<body><div class="shell">
+<aside class="sidebar">
+ 
+<div class="sidebar-brand">
+  <div class="mark"><span class="dot"></span><h1>控制理论 ⊗ Agent</h1></div>
+  <p>五大核心环 · 6 框架 + 14 精装房 · 6 实验组</p>
+</div>
+ <nav class="sidebar-nav"><div class="grp">入门</div><a class="" href="../index.html"><span class="mag">00</span>门户入口</a><div class="grp">概览</div><a class="" href="index.html"><span class="mag">01</span>总览</a><a class="" href="index_cyto.html"><span class="mag">02</span>交互DAG</a><div class="grp">核心</div><a class="" href="framework.html"><span class="mag">03</span>框架</a><div class="grp">理论</div><a class="" href="theory-closed-loop.html"><span class="mag">04</span>理论:闭环反馈</a><a class="" href="theory-state-est.html"><span class="mag">05</span>理论:状态估计</a><a class="" href="theory-pid.html"><span class="mag">06</span>理论:PID</a><a class="active" href="theory-robust.html"><span class="mag">07</span>理论:鲁棒控制</a><a class="" href="theory-hierarchical.html"><span class="mag">08</span>理论:分层控制</a><div class="grp">案例</div><a class="" href="case-opencode.html"><span class="mag">09</span>案例:opencode</a><a class="" href="case-dsh.html"><span class="mag">10</span>案例:dsh</a><a class="" href="case-prime.html"><span class="mag">11</span>案例:PRIME</a><a class="" href="case-hermes.html"><span class="mag">12</span>案例:hermes</a><a class="" href="case-claude-code.html"><span class="mag">13</span>案例:claude-code</a><a class="" href="case-codex.html"><span class="mag">14</span>案例:codex</a><div class="grp">实验</div><a class="" href="exp-opencode.html"><span class="mag">15</span>实验:opencode</a><a class="" href="exp-dsh.html"><span class="mag">16</span>实验:dsh</a><a class="" href="exp-prime.html"><span class="mag">17</span>实验:PRIME</a><a class="" href="exp-hermes.html"><span class="mag">18</span>实验:hermes</a><a class="" href="exp-claude-code.html"><span class="mag">19</span>实验:claude-code</a><a class="" href="exp-codex.html"><span class="mag">20</span>实验:codex</a><div class="grp">精装房全景</div><a class="" href="premium-map.html"><span class="mag">21</span>精装房全景</a><a class="" href="premium-cyto.html"><span class="mag">22</span>精装房DAG</a><a class="" href="premium-cursor.html"><span class="mag">23</span>精装:Cursor</a><a class="" href="premium-devin.html"><span class="mag">24</span>精装:Devin</a><a class="" href="premium-workbuddy.html"><span class="mag">25</span>精装:WorkBuddy</a><a class="" href="premium-windsurf.html"><span class="mag">26</span>精装:Windsurf</a><a class="" href="premium-copilot.html"><span class="mag">27</span>精装:Copilot</a><a class="" href="premium-dify.html"><span class="mag">28</span>精装:Dify</a><a class="" href="premium-openhands.html"><span class="mag">29</span>精装:OpenHands</a><a class="" href="premium-coze.html"><span class="mag">30</span>精装:Coze</a><a class="" href="premium-openclaude.html"><span class="mag">31</span>精装:OpenClaude</a><a class="" href="premium-codewhale.html"><span class="mag">32</span>精装:CodeWhale</a><a class="" href="premium-gptresearcher.html"><span class="mag">33</span>精装:GPT-Researcher</a><a class="" href="premium-qcode.html"><span class="mag">34</span>精装:QCode</a><a class="" href="premium-ccrouter.html"><span class="mag">35</span>精装:CC-Router</a><a class="" href="premium-crewai.html"><span class="mag">36</span>精装:CrewAI</a>
+ </nav>
+</aside>
+<div class="main">
+<div class="main-topbar"><div class="crumb"><b>理论：鲁棒控制与不确定性</b> · 控制理论 ⊗ Agent</div></div>
+<div class="main-content">
+<header class="topic"><div class="crumb">理论证据包 · 31 知识点</div><h1>理论：鲁棒控制与不确定性</h1></header>
+<span class='kicker'>Theory · 控制理论证据包</span><p class='breadcrumb'><a href='index.html'>总览</a> › 理论</p>
+<div class="kt-card">
+<h3>模型不确定性 <span class="chip">KT-ctrl-030</span></h3>
+<p><strong>定义</strong>模型不确定性指控制所基于的标称模型与实际系统的偏差，包括参数不确定（参数漂移）、未建模动态（被忽略的高频/高阶动力学）和外部干扰；鲁棒控制核心目标是在这些不确定性存在时仍保持满意性能。</p>
+<p><strong>数学</strong>加性 G_p=G_n+Δ_a；乘性 G_p=G_n(1+Δ_m)，Δ∈BH_∞，‖Δ‖_∞≤1；结构化用 Δ=diag(δ_i)块对角；小增益定理保证 ‖Δ‖_∞·‖M‖_∞<1。</p>
+<div class="mapping">Agent 映射：LLM Agent 是可被标称模型，输出受 prompt 措辞/上下文窗口/模型漂移构成未建模动态；外部 API 延迟/限流是外部干扰。设计上需预留模型偏差的稳定裕度（置信度阈值、降级路径），而非假设标称行为。</div>
+<div class="evidence"><h4>📚 证据来源</h4><table><thead><tr><th>SRC</th><th>级别</th><th>信源</th></tr></thead><tbody><tr><td class='mono'>SRC-001</td><td><span class='badge s2'>S2</span></td><td>Wikipedia Robust control</td></tr><tr><td class='mono'>SRC-002</td><td><span class='badge s1'>S1</span></td><td>Zhou &amp; Doyle《Essentials of Robust Control》</td></tr></tbody></table></div>
+</div>
+<div class="kt-card">
+<h3>鲁棒稳定性 vs 标称稳定性 <span class="chip">KT-ctrl-031</span></h3>
+<p><strong>定义</strong>标称稳定保证控制器在精确标称模型上稳定；鲁棒稳定保证真实模型在给定不确定性集合内任意偏离标称模型时闭环仍稳定。</p>
+<p><strong>数学</strong>标称稳定 A_cl=BK 特征值全在左半平面；鲁棒稳定（小增益定理）‖W_m T‖_∞≤1 对所有 Δ；鲁棒性能同时要求 ‖W_s S‖_∞<1 与 ‖W_m T‖_∞<1。</p>
+<div class="mapping">Agent 映射：Agent 标称稳定=理想输入下流程总能完成；鲁棒稳定=即使 prompt 改写/参数变化/工具异常，整套编排不失控/不死循环。设计需求=为 Agent 建立受控不确定性内绝不崩溃的保证。</div>
+<div class="evidence"><h4>📚 证据来源</h4><table><thead><tr><th>SRC</th><th>级别</th><th>信源</th></tr></thead><tbody><tr><td class='mono'>SRC-003</td><td><span class='badge s2'>S2</span></td><td>Wikipedia H-infinity methods（次级背景，不作独立结论）</td></tr><tr><td class='mono'>SRC-004</td><td><span class='badge s1'>S1</span></td><td>Zames 1983 TAC &quot;Feedback, minimax sensitivity, and optimal robustness&quot;（期刊版，H∞ 奠基论文）</td></tr></tbody></table></div>
+</div>
+<div class="kt-card">
+<h3>鲁棒控制方法（H∞/μ综合/滑模控制） <span class="chip">KT-ctrl-032</span></h3>
+<p><strong>定义</strong>H∞ 控制最小化干扰到输出 H∞ 范数（worst-case 增益）同时保证鲁棒稳定性与性能（频域最优）；μ综合引入结构化奇异值处理结构化不确定性降低保守性；滑模控制设计滑模面使轨迹沿滑模面滑动，对模型不确定与干扰具不变性（时域鲁棒）。</p>
+<p><strong>数学</strong>H∞ min_K‖T_zw‖_∞，‖T‖_∞=sup_ω σ̄(T(jω))；μ综合 μ(M)=1/min{k:∃Δ,det(I−MΔ)=0}，sup‖μ≤1 保证鲁棒；滑模 s=0，控制律 u=−k·sat(s) 保证 s·ṡ<0，滑模面上扰动被完全抵消。</p>
+<div class="mapping">Agent 映射：H∞→把 worst-case 失败成本作为首要优化目标；μ综合→对结构化不确定性（某类工具必超时/某类输入必格式错）针对性建模而非笼统兜底；滑模→触发容错保护规则后强制切换到稳定容错态并保持，对随机误差具不变性。</div>
+<div class="evidence"><h4>📚 证据来源</h4><table><thead><tr><th>SRC</th><th>级别</th><th>信源</th></tr></thead><tbody><tr><td class='mono'>SRC-005</td><td><span class='badge s2'>S2</span></td><td>Wikipedia Sliding mode control</td></tr><tr><td class='mono'>SRC-006</td><td><span class='badge s1'>S1</span></td><td>Doyle 1982 IEE Proceedings D</td></tr><tr><td class='mono'>SRC-007</td><td><span class='badge s1'>S1</span></td><td>Zames 1983 TAC &quot;Feedback, minimax sensitivity, and optimal robustness&quot;（H∞/worst-case 奠基，与 SRC-004 同源校正）</td></tr></tbody></table></div>
+</div>
+<div class="kt-card">
+<h3>冗余与仲裁（多冗余表决/容错） <span class="chip">KT-ctrl-033</span></h3>
+<p><strong>定义</strong>容错控制通过复制冗余组件（N-模冗余 NMR）+多数表决仲裁机容忍单个组件故障；三模冗余（TMR）用三个独立通道+多数表决器，任一通道失效输出仍正确；异质冗余通过多样化设计抵消共模/系统性错误。</p>
+<p><strong>数学</strong>TMR 可靠度 R_TMR=3R²−2R³；M-out-of-N 表决 R=∑(i=M..N)C(N,i)R^i(1−R)^(N−i)；输出=多数一致值，当且仅当 ≥M 通道一致时仲裁通过。</p>
+<div class="mapping">Agent 映射：多 LLM Agent 互为校验；异质冗余→用不同模型/不同 prompt 模板/不同工具链做多样化生成，抵消同一模型系统性偏置（非重复相同调用）；仲裁器定义一致判定阈值（如 2/3 一致才置信）。</div>
+<div class="evidence"><h4>📚 证据来源</h4><table><thead><tr><th>SRC</th><th>级别</th><th>信源</th></tr></thead><tbody><tr><td class='mono'>SRC-008</td><td><span class='badge s2'>S2</span></td><td>Wikipedia Fault tolerance</td></tr><tr><td class='mono'>SRC-009</td><td><span class='badge s2'>S2</span></td><td>Wikipedia Fault-tolerant computing</td></tr></tbody></table></div>
+</div>
+<div class="kt-card">
+<h3>安全边际/硬约束限幅（输入饱和/看门狗） <span class="chip">KT-ctrl-034</span></h3>
+<p><strong>定义</strong>输入饱和指执行机构输出受物理硬限幅（如 ≤U_max），产生不可实现的控制量；当控制器积分累积使输出超限时发生积分饱和（windup），需限幅器/anti-windup 防止失控；看门狗是超限即拦截的硬保护。</p>
+<p><strong>数学</strong>执行器饱和 u=sign(u_c)·min(|u_c|,u_sat)；积分 windup 在 ∫e dt 超限时发生；anti-windup 饱和时冻结积分 o[r]=sat(K·e)，限制 ‖u‖_∞≤U_max。</p>
+<div class="mapping">Agent 映射：执行器饱和=工具调用频率/预算/API rate-limit 硬上限；限幅器=把重试次数/并行工具数/累计 token/成本限制在预设阈值；看门狗=超出预算/权限/安全策略即终止该路径并降级，非继续尝试。</div>
+<div class="evidence"><h4>📚 证据来源</h4><table><thead><tr><th>SRC</th><th>级别</th><th>信源</th></tr></thead><tbody><tr><td class='mono'>SRC-AW-01</td><td><span class='badge s1'>S1</span></td><td>arXiv 2606.01959 Anti-Windup in PID Control: Review (Caparroz, Soltesz, Hägglund, Guzmán)</td></tr><tr><td class='mono'>SRC-AW-02</td><td><span class='badge s1'>S1</span></td><td>arXiv 2311.00433 Decentralized PI-control and Anti-windup in Resource Sharing Networks (Tarbouriech, Zaccarian et al.)</td></tr></tbody></table></div>
+</div>
+<div class="kt-card">
+<h3>干扰抑制/扰动观测器（DOB） <span class="chip">KT-ctrl-035</span></h3>
+<p><strong>定义</strong>扰动观测器（DOB）是内环输出反馈控制器，在线估计作用于系统的外部扰动（含参数摄动/未建模动态之和），并在外环基线控制器输出中减去该估计值抵消扰动，使闭环在扰动下鲁棒、逼近无扰动标称响应。</p>
+<p><strong>数学</strong>经典 DOB (Chen 2004) 扰动估计 d̂=P_n⁻¹(s)·u−y；补偿后 u=u₀−d̂；Kobayashi 频域 u_c=(U_ff)/Q(s)+Q(s)·y，Q(s) 低通滤波 ‖Q‖_∞≤1 限噪镇定。</p>
+<div class="mapping">Agent 映射：在线估计=用历史执行结果实时评估当前环境偏移（API 状态监测/递归估计错误率），并从当前决策中减去感知偏差，使 Agent 输出逼近无干扰理想行为；低通滤波=容忍瞬时噪声而非反应过度。</div>
+<div class="evidence"><h4>📚 证据来源</h4><table><thead><tr><th>SRC</th><th>级别</th><th>信源</th></tr></thead><tbody><tr><td class='mono'>SRC-012</td><td><span class='badge s1'>S1</span></td><td>Chen 2004 IEEE/ASME Trans Mechatronics</td></tr><tr><td class='mono'>SRC-013</td><td><span class='badge s1'>S1</span></td><td>DOB 35th Anniversary Overview arXiv:2203.12855</td></tr></tbody></table></div>
+</div>
+<div class="pager"><a href="theory-pid.html">← 理论:PID</a><a class="next" href="theory-hierarchical.html">理论:分层控制</a></div>
+<footer class="footer">
+<span>控制理论 ⊗ Agent 设计知识库 · v1.1 精装房全景版（6 框架 + 14 精装房）</span>
+<span class="fbrand">data: 09-src-data · contract: 00-contract</span>
+</footer>
+</div></div></div></body></html>

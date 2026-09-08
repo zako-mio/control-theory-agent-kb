@@ -1,0 +1,115 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>精装房 DAG — 控制理论⊗Agent知识库</title>
+<link rel="stylesheet" href="assets/design-tokens.css">
+<style>
+  .cy-shell{display:flex;min-height:100vh;flex-direction:column}
+  .cy-toolbar{display:flex;align-items:center;gap:14px;padding:0 var(--space-5);height:48px;border-bottom:1px solid var(--line);background:var(--panel)}
+  .cy-toolbar .lab{font-family:var(--font-mono);font-size:11px;color:var(--signal-amber);letter-spacing:.1em}
+  #cy{flex:1;min-height:600px;position:relative;background:var(--panel)}
+  .info-panel{position:absolute;right:16px;top:16px;width:340px;max-height:calc(100% - 40px);background:rgba(255,255,255,.98);border:1px solid var(--line);border-radius:var(--r-md);padding:var(--space-4);overflow-y:auto;display:none;box-shadow:0 6px 24px rgba(11,18,32,.12)}
+  .info-panel .ip-close{cursor:pointer;color:var(--muted);float:right;font-size:18px;line-height:1}
+  .info-panel h4{color:var(--ink);margin-bottom:6px;font-size:16px}
+  .info-panel .ip-kt{font-family:var(--font-mono);font-size:11px;color:var(--signal-amber);margin-bottom:8px}
+  .info-panel .ip-def{font-size:13px;color:var(--muted);line-height:1.6}
+  .info-panel .ip-agent{margin-top:10px;padding-top:10px;border-top:1px solid var(--line);font-size:13px}
+  .info-panel .ip-agent a{color:var(--ctrl-blue);font-weight:600}
+  .cy-legend{display:flex;gap:var(--space-3);flex-wrap:wrap;padding:10px var(--space-5);border-top:1px solid var(--line);background:var(--panel)}
+  .cy-legend span{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted)}
+  .cy-legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+  body{overflow:hidden}
+</style></head>
+<body>
+<div class="shell">
+<aside class="sidebar">
+ 
+<div class="sidebar-brand">
+  <div class="mark"><span class="dot"></span><h1>控制理论 ⊗ Agent</h1></div>
+  <p>五大核心环 · 6 框架 + 14 精装房 · 6 实验组</p>
+</div>
+ <nav class="sidebar-nav"><div class="grp">入门</div><a class="" href="../index.html"><span class="mag">00</span>门户入口</a><div class="grp">概览</div><a class="" href="index.html"><span class="mag">01</span>总览</a><a class="" href="index_cyto.html"><span class="mag">02</span>交互DAG</a><div class="grp">核心</div><a class="" href="framework.html"><span class="mag">03</span>框架</a><div class="grp">理论</div><a class="" href="theory-closed-loop.html"><span class="mag">04</span>理论:闭环反馈</a><a class="" href="theory-state-est.html"><span class="mag">05</span>理论:状态估计</a><a class="" href="theory-pid.html"><span class="mag">06</span>理论:PID</a><a class="" href="theory-robust.html"><span class="mag">07</span>理论:鲁棒控制</a><a class="" href="theory-hierarchical.html"><span class="mag">08</span>理论:分层控制</a><div class="grp">案例</div><a class="" href="case-opencode.html"><span class="mag">09</span>案例:opencode</a><a class="" href="case-dsh.html"><span class="mag">10</span>案例:dsh</a><a class="" href="case-prime.html"><span class="mag">11</span>案例:PRIME</a><a class="" href="case-hermes.html"><span class="mag">12</span>案例:hermes</a><a class="" href="case-claude-code.html"><span class="mag">13</span>案例:claude-code</a><a class="" href="case-codex.html"><span class="mag">14</span>案例:codex</a><div class="grp">实验</div><a class="" href="exp-opencode.html"><span class="mag">15</span>实验:opencode</a><a class="" href="exp-dsh.html"><span class="mag">16</span>实验:dsh</a><a class="" href="exp-prime.html"><span class="mag">17</span>实验:PRIME</a><a class="" href="exp-hermes.html"><span class="mag">18</span>实验:hermes</a><a class="" href="exp-claude-code.html"><span class="mag">19</span>实验:claude-code</a><a class="" href="exp-codex.html"><span class="mag">20</span>实验:codex</a><div class="grp">精装房全景</div><a class="" href="premium-map.html"><span class="mag">21</span>精装房全景</a><a class="active" href="premium-cyto.html"><span class="mag">22</span>精装房DAG</a><a class="" href="premium-cursor.html"><span class="mag">23</span>精装:Cursor</a><a class="" href="premium-devin.html"><span class="mag">24</span>精装:Devin</a><a class="" href="premium-workbuddy.html"><span class="mag">25</span>精装:WorkBuddy</a><a class="" href="premium-windsurf.html"><span class="mag">26</span>精装:Windsurf</a><a class="" href="premium-copilot.html"><span class="mag">27</span>精装:Copilot</a><a class="" href="premium-dify.html"><span class="mag">28</span>精装:Dify</a><a class="" href="premium-openhands.html"><span class="mag">29</span>精装:OpenHands</a><a class="" href="premium-coze.html"><span class="mag">30</span>精装:Coze</a><a class="" href="premium-openclaude.html"><span class="mag">31</span>精装:OpenClaude</a><a class="" href="premium-codewhale.html"><span class="mag">32</span>精装:CodeWhale</a><a class="" href="premium-gptresearcher.html"><span class="mag">33</span>精装:GPT-Researcher</a><a class="" href="premium-qcode.html"><span class="mag">34</span>精装:QCode</a><a class="" href="premium-ccrouter.html"><span class="mag">35</span>精装:CC-Router</a><a class="" href="premium-crewai.html"><span class="mag">36</span>精装:CrewAI</a>
+ </nav>
+</aside>
+<div class="main">
+  <div class="main-topbar"><div class="crumb"><b>精装房 DAG</b> · 14 产品 × 精装度 × 一手/二手（点击查看）</div></div>
+  <div class="cy-toolbar">
+    <span class="lab">PREMIUM-HOUSING / 14 PRODUCTS</span>
+    <span style="color:var(--muted);font-size:12px">精装度着色：绿(≥4.5)/金(3.5-4.5)/红(&lt;3.5) · 形状：矩形=一手 / 菱形=二手 · 虚线=声称vs实际标注</span>
+  </div>
+  <div id="cy">
+    <div class="info-panel" id="infoPanel">
+      <span class="ip-close" onclick="closeInfo()">✕</span>
+      <h4 id="ipTitle">节点</h4>
+      <div class="ip-kt" id="ipKt">—</div>
+      <div class="ip-def" id="ipDef">—</div>
+      <div class="ip-agent" id="ipAgent">—</div>
+    </div>
+  </div>
+  <div class="cy-legend">
+    <span><i style="background:#1F7A52"></i>精装度 ≥4.5</span>
+    <span><i style="background:#C77700"></i>精装度 3.5-4.5</span>
+    <span><i style="background:#B23A2F"></i>精装度 &lt;3.5</span>
+    <span><i style="background:#1E5AA8"></i>第一方成品</span>
+    <span><i style="background:#5B4B9B"></i>低代码平台</span>
+    <span><i style="background:#1F7A52"></i>开源成品化</span>
+    <span><i style="background:#C77700"></i>二次封装</span>
+  </div>
+  <footer class="footer"><span>控制理论 ⊗ Agent 设计知识库 · v1.1 精装房全景版（6 框架 + 14 精装房）</span><span class="fbrand">data: 09-src-data · contract: 00-contract</span></footer>
+</div>
+</div>
+<script src="vendor/cytoscape.min.js"></script>
+<script src="vendor/cytoscape-dagre.min.js"></script>
+<script>
+const ELEMENTS = [{"data": {"id": "cat_0", "kind": "cat", "label": "开源成品化\n(3)", "color": "#1F7A52"}}, {"data": {"id": "cat_1", "kind": "cat", "label": "第一方成品\n(5)", "color": "#1E5AA8"}}, {"data": {"id": "cat_2", "kind": "cat", "label": "低代码平台\n(2)", "color": "#5B4B9B"}}, {"data": {"id": "cat_3", "kind": "cat", "label": "二次封装\n(4)", "color": "#C77700"}}, {"data": {"id": "p_openhands", "kind": "product", "label": "OpenHands\n5.0", "color": "#1F7A52", "hand": "一手", "cat": "开源成品化", "score": 5.0, "vendor": "All Hands AI", "ev": "源码级", "note": "Agent Canvas UI+沙箱+子Agent预设+技能市场", "slug": "openhands"}}, {"data": {"id": "e_openhands_cat_0", "source": "p_openhands", "target": "cat_0", "kind": "belong"}}, {"data": {"id": "p_devin", "kind": "product", "label": "Devin\n5.0", "color": "#1F7A52", "hand": "一手", "cat": "第一方成品", "score": 5.0, "vendor": "Cognition", "ev": "文档级", "note": "每session独立VM沙箱+Managed Devins+Dynamic Workflows", "slug": "devin"}}, {"data": {"id": "e_devin_cat_1", "source": "p_devin", "target": "cat_1", "kind": "belong"}}, {"data": {"id": "p_workbuddy", "kind": "product", "label": "WorkBuddy\n5.0", "color": "#1F7A52", "hand": "一手", "cat": "第一方成品", "score": 5.0, "vendor": "腾讯云", "ev": "文档级", "note": "多Agent并行+7万Skills+托管底座", "slug": "workbuddy"}}, {"data": {"id": "e_workbuddy_cat_1", "source": "p_workbuddy", "target": "cat_1", "kind": "belong"}}, {"data": {"id": "p_dify", "kind": "product", "label": "Dify\n5.0", "color": "#1F7A52", "hand": "一手", "cat": "低代码平台", "score": 5.0, "vendor": "LangGenius", "ev": "源码级", "note": "自研graphon编排+可视化画布+RAG+插件市场", "slug": "dify"}}, {"data": {"id": "e_dify_cat_2", "source": "p_dify", "target": "cat_2", "kind": "belong"}}, {"data": {"id": "p_openclaude", "kind": "product", "label": "OpenClaude\n5.0", "color": "#1F7A52", "hand": "一手", "cat": "二次封装", "score": 5.0, "vendor": "Gitlawb", "ev": "源码级", "note": "200+模型开箱+agents/tasks+MCP（实为自研）", "slug": "openclaude"}}, {"data": {"id": "e_openclaude_cat_3", "source": "p_openclaude", "target": "cat_3", "kind": "belong"}}, {"data": {"id": "p_cursor", "kind": "product", "label": "Cursor\n4.5", "color": "#1F7A52", "hand": "一手", "cat": "第一方成品", "score": 4.5, "vendor": "Anysphere", "ev": "文档级", "note": "Cloud Agents并行+Composer+MCP+语义索引", "slug": "cursor"}}, {"data": {"id": "e_cursor_cat_1", "source": "p_cursor", "target": "cat_1", "kind": "belong"}}, {"data": {"id": "p_coze", "kind": "product", "label": "Coze扣子\n4.5", "color": "#1F7A52", "hand": "一手", "cat": "低代码平台", "score": 4.5, "vendor": "字节跳动", "ev": "文档级", "note": "可视化工作流+单/多Agent+插件商店+长期记忆", "slug": "coze"}}, {"data": {"id": "e_coze_cat_2", "source": "p_coze", "target": "cat_2", "kind": "belong"}}, {"data": {"id": "p_windsurf", "kind": "product", "label": "Windsurf\n4.0", "color": "#C77700", "hand": "一手", "cat": "第一方成品", "score": 4.0, "vendor": "Cognition", "ev": "文档级", "note": "Cascade+RAG+MCP+SKILL.md（无Flows DAG）", "slug": "windsurf"}}, {"data": {"id": "e_windsurf_cat_1", "source": "p_windsurf", "target": "cat_1", "kind": "belong"}}, {"data": {"id": "p_gptresearcher", "kind": "product", "label": "GPT-Researcher\n4.0", "color": "#C77700", "hand": "一手", "cat": "开源成品化", "score": 4.0, "vendor": "assafelovic", "ev": "源码级", "note": "Web UI+8-agent编排+报告生成", "slug": "gptresearcher"}}, {"data": {"id": "e_gptresearcher_cat_0", "source": "p_gptresearcher", "target": "cat_0", "kind": "belong"}}, {"data": {"id": "p_codewhale", "kind": "product", "label": "CodeWhale\n4.0", "color": "#C77700", "hand": "一手", "cat": "二次封装", "score": 4.0, "vendor": "Hmbown", "ev": "源码级", "note": "自研Rust底层20crate（实为自研）", "slug": "codewhale"}}, {"data": {"id": "e_codewhale_cat_3", "source": "p_codewhale", "target": "cat_3", "kind": "belong"}}, {"data": {"id": "p_copilot", "kind": "product", "label": "GitHub Copilot\n3.75", "color": "#C77700", "hand": "一手", "cat": "第一方成品", "score": 3.75, "vendor": "GitHub/MS", "ev": "文档级", "note": "Agent mode+Workspace+多模型路由+MCP", "slug": "copilot"}}, {"data": {"id": "e_copilot_cat_1", "source": "p_copilot", "target": "cat_1", "kind": "belong"}}, {"data": {"id": "p_qcode", "kind": "product", "label": "QCode\n3.5", "color": "#C77700", "hand": "二手", "cat": "二次封装", "score": 3.5, "vendor": "qcode.cc", "ev": "文档级", "note": "一Key七模型族（官价×倍率=二手）", "slug": "qcode"}}, {"data": {"id": "e_qcode_cat_3", "source": "p_qcode", "target": "cat_3", "kind": "belong"}}, {"data": {"id": "p_crewai", "kind": "product", "label": "CrewAI\n3.0", "color": "#B23A2F", "hand": "一手", "cat": "开源成品化", "score": 3.0, "vendor": "CrewAI Inc", "ev": "源码级", "note": "角色编排+工具库+JSON脚手架，需填流程", "slug": "crewai"}}, {"data": {"id": "e_crewai_cat_0", "source": "p_crewai", "target": "cat_0", "kind": "belong"}}, {"data": {"id": "p_ccrouter", "kind": "product", "label": "CC-Router\n3.0", "color": "#B23A2F", "hand": "二手", "cat": "二次封装", "score": 3.0, "vendor": "musistudio", "ev": "源码级", "note": "多provider路由（依赖第三方网关=二手）", "slug": "ccrouter"}}, {"data": {"id": "e_ccrouter_cat_3", "source": "p_ccrouter", "target": "cat_3", "kind": "belong"}}, {"data": {"id": "flag_ccrouter", "kind": "flag", "label": "二手被高估：声称增强Claude Code，实依赖@the-next-ai网关", "source": "p_ccrouter", "target": "cat_3"}}, {"data": {"id": "flag_qcode", "kind": "flag", "label": "二手被高估：声称平替，实为官价×倍率中转", "source": "p_qcode", "target": "cat_3"}}, {"data": {"id": "flag_codewhale", "kind": "flag", "label": "一手被低估：声称平替，实为自研Rust底层", "source": "p_codewhale", "target": "cat_3"}}, {"data": {"id": "flag_openclaude", "kind": "flag", "label": "一手被低估：声称替代，实为独立TS实现", "source": "p_openclaude", "target": "cat_3"}}, {"data": {"id": "flag_windsurf", "kind": "flag", "label": "声称功能不存在：无Flows DAG", "source": "p_windsurf", "target": "cat_1"}}];
+let cy;
+function initCy(){
+  cy = cytoscape({
+    container: document.getElementById('cy'),
+    elements: ELEMENTS,
+    style: [
+      { selector:'node', style:{
+        'label':'data(label)','background-color':'data(color)','color':'#fff',
+        'text-valign':'center','text-halign':'center','font-size':'11','font-weight':'600',
+        'text-wrap':'wrap','text-max-width':'100','border-width':'1.5','border-color':'#fff',
+        'shape':'round-rectangle'
+      }},
+      { selector:'node[kind="cat"]', style:{
+        'width':'130','height':'54','font-size':'12','font-weight':'700','shape':'round-rectangle',
+        'background-opacity':'0.92','border-width':'2','border-color':'#fff'
+      }},
+      { selector:'node[kind="product"]', style:{'width':'104','height':'46','font-size':'10'}},
+      { selector:'node[kind="product"][hand="二手"]', style:{'shape':'diamond','width':'118','height':'70'}},
+      { selector:'edge', style:{
+        'width':'1.3','line-color':'#A8B3C7','target-arrow-color':'#A8B3C7',
+        'target-arrow-shape':'triangle','curve-style':'bezier',
+        'font-size':'8','color':'#8794A8','text-rotation':'autorotate',
+        'text-background-color':'#fff','text-background-opacity':'0.9','text-wrap':'wrap','text-max-width':'130'
+      }},
+      { selector:'edge[kind="flag"]', style:{
+        'line-style':'dashed','line-color':'#B23A2F','target-arrow-color':'#B23A2F',
+        'width':'1.6','label':'data(label)','color':'#B23A2F'
+      }},
+    ],
+    layout:{name:'dagre',rankDir:'RL',spacingFactor:1.1,nodeSep:28,edgeSep:14,rankSep:150},
+    wheelSensitivity:0.2,
+  });
+  cy.on('tap','node', evt=>{
+    const d = evt.target.data();
+    if(d.kind==='cat'){
+      document.getElementById('ipTitle').textContent = d.label.replace('\n',' ');
+      document.getElementById('ipKt').textContent = '分类';
+      document.getElementById('ipDef').textContent = '该分类下的精装房产品（点击产品节点查看详情）';
+      document.getElementById('ipAgent').innerHTML = '—';
+    } else if(d.kind==='product'){
+      document.getElementById('ipTitle').textContent = d.label.replace('\n',' · ');
+      document.getElementById('ipKt').textContent = d.cat + ' · ' + d.hand + ' · 精装度 ' + d.score + ' · ' + d.ev;
+      document.getElementById('ipDef').textContent = d.vendor + ' — ' + d.note;
+      document.getElementById('ipAgent').innerHTML = '<a href="premium-'+d.slug+'.html">查看完整画像 →</a>';
+    }
+    document.getElementById('infoPanel').style.display='block';
+  });
+}
+function closeInfo(){ document.getElementById('infoPanel').style.display='none'; }
+window.__cy = cy;
+document.addEventListener('DOMContentLoaded', initCy);
+</script></body></html>

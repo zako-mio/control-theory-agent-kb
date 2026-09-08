@@ -1,0 +1,312 @@
+/* ============================================================
+   控制理论 ⊗ Agent 设计知识库 — 统一设计系统 (design-tokens.css)
+   Swiss / 工程可视化方向
+   ============================================================ */
+
+/* ---------- 1. Color Tokens ---------- */
+:root{
+  /* 基础 */
+  --ink:#0B1220;            /* 主文字 off-black */
+  --surface:#F6F8FB;        /* 页面底 off-white */
+  --panel:#FFFFFF;          /* 面板/卡片 */
+  --line:#DFE5EC;           /* 分隔/边框 */
+  --muted:#5A6B85;          /* 次要文字 */
+  --muted-2:#8794A8;        /* 说明文字 */
+
+  /* 语义色（控制系统可视化） */
+  --ctrl-blue:#1E5AA8;      /* 主强调: 回路/执行 */
+  --ctrl-blue-soft:#EAF1FA;
+  --signal-amber:#C77700;   /* 信号/反馈/反射 */
+  --signal-amber-bg:#FDF3E3;
+  --signal-red:#B23A2F;     /* 最弱/偏航 */
+  --signal-red-bg:#FBE9E7;
+  --state-green:#1F7A52;    /* 强/收敛 */
+  --state-green-bg:#E7F4EC;
+  --signal-purple:#5B4B9B;  /* 工具/执行多彩 */
+  --signal-purple-bg:#EFECF7;
+
+  /* 字体 */
+  --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif;
+  --font-mono:"JetBrains Mono","SF Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+
+  /* 尺寸 */
+  --w-max:1120px;
+  --w-reading:72ch;
+  --space-1:4px; --space-2:8px; --space-3:16px; --space-4:24px; --space-5:32px; --space-6:48px;
+  --r-sm:6px; --r-md:10px; --r-lg:14px;
+}
+
+/* ---------- 2. Reset ---------- */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{
+  font-family:var(--font-sans);
+  background:var(--surface);
+  color:var(--ink);
+  line-height:1.7;
+  font-size:16px;
+  -webkit-font-smoothing:antialiased;
+}
+img{max-width:100%;display:block}
+a{color:var(--ctrl-blue);text-decoration:none}
+a:hover{text-decoration:underline}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--ctrl-blue);outline-offset:2px}
+
+/* ---------- 3. Layout shell ---------- */
+.shell{display:flex;min-height:100vh}
+.sidebar{
+  width:264px;flex-shrink:0;background:var(--ink);color:#E6EAF2;
+  position:sticky;top:0;height:100vh;overflow-y:auto;
+}
+.sidebar-brand{padding:var(--space-5) var(--space-4) var(--space-4);border-bottom:1px solid rgba(255,255,255,.08)}
+.sidebar-brand .mark{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.sidebar-brand .mark .dot{
+  width:12px;height:12px;border-radius:50%;
+  background:var(--signal-amber);box-shadow:0 0 0 4px rgba(199,119,0,.22);
+}
+.sidebar-brand h1{font-size:15px;font-weight:700;letter-spacing:-.01em;color:#fff}
+.sidebar-brand p{font-size:11px;color:var(--muted-2);line-height:1.5;margin-top:4px}
+.sidebar-nav{padding:var(--space-3) var(--space-3)}
+.sidebar-nav .grp{
+  font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:#5B6B87;margin:18px 8px 6px;font-weight:600;
+}
+.sidebar-nav a{
+  display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:var(--r-sm);
+  color:#A9B6CB;font-size:13px;margin-bottom:1px;transition:background .15s,color .15s;
+}
+.sidebar-nav a:hover{background:rgba(255,255,255,.06);color:#fff;text-decoration:none}
+.sidebar-nav a.active{background:var(--ctrl-blue);color:#fff;font-weight:600}
+.sidebar-nav a .mag{
+  font-family:var(--font-mono);font-size:10px;width:26px;height:22px;display:flex;
+  align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.18);
+  border-radius:4px;color:#C9D4E4;flex-shrink:0;
+}
+.sidebar-nav a.active .mag{background:rgba(255,255,255,.16);border-color:transparent;color:#fff}
+
+.main{flex:1;min-width:0}
+.main-topbar{
+  height:52px;border-bottom:1px solid var(--line);background:var(--panel);
+  display:flex;align-items:center;gap:12px;padding:0 var(--space-5);
+}
+.main-topbar .crumb{color:var(--muted);font-size:12.5px}
+.main-topbar .crumb b{color:var(--ink)}
+.main-content{padding:var(--space-5) var(--space-5) 80px;max-width:var(--w-max);margin:0 auto}
+
+/* ---------- 4. Topology signal (签名元素: 五环控制回路) ---------- */
+.signal{
+  background:var(--ink);border-radius:var(--r-lg);padding:var(--space-5);
+  color:#fff;margin-bottom:var(--space-5);position:relative;overflow:hidden;
+}
+.signal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-4)}
+.signal-head .label{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#7E8CA5;font-weight:600}
+.signal-head .tag{font-size:11px;color:#5B6B87;font-family:var(--font-mono)}
+.signal svg{width:100%;height:auto;display:block}
+.signal-legend{display:flex;gap:var(--space-3);flex-wrap:wrap;margin-top:var(--space-4)}
+.signal-legend span{
+  display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#CBD4E2;
+}
+.signal-legend i{width:9px;height:9px;border-radius:50%;display:inline-block}
+
+/* ---------- 5. Typography & content ---------- */
+h1.display{font-size:clamp(28px,4.5vw,42px);font-weight:700;letter-spacing:-.02em;line-height:1.15}
+.kicker{
+  font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ctrl-blue);
+  font-weight:700;margin-bottom:12px;font-family:var(--font-mono);
+}
+.lead{color:var(--muted);font-size:17px;line-height:1.7;max-width:var(--w-reading)}
+h2{font-size:22px;font-weight:700;letter-spacing:-.015em;margin:var(--space-5) 0 var(--space-3)}
+h3{font-size:17px;font-weight:600;margin:var(--space-4) 0 var(--space-2)}
+h2 .idx{
+  font-family:var(--font-mono);font-size:12px;color:var(--signal-amber);
+  vertical-align:middle;margin-right:8px;font-weight:500;
+}
+p{margin:var(--space-2) 0;max-width:var(--w-reading)}
+strong{color:var(--ink);font-weight:600}
+
+/* ---------- 6. Cards/grid ---------- */
+.grid{display:grid;gap:var(--space-3);margin:var(--space-4) 0}
+.grid.cols-2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.grid.cols-3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.card{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);
+  padding:var(--space-4);transition:border-color .15s,box-shadow .15s;
+}
+.card:hover{border-color:var(--ctrl-blue);box-shadow:0 2px 12px rgba(11,18,32,.06)}
+.card .num{
+  font-family:var(--font-mono);font-size:11px;color:var(--signal-amber);
+  letter-spacing:.08em;margin-bottom:8px;display:block;
+}
+.card h3{color:var(--ink);margin-top:0}
+.card p{color:var(--muted);font-size:14px;margin-bottom:0}
+
+/* ---------- 7. Table ---------- */
+table{border-collapse:collapse;width:100%;margin:var(--space-4) 0;font-size:14px;background:var(--panel);border-radius:var(--r-md);overflow:hidden;border:1px solid var(--line)}
+th{background:#F1F4F8;color:var(--muted);font-weight:600;text-align:left;padding:11px 14px;font-size:12.5px;letter-spacing:.02em}
+td{padding:11px 14px;border-top:1px solid var(--line);color:var(--ink)}
+td.mono,th.mono{font-family:var(--font-mono)}
+tbody tr:hover{background:#FAFBFD}
+
+/* ---------- 8. Badges ---------- */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600;line-height:1.6}
+.badge strong{color:#fff;font-weight:700;margin-right:4px}
+.badge.strong{background:#E7F4EC;color:#1F7A52}
+.badge.strong strong{color:#1F7A52}
+.badge.weak{background:#FBE9E7;color:#B23A2F}
+.badge.weak strong{color:#B23A2F}
+.badge.neutral{background:#EEF1F6;color:#5A6B85}
+.badge.neutral strong{color:#5A6B85}
+.ring-tag{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:26px;height:26px;border-radius:6px;color:#fff;font-family:var(--font-mono);
+  font-size:12px;font-weight:700;flex-shrink:0;
+}
+.ring-tag.E{background:#B23A2F}
+.ring-tag.R{background:#C77700}
+.ring-tag.M{background:#1F7A52}
+.ring-tag.P{background:#1E5AA8}
+.ring-tag.T{background:#5B4B9B}
+
+/* ---------- 9. Chip / mono code ---------- */
+.chip{display:inline-block;background:#EEF1F6;color:#37445C;padding:2px 8px;border-radius:5px;font-family:var(--font-mono);font-size:12px}
+code{font-family:var(--font-mono);background:#F1F4F8;padding:1px 5px;border-radius:4px;font-size:.88em;color:#37445C}
+
+/* ---------- 10. Evidence block ---------- */
+.evidence{background:var(--state-green-bg);border:1px solid #BFDCCB;border-radius:var(--r-md);padding:var(--space-3);margin-top:var(--space-3)}
+.evidence h4{color:#1F7A52;font-size:13px;margin-bottom:8px;font-weight:600}
+
+/* ---------- 11. Contrast callout ---------- */
+.insight{background:var(--signal-amber-bg);border-left:3px solid var(--signal-amber);border-radius:0 var(--r-md) var(--r-md) 0;padding:var(--space-3) var(--space-4);margin:var(--space-4) 0}
+.note{background:#F1F4F8;border-left:3px solid var(--ctrl-blue);border-radius:0 var(--r-md) var(--r-md) 0;padding:var(--space-3) var(--space-4);margin:var(--space-4) 0;font-size:14px}
+
+/* ---------- 12. Pager ---------- */
+.pager{display:flex;justify-content:space-between;gap:var(--space-3);margin-top:var(--space-6);border-top:1px solid var(--line);padding-top:var(--space-4)}
+.pager a{font-size:14px;font-weight:600}
+.pager a::before{content:"← ";color:var(--muted)}
+.pager a.next::before{content:""}
+.pager a.next::after{content:" →";color:var(--muted)}
+
+/* ---------- 13. Footer ---------- */
+.footer{border-top:1px solid var(--line);padding:var(--space-4) 0;color:var(--muted-2);font-size:12px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.footer .fbrand{font-family:var(--font-mono);letter-spacing:.04em}
+
+/* ---------- 14. Responsive ---------- */
+@media (max-width:820px){
+  .shell{flex-direction:column}
+  .sidebar{width:100%;height:auto;position:static;display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 14px}
+  .sidebar-brand{width:auto;padding:0;border:none;margin-right:8px}
+  .sidebar-brand .mark{margin-bottom:0}
+  .sidebar-brand h1{font-size:14px}
+  .sidebar-brand p{display:none}
+  .sidebar-nav{display:flex;flex-wrap:wrap;padding:0;gap:4px}
+  .sidebar-nav .grp{display:none}
+  .sidebar-nav a{padding:5px 9px;margin:0}
+  .sidebar-nav a .mag{display:none}
+  .main-content{padding:var(--space-4) var(--space-3) 60px}
+  .main-topbar{padding:0 var(--space-3)}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+
+/* ---------- 15. 文档集群专有(gen_html 生成) ---------- */
+.topic{border-bottom:1px solid var(--line);padding-bottom:var(--space-3);margin-bottom:var(--space-4)}
+.topic h1{font-size:24px;letter-spacing:-.02em}
+.topic .crumb{color:var(--muted);font-size:12.5px;font-family:var(--font-mono);margin-top:4px}
+.breadcrumb{font-size:12.5px;color:var(--muted);margin-bottom:var(--space-3)}
+.breadcrumb a{color:var(--ctrl-blue)}
+.kt-card{
+  background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ctrl-blue);
+  border-radius:var(--r-md);padding:var(--space-4);margin:var(--space-3) 0;
+}
+.kt-card h3{display:flex;align-items:center;gap:10px;margin-top:0;color:var(--ink)}
+.kt-card .chip{background:var(--ctrl-blue-soft);color:var(--ctrl-blue)}
+.kt-card p{margin:6px 0}
+.kt-card p strong{color:var(--muted);font-weight:600;font-size:12px;letter-spacing:.02em;margin-right:4px}
+.kt-card .mapping{background:var(--signal-amber-bg);border-radius:var(--r-sm);padding:var(--space-2) var(--space-3);margin-top:var(--space-2);font-size:14px}
+.badge.s1{background:#E7F4EC;color:#1F7A52}
+.badge.s2{background:#FDF3E3;color:#C77700}
+.badge.s4{background:#EFECF7;color:#5B4B9B}
+.ring-row{display:flex;align-items:center;gap:10px;margin:6px 0}
+.ring-row p{flex:1;margin:0}
+.mono-kick{font-family:var(--font-mono);font-size:12px;color:var(--signal-amber);letter-spacing:.05em}
+
+/* ---------- 16. Framework 页专用(五环章节渲染) ---------- */
+.ring-section{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:var(--space-5);margin:var(--space-5) 0;scroll-margin-top:80px;
+}
+.ring-head{display:flex;align-items:center;gap:14px;margin-bottom:var(--space-3);border-bottom:1px solid var(--line);padding-bottom:var(--space-3)}
+.ring-head .ring-tag{width:38px;height:38px;border-radius:9px;font-size:18px}
+.ring-head .ring-title{flex:1}
+.ring-head .ring-title h2{margin:0;font-size:20px;color:var(--ink)}
+.ring-head .ring-ctrl{font-size:13px;color:var(--muted);display:block;margin-top:2px}
+.ring-head .ring-tag-mono{font-family:var(--font-mono);font-size:11px;color:var(--signal-amber);letter-spacing:.05em;white-space:nowrap}
+.ring-loc{background:var(--ctrl-blue-soft);border-left:3px solid var(--ctrl-blue);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:var(--space-2) var(--space-3);margin-bottom:var(--space-3);font-size:14px}
+.ring-section h3{margin-top:var(--space-4)}
+.ring-section ul{margin:8px 0 0 18px;color:var(--ink)}
+.ring-section ul li{margin:6px 0}
+.paradigm{background:var(--signal-amber-bg);border-radius:var(--r-sm);padding:var(--space-3);margin-top:var(--space-2)}
+.paradigm ul{margin-left:18px}
+.ring-section table thead th{font-size:12px}
+
+/* ---------- 17. Case 页专用(控制论画像渲染) ---------- */
+.mapping-box{background:var(--ctrl-blue-soft);border-radius:var(--r-sm);padding:var(--space-2) var(--space-3);margin-top:var(--space-2);font-size:14px}
+.mapping-box strong{color:var(--ctrl-blue)}
+.ring-sw{background:var(--signal-amber-bg);border-left:3px solid var(--signal-amber);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:var(--space-2) var(--space-3);margin-top:var(--space-2);font-size:14px}
+.signature{font-family:var(--font-mono);font-size:11px;color:var(--muted-2)}
+
+/* ---------- 18. Case 总结卡 ---------- */
+.summary-block{background:linear-gradient(135deg,#fff,#F6F8FB)}
+.case-verdict{background:var(--signal-amber-bg);border-left:3px solid var(--signal-amber);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:var(--space-2) var(--space-3);margin-bottom:var(--space-2);font-size:15px}
+.case-verdict strong{color:var(--signal-amber)}
+
+/* ---------- 18b. 精装房 Premium Score 区块 ---------- */
+.premium-block{background:linear-gradient(135deg,#fff,#F3F7FC);border:1.5px solid var(--ctrl-blue-soft)}
+.prem-scorecard{display:flex;align-items:center;gap:var(--space-4);margin-bottom:var(--space-3)}
+.prem-score{font-family:var(--font-mono);font-size:40px;font-weight:800;line-height:1;white-space:nowrap}
+.prem-reason{font-size:14px;color:var(--ink);line-height:1.7}
+.prem-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:var(--space-3)}
+.prem-chip{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12px;color:var(--muted)}
+.prem-table{margin-top:var(--space-2)}
+.prem-table td.prem-ok{color:var(--ctrl-green,#1F7A52);font-weight:700}
+.prem-table td.prem-part{color:var(--signal-amber);font-weight:700}
+.prem-table td.prem-no{color:var(--signal-red);font-weight:700}
+.prem-table td.prem-ev{font-size:12px;color:var(--muted-2,#7E8CA5)}
+.prem-claim{background:var(--signal-red-bg);border-left:3px solid var(--signal-red);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:var(--space-3);margin-top:var(--space-3);font-size:14px;line-height:1.7}
+.prem-claim strong{color:var(--signal-red)}
+
+/* ---------- 18c. 精装房全景页 ---------- */
+.pm-axis{display:flex;flex-direction:column;gap:6px}
+.pm-row{display:grid;grid-template-columns:150px 120px 1fr 44px 54px 130px;align-items:center;gap:10px;padding:7px 10px;border-radius:var(--r-sm);background:var(--panel);border:1px solid var(--line)}
+.pm-row:hover{background:var(--ctrl-blue-soft)}
+.pm-name{color:var(--ctrl-blue);text-decoration:none;font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pm-name:hover{text-decoration:underline}
+.pm-vendor{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pm-bar-wrap{background:var(--line);border-radius:999px;height:12px;overflow:hidden}
+.pm-bar{height:100%;border-radius:999px;transition:width .3s}
+.pm-score{font-family:var(--font-mono);font-weight:800;font-size:14px;text-align:right}
+.pm-badge{display:inline-block;color:#fff;border-radius:999px;padding:1px 8px;font-size:11px;font-weight:600;white-space:nowrap}
+.pm-cat{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pm-cats{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--space-4)}
+.pm-catcard{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);padding:var(--space-4)}
+.pm-catcard h3{margin:0 0 6px;font-size:15px;color:var(--ink);display:flex;align-items:center;gap:8px}
+.pm-count{background:var(--ctrl-blue-soft);color:var(--ctrl-blue);border-radius:999px;font-size:11px;padding:1px 8px;font-weight:700}
+.pm-catdesc{font-size:12px;color:var(--muted);margin:0 0 10px;line-height:1.6}
+.pm-catcard ul{margin:0;padding-left:16px}
+.pm-catcard li{margin:5px 0;font-size:13px}
+.pm-catcard li a{color:var(--ctrl-blue);text-decoration:none}
+.pm-catcard li a:hover{text-decoration:underline}
+.pm-mini{font-family:var(--font-mono);font-weight:700;font-size:12px;margin-left:2px}
+
+/* ---------- 19. Exp 实验卡专用 ---------- */
+.exp-meta-list{display:flex;flex-direction:column;gap:6px}
+.exp-meta{color:#CBD4E2;font-size:13px;line-height:1.6}
+.exp-meta code{background:rgba(255,255,255,.12);color:#fff}
+.exp-meta-list .exp-meta:first-child{color:#E6EAF2;font-weight:600}
+.exp-field{margin-bottom:var(--space-3)}
+.exp-field-tag{display:inline-block;font-size:12px;font-weight:700;border:1.5px solid;border-radius:5px;padding:2px 10px;margin-bottom:6px;letter-spacing:.04em}
+.exp-field ul{margin:4px 0 0 18px}
+.exp-field ul li{margin:5px 0}
+.exp-card h3{color:var(--ink)}

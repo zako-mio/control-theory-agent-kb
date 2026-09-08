@@ -1,0 +1,97 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>案例：PRIME — 控制理论⊗Agent知识库</title>
+<link rel="stylesheet" href="assets/design-tokens.css"></head>
+<body><div class="shell">
+<aside class="sidebar">
+ 
+<div class="sidebar-brand">
+  <div class="mark"><span class="dot"></span><h1>控制理论 ⊗ Agent</h1></div>
+  <p>五大核心环 · 6 框架 + 14 精装房 · 6 实验组</p>
+</div>
+ <nav class="sidebar-nav"><div class="grp">入门</div><a class="" href="../index.html"><span class="mag">00</span>门户入口</a><div class="grp">概览</div><a class="" href="index.html"><span class="mag">01</span>总览</a><a class="" href="index_cyto.html"><span class="mag">02</span>交互DAG</a><div class="grp">核心</div><a class="" href="framework.html"><span class="mag">03</span>框架</a><div class="grp">理论</div><a class="" href="theory-closed-loop.html"><span class="mag">04</span>理论:闭环反馈</a><a class="" href="theory-state-est.html"><span class="mag">05</span>理论:状态估计</a><a class="" href="theory-pid.html"><span class="mag">06</span>理论:PID</a><a class="" href="theory-robust.html"><span class="mag">07</span>理论:鲁棒控制</a><a class="" href="theory-hierarchical.html"><span class="mag">08</span>理论:分层控制</a><div class="grp">案例</div><a class="" href="case-opencode.html"><span class="mag">09</span>案例:opencode</a><a class="" href="case-dsh.html"><span class="mag">10</span>案例:dsh</a><a class="active" href="case-prime.html"><span class="mag">11</span>案例:PRIME</a><a class="" href="case-hermes.html"><span class="mag">12</span>案例:hermes</a><a class="" href="case-claude-code.html"><span class="mag">13</span>案例:claude-code</a><a class="" href="case-codex.html"><span class="mag">14</span>案例:codex</a><div class="grp">实验</div><a class="" href="exp-opencode.html"><span class="mag">15</span>实验:opencode</a><a class="" href="exp-dsh.html"><span class="mag">16</span>实验:dsh</a><a class="" href="exp-prime.html"><span class="mag">17</span>实验:PRIME</a><a class="" href="exp-hermes.html"><span class="mag">18</span>实验:hermes</a><a class="" href="exp-claude-code.html"><span class="mag">19</span>实验:claude-code</a><a class="" href="exp-codex.html"><span class="mag">20</span>实验:codex</a><div class="grp">精装房全景</div><a class="" href="premium-map.html"><span class="mag">21</span>精装房全景</a><a class="" href="premium-cyto.html"><span class="mag">22</span>精装房DAG</a><a class="" href="premium-cursor.html"><span class="mag">23</span>精装:Cursor</a><a class="" href="premium-devin.html"><span class="mag">24</span>精装:Devin</a><a class="" href="premium-workbuddy.html"><span class="mag">25</span>精装:WorkBuddy</a><a class="" href="premium-windsurf.html"><span class="mag">26</span>精装:Windsurf</a><a class="" href="premium-copilot.html"><span class="mag">27</span>精装:Copilot</a><a class="" href="premium-dify.html"><span class="mag">28</span>精装:Dify</a><a class="" href="premium-openhands.html"><span class="mag">29</span>精装:OpenHands</a><a class="" href="premium-coze.html"><span class="mag">30</span>精装:Coze</a><a class="" href="premium-openclaude.html"><span class="mag">31</span>精装:OpenClaude</a><a class="" href="premium-codewhale.html"><span class="mag">32</span>精装:CodeWhale</a><a class="" href="premium-gptresearcher.html"><span class="mag">33</span>精装:GPT-Researcher</a><a class="" href="premium-qcode.html"><span class="mag">34</span>精装:QCode</a><a class="" href="premium-ccrouter.html"><span class="mag">35</span>精装:CC-Router</a><a class="" href="premium-crewai.html"><span class="mag">36</span>精装:CrewAI</a>
+ </nav>
+</aside>
+<div class="main">
+<div class="main-topbar"><div class="crumb"><b>案例：PRIME</b> · 控制理论 ⊗ Agent</div></div>
+<div class="main-content">
+<header class="topic"><div class="crumb">产品控制论画像</div><h1>案例：PRIME</h1></header>
+<p class='breadcrumb'><a href='index.html'>总览</a> › 案例</p>
+<div class="signal">
+  <div class="signal-head"><span class="label">Product Portrait · 控制论画像</span><span class="tag">prime</span></div>
+  <span class="kicker" style="font-family:var(--font-mono);letter-spacing:.12em;color:#7E8CA5;font-size:11px">CASE</span>
+  <h1 style="font-size:26px;margin:8px 0 10px;color:#fff;letter-spacing:-.02em">PRIME 控制论画像 — 五大核心环分析</h1>
+  <p style="color:#CBD4E2;max-width:720px;line-height:1.7;font-size:15px;margin:0">把用户的高层意图固化为「可跨轮存活、可预算计量、可显式完成」的持久被控参考值 r，并授权子层继续分解。</p>
+</div>
+
+<div class="ring-section" id="ring-SP">
+  <div class="ring-head">
+    <span class="ring-tag" style="background:#1E5AA8">SP</span>
+    <div class="ring-title"><h2>设定值：目标分解机制（Goal ≡ 被控量参考 r）</h2><span class="ring-ctrl">用户意图 → 可验证子目标</span></div>
+  </div>
+  <div class="ring-loc"><strong>承担角色：</strong>把用户的高层意图固化为「可跨轮存活、可预算计量、可显式完成」的持久被控参考值 r，并授权子层继续分解。</div>
+  <h3>关键机制</h3><ul><li><strong><code>/goal</code> 持久目标</strong>（<code>src/core/goals.ts</code>）：<code>GoalState</code> 记录 <code>objective / tokenBudget / tokensUsed / timeUsedSeconds / continuationsUsed / status(active|paused|budget_limited|complete|error)</code>。目标由用户或 host 显式创建，状态写入 <code>thread_goal_state</code> custom entry，随会话 JSONL 持久化（<code>_persistGoalState</code>）。</li><li><strong><code>goal.complete()</code> 显式收敛信号</strong>：只有 kernel 侧 <code>goal.complete()</code> 标记成功；其余状态（paused/budget_limited/error）都是未收敛。</li><li><strong><code>rlm(...)</code> 子代理 = 目标下钻分解</strong>：子代继承父模型/provider/skills/tools，把单个子目标封装成独立 context 的 <code>AgentSession</code>；子代结果只经 <code>agent_message</code> 或文件回流。</li><li><strong><code>/heartbeat</code> + <code>rlm_heartbeat</code> + <code>prime-agent schedule</code></strong>：三套定时/调度表面，把&quot;持续被控指令&quot;注入队列，让目标在无人值守时仍被持续跟追。</li><li><strong><code>createGoalContextMessage</code> 目标续接上下文</strong>（agent-session.ts:1317,2135）：active 目标在普通轮后由 harness 继续 push <code>goal_context</code> continuation 消息，直到 <code>goal.complete()</code> 或预算到达。</li></ul>
+  <div class="mapping-box"><strong>控制论映射：</strong>KT-ctrl-002（负反馈闭环结构，目标/规格=设定值 r）+ KT-ctrl-041（分层控制结构，根 agent 定高策略目标，<code>rlm()</code> 子层分解执行）。</div>
+  <div class='ring-sw'><strong>强</strong>——目标有显式状态机、可预算（token budget）、可续接（continuation）、可收敛（complete），比多数 agent 的单轮任务闭环更工程化。<strong>弱</strong>——目标分解粒度靠 LLM 主观性，<code>objective</code> 上限 4000 字符且无结构化&quot;子目标清单&quot;模板；目标达成与否缺少机器可验证的结构化判据。</div>
+</div>
+<div class="ring-section" id="ring-E">
+  <div class="ring-head">
+    <span class="ring-tag" style="background:#B23A2F">E</span>
+    <div class="ring-title"><h2>E 环 — 传感器/评估（测量执行达标）</h2><span class="ring-ctrl">评估/传感器</span></div>
+  </div>
+  <div class="ring-loc"><strong>承担角色：</strong>为闭环生产&quot;执行是否达标&quot;的反馈信号 y，含质量门（quality gates）、<code>/refine</code> 的证据评估、autonomous 的硬件限额。</div>
+  <h3>关键机制</h3><ul><li><strong>Autonomous quality gates</strong>（<code>src/core/autonomous.ts:273-348</code>）：<code>refreshAutonomousQualityGates</code> 跑配置命令（如 <code>npm run check</code>），<code>exit_code==0</code> 判定 passed；失败返回 bounded output 给 agent 再试。这是真正的<strong>终端验证器/传感器</strong>。</li><li><strong>Gate 不重跑优化（DOB 式感知偏差补偿）</strong>：抓 git worktree snapshot（<code>git status + git diff + untrackedHash</code>），若 workspace 未变则<strong>不重跑同一失败 gate</strong>（autonomous.ts:296-311），防&quot;反复耗尽的空转&quot;。</li><li><strong>Autonomous 硬件限额即&quot;传感器量程&quot;</strong>：<code>maxContinuations=3 / maxTurns=12 / maxTokens=80k / timeoutMs=30min</code>，<code>shouldAutonomouslyContinue</code> 根据 gateResult 与 limitReason 决定是否继续。</li><li><strong><code>/refine</code> 证据评估（在线反思式&quot;评审器&quot;）</strong>：<code>planRefinement</code>（refinement.ts:880-948）把 trajectory、当前 harness state、refinement history 打包给 LLM，要求&quot;small evidence-backed edits&quot;，输出 JSON 后按 before/after snapshot 应用，可回滚。</li><li><strong><code>shouldAutonomouslyContinue</code> 判定偏&quot;诚实&quot;</strong>：<code>reason=&quot;missing_terminal_evidence&quot;</code>——当没配置 gate 时，用&quot;是否已产出可观察终态证据&quot;作为弱传感器。</li></ul>
+  <div class="mapping-box"><strong>控制论映射：</strong>KT-ctrl-035（扰动观测器 DOB，gate 不重跑=低通滤波+剔除噪声虚耗）+ KT-ctrl-006（灵敏度与鲁棒性基础，gate 通过=高回路增益）+ 交叉 KT-ctrl-001（开环vs闭环）。</div>
+  <div class='ring-sw'><strong>强</strong>——quality gates + git-snapshot 变更检测 + bounded output 回灌，是<strong>真正的硬验证器</strong>而非纯 LLM 自评；gate 失败还记录 <code>lastGateFailureSnapshot</code> 供补偿。<strong>弱</strong>——默认 gate 为空（<code>commands:[]</code>，即默认跑&quot;无测量开环&quot;）；<code>/refine</code> 的评估本质仍是同一 LLM 自评（共模偏置），未做异质多评审器仲裁；E 环信噪比取决于用户是否显式配置 gate。</div>
+</div>
+<div class="ring-section" id="ring-T">
+  <div class="ring-head">
+    <span class="ring-tag" style="background:#5B4B9B">T</span>
+    <div class="ring-title"><h2>T 环 — 执行器/工具（容错执行）</h2><span class="ring-ctrl">工具调用/执行器</span></div>
+  </div>
+  <div class="ring-loc"><strong>承担角色：</strong>把规划动作以&quot;常驻控制环境 + 限幅 + 看门狗&quot;的方式容错落地，唯一直接触碰外界的环节。</div>
+  <h3>关键机制</h3><ul><li><strong>常驻 Python REPL 作为唯一内建工具</strong>（core/tools/ipython.ts + rlm/rlm.md）：执行、读改文件、跑项目命令、调 skills、委托 subagent 全部从持久 kernel 开始；Python 状态跨 tool call 与 compaction 存活。</li><li><strong><code>bash()</code> 异步执行 + 可终止句柄（看门狗）</strong>（prime-agent-runtime/src/rlm/bash.py）：<code>h=bash(&#x27;npm test&#x27;)</code> 立即返回 handle，<code>h.tail()/h.output()/h.poll()/h.kill()</code>；kill() 为 SIGTERM 逐级升级到 SIGKILL——T 环强制终止/降级路径。输出用 <code>_BoundedBuffer</code>（head+tail 滚动）防内存爆炸。</li><li><strong>RLM 深度限幅（执行器硬约束 u_sat）</strong>：<code>RLM_DEPTH &lt; RLM_MAX_DEPTH</code>；默认 <code>RLM_MAX_DEPTH=2</code>，超深度 host 拒绝 <code>rlm.run</code> 并 raise 到 Python。</li><li><strong>Typed host bridge 错误传播</strong>：<code>status:&quot;error&quot;</code> 直接 <code>raise RuntimeError</code>，不让错误静默。</li><li><strong>Skills 作为可导入 Python 包（执行器冗余/组合）</strong>：Python-backed skill 把能力封装成 <code>await &lt;skill_import&gt;.&lt;fn&gt;(...)</code>，skill 元数据只在 startup prompt，SKILL.md 按需加载。</li></ul>
+  <div class="mapping-box"><strong>控制论映射：</strong>KT-ctrl-034（安全边际/硬约束限幅+看门狗）+ KT-ctrl-030（模型不确定性）+ 交叉 KT-ctrl-031（鲁棒稳定性）。</div>
+  <div class='ring-sw'><strong>强</strong>——单一常驻 REPL 控制环境让&quot;工具即代码&quot;，容错路径（kill 升级、depth 拦截、协议错误不崩、snapshot 恢复）密集且工程化。<strong>弱</strong>——缺显式冗余仲裁（NMR/TMR/多数表决）：无多模型/多工具链&quot;异质冗余 vote&quot;机制；安全上明确声明&quot;不是 security sandbox&quot;（trust model），执行器以 worker OS 权限运行，属已知风险敞口。</div>
+</div>
+<div class="ring-section" id="ring-M">
+  <div class="ring-head">
+    <span class="ring-tag" style="background:#1F7A52">M</span>
+    <div class="ring-title"><h2>M 环 — 记忆/状态估计（上下文与状态）</h2><span class="ring-ctrl">记忆/状态估计</span></div>
+  </div>
+  <div class="ring-loc"><strong>承担角色：</strong>在长上下文与跨轮/跨会话中保真维护&quot;我现在的状态与经验&quot;，含 compaction、continual harness 持久态、kernel snapshot 回滚。</div>
+  <h3>关键机制</h3><ul><li><strong>Continual Harness 持久状态（状态观测器）</strong>（rlm/harness.py + refinement.ts）：harness_state.json 把 <code>prompt/memory/skill/subagent</code> 四类条目 + <code>refinements[]</code> 事件按 local/global 双层作用域持久化；Python 侧 <code>_sync_from_disk()</code> 用 mtime 检测 host <code>/refine</code> 外部改写，防内存陈旧覆盖。</li><li><strong>Compaction（信息滤波/蒸馏）</strong>（docs/compaction.md）：<code>contextTokens &gt; contextWindow - reserveTokens</code> 触发，向后找 cut point 保留 <code>keepRecentTokens=20k</code>；生成结构化 summary（读/改文件累计跟踪），<code>CompactionEntry</code> 含 <code>firstKeptEntryId</code>。</li><li><strong>Kernel snapshot/restore（状态回滚）</strong>（rlm/repl.py:607-808）：<code>dill</code> 序列化命名空间到 <code>kernel-state.dill</code>，可 restore；带 per-variable 与 aggregate size cap、corrupt snapshot 降级为空。</li><li><strong>Subagent 注册表跨持久化</strong>：<code>rlm.list_subagents()</code> 父作用域注册表 survives kernel restart/compaction/parent restore；daemon 子代从 parent artifact registry rehydrate。</li><li><strong>目标/自动模式状态记账</strong>（goals.ts + autonomous.ts）：<code>GoalState</code>（token/time/continuation）与 <code>AutonomousRuntimeState</code> 作为硬状态估计量，持久化进会话。</li></ul>
+  <div class="mapping-box"><strong>控制论映射：</strong>KT-ctrl-011（卡尔曼滤波 预测-更新，compaction=预测推进、每轮反馈=更新校正）+ KT-ctrl-014（信息滤波/降维，compaction 只保留增量信息）+ 交叉 KT-ctrl-012（观测噪声 R vs 过程噪声 Q，harness 持久态=强先验 Q，工具/gate 反馈=高置信观测 R）。</div>
+  <div class='ring-sw'><strong>强</strong>——Continual Harness 是<strong>除对话历史外的第二记忆层</strong>，带作用域（local/global）、版本、before/after snapshot、refinement 历史，是可&quot;持续自改进&quot;的记忆基底；compaction + kernel snapshot + subagent registry 三层持久化是其亮点。<strong>弱</strong>——记忆<strong>不显式携带置信度（P 协方差）</strong>：harness 条目只有 version 无&quot;置信度/证据强度&quot;字段，<code>/refine</code> 的 evidence 是自由文本非量化；compaction summary 仍是 LLM 生成（可能引入失真），无信息量阈值门控。</div>
+</div>
+<div class="ring-section" id="ring-P">
+  <div class="ring-head">
+    <span class="ring-tag" style="background:#1E5AA8">P</span>
+    <div class="ring-title"><h2>P 环 — 规划/分层控制（慢/快双速 + 递归分解）</h2><span class="ring-ctrl">规划/分层控制</span></div>
+  </div>
+  <div class="ring-loc"><strong>承担角色：</strong>作为&quot;慢大脑&quot;，把长程目标抽象成里程碑序列，并用 RLM 递归子代理 + daemon 后台并发实现快/慢分离的滚动推进。</div>
+  <h3>关键机制</h3><ul><li><strong>RLM 递归子代理 = 规划-执行解耦</strong>（rlm.md + rlm-runtime.md）：父模型保持自身 context 聚焦，Python 持工作状态，子代理只拿到子任务所需 context；<code>rlm()</code> 返回 admission handle（立即返回，不回答案）。</li><li><strong>Daemon-backed 后台代理 = 时标分离（慢变量持宏观状态）</strong>：resident worker 拥有 root session/kernel/schedules/descendants；关闭 terminal 只 detach client 不 stop worker，<code>prime-agent attach</code> reattach。慢层规划跨 detach/reattach 存活，快层单轮执行。</li><li><strong>非阻塞控制循环</strong>（rlm.ts）：<code>start work → record handle/output location → end turn → later read</code>；禁止 <code>time.sleep()</code> 轮询、禁止长阻塞 await——把&quot;启动&quot;与&quot;等待完成&quot;在时间上解耦。</li><li><strong>独立并发子代理</strong>（rlm.md:64-71）：<code>api_review / test_review / integration_audit</code> 三路独立 spawn 后 end turn，等 <code>agent_message</code> 或文件回流——真正的并行/后台编排。</li><li><strong><code>/autonomous</code> bounded continuation = MPC 式滚动续接</strong>：gate 通过/限额到达才停；每轮注入 continuation prompt 尝试推进，失败 gate 回灌 bounded output 再续——&quot;前瞻一组、只进一步、根据门重算&quot;。</li></ul>
+  <div class="mapping-box"><strong>控制论映射：</strong>KT-ctrl-044（MPC 滚动时域优化）+ KT-ctrl-045（规划-执行解耦）+ KT-ctrl-043（时间尺度分离 ε）。</div>
+  <div class='ring-sw'><strong>强</strong>——RLM 递归 + daemon + 非阻塞 loop 构成真正的慢/快双速架构，后台并发与 reattach 是少见的&quot;长时间跨会话规划可持续&quot;设计；深度限幅防递归爆炸。<strong>弱</strong>——缺显式&quot;rollout/前瞻树&quot;与&quot;规划时域 N 的显式设定&quot;：不存在独立 planner 实体，规划全依赖单模型每次 <code>rlm()</code> 即时判断；子代理间无拓扑调度（无 DAG/依赖先序），并发是&quot;fire-and-forget&quot;式而非按依赖序执行。</div>
+</div>
+<div class="ring-section" id="ring-R">
+  <div class="ring-head">
+    <span class="ring-tag" style="background:#C77700">R</span>
+    <div class="ring-title"><h2>R 环 — 反思/反馈闭环（多轮自我纠偏）</h2><span class="ring-ctrl">反思/反馈闭环</span></div>
+  </div>
+  <div class="ring-loc"><strong>承担角色：</strong>作为反馈控制器，计算&quot;目标效果 vs 实际输出&quot;的误差并把修正量回灌到持久 harness 状态，PRIME 的<strong>最大亮点</strong>。</div>
+  <h3>关键机制</h3><ul><li><strong><code>/refine</code> 自我改进 harness（核心 R 环实现）</strong>（refinement.ts）：专用 <code>/refine</code> 子系统对当前 trajectory 做评审，产出具名 <code>create/update/delete</code> edits 到 <code>prompt/memory/skill/subagent</code>；<code>REFINEMENT_SYSTEM_PROMPT</code> 明示&quot;base system prompt 不可改写，只改 supplemental 状态&quot;。</li><li><strong>rollback 回滚 = 误差修正的反向撤销</strong>：每次 refine 记录 before/after snapshot，<code>rollbackOf</code> 可逆序恢复——负反馈可逆，等于&quot;Kd 式防过度修正的刹车&quot;。</li><li><strong>Auto-refine review gate（反思触发/滤波）</strong>（refinement.ts:175-185）：内置一台&quot;是否该跑 /refine&quot;的评审器，置于静默边界执行，拒绝一次性噪声/未支持假设/瞬时工具输出（低通滤波 + 防 windup 累积）。触发理由：<code>turn_interval</code> / <code>compact</code>。</li><li><strong>执行状态累计纠偏</strong>：<code>_assistantTurnsSinceAutoRefine</code> 自上次评审起累计，<code>_lastAutoRefineReviewAt</code> 冷却时间戳，防过度反思（PID 的 I 项 windup 防止）。</li><li><strong>Autonomous gate 失败回灌 = 闭环误差信号注入</strong>：<code>buildAutonomousGateFailureContinuation</code> 将失败命令/输出/bounded 提示注入下一轮，&quot;Fix the failure, then produce terminal evidence&quot;——负反馈误差 e 直接回灌执行器。 ## PRIME 控制论画像总结</li><li><strong>R 环（反思/反馈闭环）——真正亮点</strong>。<code>/refine</code> 子系统（evidence-backed 小步更新 + auto-refine review gate 滤波 + snapshot 可逆回滚 + local/global 作用域）是唯一能把&quot;学习&quot;落到持久且可撤销状态上的机制；配合 M 环 harness 持久层，实现&quot;一次踩坑→固化 lessons→下次复用&quot;。</li><li><strong>M 环（记忆/状态估计）并列突出</strong>：Continual Harness + compaction（信息蒸馏）+ kernel snapshot + subagent registry 三层持久化，是 R 环自改进的承载体。</li><li><strong>E 环（评估/传感器）</strong> ——软肋。默认 autonomous 无 gate（开环）；<code>/refine</code> 与 auto-refine review 的&quot;评估&quot;仍是同一 LLM 自评（共模偏置，无异质评审器/独立验证器仲裁）；gate 是二值 pass/fail，量化误差信号缺失；<code>/refine</code> 的 evidence 是自由文本而非可量化度量。即框架强调的&quot;E 环信噪比决定闭环能走多远&quot;，在 PRIME 里正是<strong>最依赖用户显式配置、且无多源交叉验证</strong>的一环。从业者应知：PRIME 把&quot;自我改进&quot;做得很强（R/M），但&quot;自我验证&quot;（E）相对薄弱，<strong>强 R 环放大的是一个信噪比有限的误差信号</strong>——正对应框架 §7 警示&quot;过度依赖 E、信号质量差时 R 环放大的全是不确定度&quot;。</li></ul>
+  <div class="mapping-box"><strong>控制论映射：</strong>KT-ctrl-002（负反馈闭环结构）+ KT-ctrl-020/023（PID 三环节，P=gate 即时纠偏、I=auto-refine 累积记忆纠偏、D=snapshot 回滚防过度修正）+ KT-ctrl-004（误差收敛）+ 交叉 KT-ctrl-022（积分 I/防 windup）。</div>
+  <div class='ring-sw'><strong>强（PRIME 最突出环）</strong>——<code>/refine</code> + auto-refine review gate + snapshot rollback + 持久 harness 是<strong>业界罕见的&quot;harness 自身可持续改进&quot;闭环</strong>：不重写 immutabble system prompt，只调整 supplement 状态，且带版本/作用域/回滚，实现&quot;反思→固化经验→下次复用&quot;的自我训练机制。<strong>弱</strong>——误差信号仍依赖 LLM 自评（<code>/refine</code> 和 auto-refine review 都是同一模型体系），存在共模偏差；<code>/refine</code> 的 edits 应用前有 baseline 冲突检测，但未与 gate 的硬测量联动；误差收敛的&quot;稳态带 |e|≤ε_des 验收标准&quot;未显式定义——只靠 gate 二值判定。</div>
+</div>
+<div class="ring-section summary-block">
+  <div class="ring-head"><span class="ring-tag" style="background:#C77700">★</span><div class="ring-title"><h2>控制论画像总结</h2></div></div>
+  <div class="case-verdict"><strong>整体范式：</strong><strong>整体控制范式</strong>：一个<strong>以&quot;常驻被控环境 + 持久可改进状态&quot;为核心的 自适应/自整定 负反馈控制系统</strong>。它把&quot;模型&quot;当作被控对象，&quot;Python REPL&quot;当作可编程的常驻执行环境（过程），&quot;continual harness&quot;当作可调参的控制器状态（供校正律回灌），&quot;quality gates&quot;当作硬传感器。其精髓是 <strong>R 环（自改进 harness）与 M 环（双层持久记忆）深度耦合，驱动整个闭环&quot;自我整定&quot;</strong>——接近&quot;自适应控制 + 内模控制&quot;的混合体。</div>
+  <ul><li><strong>R 环（反思/反馈闭环）——真正亮点</strong>。<code>/refine</code> 子系统（evidence-backed 小步更新 + auto-refine review gate 滤波 + snapshot 可逆回滚 + local/global 作用域）是唯一能把&quot;学习&quot;落到持久且可撤销状态上的机制；配合 M 环 harness 持久层，实现&quot;一次踩坑→固化 lessons→下次复用&quot;。</li><li><strong>M 环（记忆/状态估计）并列突出</strong>：Continual Harness + compaction（信息蒸馏）+ kernel snapshot + subagent registry 三层持久化，是 R 环自改进的承载体。</li><li><strong>E 环（评估/传感器）</strong> ——软肋。默认 autonomous 无 gate（开环）；<code>/refine</code> 与 auto-refine review 的&quot;评估&quot;仍是同一 LLM 自评（共模偏置，无异质评审器/独立验证器仲裁）；gate 是二值 pass/fail，量化误差信号缺失；<code>/refine</code> 的 evidence 是自由文本而非可量化度量。即框架强调的&quot;E 环信噪比决定闭环能走多远&quot;，在 PRIME 里正是<strong>最依赖用户显式配置、且无多源交叉验证</strong>的一环。从业者应知：PRIME 把&quot;自我改进&quot;做得很强（R/M），但&quot;自我验证&quot;（E）相对薄弱，<strong>强 R 环放大的是一个信噪比有限的误差信号</strong>——正对应框架 §7 警示&quot;过度依赖 E、信号质量差时 R 环放大的全是不确定度&quot;。</li></ul>
+</div>
+<div class="pager"><a href="case-dsh.html">← 案例:dsh</a><a class="next" href="case-hermes.html">案例:hermes</a></div>
+<footer class="footer">
+<span>控制理论 ⊗ Agent 设计知识库 · v1.1 精装房全景版（6 框架 + 14 精装房）</span>
+<span class="fbrand">data: 09-src-data · contract: 00-contract</span>
+</footer>
+</div></div></div></body></html>

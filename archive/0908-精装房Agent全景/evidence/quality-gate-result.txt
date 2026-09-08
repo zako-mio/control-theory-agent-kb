@@ -1,0 +1,23 @@
+# 门控结果 — 0907 主库 v1.1（分层门控 L1-L7）
+> 执行时间：2026-09-08 20:16:57
+> 脚本：kb-construction/scripts/kb_gate.py（7 层门控）
+> 排除：tmp-evidence（外部抓取快照）/ 05-source（第三方源码留档）/ 03-cases/source
+> 豁免：07-checkpoint/report-v1.1.html（报告页含报告目录导航）
+> 退出码：0
+
+```
+[PASS] structure  检查项=139 问题=0 提醒=0
+[PASS] links      检查项=1564 问题=0 提醒=0
+[PASS](warn) nav        检查项=38 问题=0 提醒=1
+    ⚠️  导航豁免: 07-checkpoint/report-v1.1.html（按 --nav-exempt）
+[PASS](warn) cascade    检查项=7 问题=0 提醒=1
+    ⚠️  页脚版本号不统一（主导 v1.1）: v1.0.0(1页)
+[PASS](warn) coverage   检查项=0 问题=0 提醒=1
+    ⚠️  未提供 --manifest/--require，coverage 层跳过比对
+[PASS] sources    检查项=20 问题=0 提醒=0
+================================================================
+门控汇总: 层=6 PASS=6 FAIL=0 SKIP=0
+nav 模式=nav-source:09-src-data/nav_data.py 页面=38 期望条目=36
+================================================================
+
+```

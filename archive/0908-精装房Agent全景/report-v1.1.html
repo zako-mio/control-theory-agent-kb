@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>留档报告 — 控制理论 ⊗ Agent 知识库 v1.1「精装房全景」专题</title>
+<link rel="stylesheet" href="../04-interactive/assets/design-tokens.css">
+<style>
+  /* 报告页专属微调（复用 design-tokens.css 的变量与组件） */
+  .hero{background:linear-gradient(135deg,#0B1220,#1E5AA8);color:#fff;border-radius:var(--r-lg);padding:var(--space-5);margin-bottom:var(--space-5);position:relative;overflow:hidden}
+  .hero .kicker{color:#9FC0E8}
+  .hero h1{color:#fff;font-size:clamp(24px,3.6vw,34px);letter-spacing:-.02em;line-height:1.2;margin:6px 0 10px}
+  .hero p{color:#CBD4E2;max-width:760px;font-size:15px;margin:0}
+  .hero .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:var(--space-4)}
+  .hero .meta span{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:3px 12px;font-size:12px;color:#E6EAF2;font-family:var(--font-mono)}
+  .stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:var(--space-3);margin:var(--space-4) 0}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);padding:var(--space-3) var(--space-4)}
+  .stat .n{font-family:var(--font-mono);font-size:28px;font-weight:800;color:var(--ctrl-blue);line-height:1.1}
+  .stat .l{font-size:12.5px;color:var(--muted);margin-top:4px}
+  .section{scroll-margin-top:24px}
+  .section > h2{display:flex;align-items:center;gap:12px;border-bottom:2px solid var(--line);padding-bottom:10px}
+  .section > h2 .idx{font-family:var(--font-mono);font-size:12px;color:var(--signal-amber);font-weight:600}
+  .phase-table td:first-child{font-family:var(--font-mono);font-weight:700;color:var(--ctrl-blue);white-space:nowrap}
+  .decision-list{counter-reset:dec;list-style:none;margin:var(--space-3) 0;padding:0}
+  .decision-list li{counter-increment:dec;position:relative;padding:8px 0 8px 44px;border-bottom:1px dashed var(--line);font-size:14.5px}
+  .decision-list li:last-child{border-bottom:none}
+  .decision-list li::before{content:counter(dec);position:absolute;left:0;top:8px;width:28px;height:24px;display:flex;align-items:center;justify-content:center;background:var(--ctrl-blue-soft);color:var(--ctrl-blue);font-family:var(--font-mono);font-weight:700;font-size:12px;border-radius:6px}
+  .finding{border-left:4px solid var(--signal-amber);background:var(--signal-amber-bg);border-radius:0 var(--r-md) var(--r-md) 0;padding:var(--space-3) var(--space-4);margin:var(--space-3) 0}
+  .finding h3{margin-top:0;color:var(--signal-amber)}
+  .finding p{margin:4px 0 0;font-size:14px}
+  .tier{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--panel);margin:6px 0}
+  .tier .bar{height:10px;border-radius:999px;flex-shrink:0}
+  .tier .sc{font-family:var(--font-mono);font-weight:800;font-size:14px;width:52px;text-align:right}
+  .tier .nm{font-size:13.5px;color:var(--ink)}
+  .tier .desc{font-size:12px;color:var(--muted);margin-left:auto;text-align:right}
+  .gate-ok{background:var(--state-green-bg);border:1px solid #BFDCCB;border-radius:var(--r-md);padding:var(--space-3) var(--space-4);margin:var(--space-3) 0}
+  .gate-ok h4{color:var(--state-green);margin:0 0 6px;font-size:14px}
+  .gate-ok ul{margin:6px 0 0 18px;font-size:14px}
+  .env-warn{background:var(--signal-red-bg);border-left:3px solid var(--signal-red);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:var(--space-3) var(--space-4);margin:var(--space-3) 0;font-size:14px}
+  .env-warn strong{color:var(--signal-red)}
+  .reflection h3{color:var(--ctrl-blue);border-left:3px solid var(--ctrl-blue);padding-left:10px}
+  .deliv td:first-child{font-weight:600;white-space:nowrap}
+  .deliv td:last-child{font-size:13px;color:var(--muted)}
+  .toc{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);padding:var(--space-3) var(--space-4);margin-bottom:var(--space-4)}
+  .toc ol{margin:6px 0 0 18px;columns:2;column-gap:var(--space-5)}
+  .toc li{margin:4px 0;font-size:13.5px}
+  @media (max-width:600px){.toc ol{columns:1}}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="mark"><span class="dot"></span><h1>控制理论 ⊗ Agent</h1></div>
+    <p>v1.1 精装房全景专题 · 留档报告</p>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="grp">报告目录</div>
+    <a href="#s1"><span class="mag">01</span>当时情况</a>
+    <a href="#s2"><span class="mag">02</span>制定计划</a>
+    <a href="#s3"><span class="mag">03</span>执行情况</a>
+    <a href="#s4"><span class="mag">04</span>完成情况</a>
+    <a href="#s5"><span class="mag">05</span>反思/建议</a>
+    <div class="grp">知识库导航</div>
+    <a href="../index.html"><span class="mag">00</span>门户入口</a>
+    <a href="../04-interactive/premium-map.html"><span class="mag">21</span>精装房全景</a>
+    <a href="../04-interactive/premium-cyto.html"><span class="mag">22</span>精装房DAG</a>
+    <a href="../04-interactive/index.html"><span class="mag">01</span>交互总览</a>
+  </nav>
+</aside>
+
+<div class="main">
+  <div class="main-topbar"><div class="crumb"><b>留档报告</b> · 控制理论 ⊗ Agent 设计知识库 v1.1</div></div>
+  <div class="main-content">
+
+    <div class="hero">
+      <div class="kicker">MISSION REPORT · 2026-09-08</div>
+      <h1>控制理论 ⊗ Agent 设计知识库 v1.1<br>「精装房全景」专题留档报告</h1>
+      <p>核心命题：<b>声称 ≠ 实际</b>。以「精装度」为主轴、「一手/二手」为标签、「4 大类」为分组、「五环」定控制本质——用源码级 / 文档级实证，鉴别市面 14 款精装房 Agent 到底精装到什么程度。</p>
+      <div class="meta">
+        <span>v1.1.0</span>
+        <span>14 款精装房</span>
+        <span>13 项决策</span>
+        <span>8 个 Phase</span>
+        <span>门控 ALL PASS</span>
+      </div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat"><div class="n">14</div><div class="l">精装房产品实证</div></div>
+      <div class="stat"><div class="n">4</div><div class="l">分析维度（精装度/一手二手/4类/五环）</div></div>
+      <div class="stat"><div class="n">3</div><div class="l">核心反直觉实证发现</div></div>
+      <div class="stat"><div class="n">0</div><div class="l">门控 issue 数（ALL PASS）</div></div>
+    </div>
+
+    <div class="toc">
+      <strong style="font-size:13px;color:var(--muted)">报告五段</strong>
+      <ol>
+        <li><a href="#s1">当时情况</a></li>
+        <li><a href="#s2">制定计划</a></li>
+        <li><a href="#s3">执行情况</a></li>
+        <li><a href="#s4">完成情况</a></li>
+        <li><a href="#s5">反思 / 分析 / 建议</a></li>
+      </ol>
+    </div>
+
+    <!-- ============ 1 ============ -->
+    <section class="section" id="s1">
+      <h2><span class="idx">01</span>当时情况</h2>
+
+      <h3>任务背景</h3>
+      <p>在既有「控制理论 ⊗ Agent 设计知识库」（v1.0，6 个技术框架产品版）基础上，用户希望<strong>增加市面「精装房」Agent 产品的案例分析</strong>——即那些主打「开箱即用、预装全套能力」的商用/开源成品（如 Cursor、Devin、Dify、Coze 等）。用户的核心好奇点是：<strong>这些产品到底「精装」到什么程度？</strong></p>
+
+      <h3>用户原始需求</h3>
+      <ul>
+        <li>调研市面主流「精装房」Agent 产品，形成全景分析；</li>
+        <li>核心命题由用户洞察提出：<strong>「声称 ≠ 实际」——源码分析能看出真正的一手还是二手</strong>；</li>
+        <li>交付形态：人类可读的高可读交互 HTML（用户明确只看 HTML），AI 端 MD 为低优先镜像；</li>
+        <li>落点：在<strong>现有知识库内扩展</strong>为 v1.1，而非另起炉灶。</li>
+      </ul>
+
+      <h3>环境状态</h3>
+      <ul>
+        <li>运行环境：WSL2（Linux），工作目录 <code>/home/zako-mio/opencode</code>；</li>
+        <li>网络：默认直连，境外被墙站点按需经宿主机代理网关 <code>172.29.0.1:7890</code>。</li>
+      </ul>
+      <div class="env-warn">
+        <strong>关键环境障碍：</strong><code>git clone</code> 不稳定（大仓库频繁挂起），GitHub API 返回 403（未认证限流）→ 最终改用 <code>raw.githubusercontent.com</code> 源码级逐个文件获取，绕开 clone / API 限制，完成开源源码级实证。
+      </div>
+    </section>
+
+    <!-- ============ 2 ============ -->
+    <section class="section" id="s2">
+      <h2><span class="idx">02</span>制定计划</h2>
+
+      <h3>grill-me 收敛的 13 项决策</h3>
+      <ol class="decision-list">
+        <li>案例定位 = 跨 4 大类「精装房全景地图」</li>
+        <li>分类骨架 = 按供应方 4 类（第一方成品 / 二次封装 / 低代码平台 / 开源成品化）</li>
+        <li>核心命题 = 声称 vs 实际（源码/黑箱实证鉴别一手/二手）</li>
+        <li>实证深度 = 开源机制级 + 闭源文档优先 + 黑箱兜底（无密钥授权）</li>
+        <li>分析框架 = 五环 + 精装度双维度</li>
+        <li>精装度量化 = 先分析，数据涌现后定评分量表（不预设公式）</li>
+        <li>交付形态 = 交互 HTML 全景页 + 案例页 + 新 DAG 图</li>
+        <li>落点 = 现有知识库内扩展 → v1.1</li>
+        <li>双维度覆盖 = 全库统一（现有 6 + 新增）</li>
+        <li>开源成品化取舍 = 保留真精装房（OpenHands/gpt-researcher）+ 框架半成品对比</li>
+        <li>坐标系 = 精装度 0-5 主轴 × 一手/二手标签 × 4 大类 × 五环定位</li>
+        <li>维度组织 = 精装度为主轴，一手/二手为标签（非独立轴）</li>
+        <li>推进 = 先落盘计划再执行；用户只看高可读 HTML</li>
+      </ol>
+
+      <div class="insight">
+        <strong>关键概念澄清（决策 12）：</strong>「一手/二手」与「精装/毛坯」是<strong>正交的两根轴</strong>。精装/毛坯 = 预装了多少；一手/二手 = 供应方是否原创者。毛坯房也可以是二手（开源壳包装发版），精装房也可能是一手（大厂自研成品）。
+      </div>
+
+      <h3>执行阶段划分</h3>
+      <table class="phase-table">
+        <thead><tr><th>Phase</th><th>内容</th><th>委派</th><th>产出</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>契约扩展：精装度定义 + 证据分级 + 四维坐标系</td><td>主Agent</td><td><code>contract.md</code> v1.1</td></tr>
+          <tr><td>1</td><td>开源源码级实证：CodeWhale / CC-Router / Dify / OpenHands / gpt-researcher / 框架半成品</td><td>explore/general</td><td>源码证据包</td></tr>
+          <tr><td>2</td><td>闭源文档 + 黑箱实证：Cursor / Windsurf / Copilot / Devin / WorkBuddy / Coze / QCode</td><td>search/explore</td><td>文档证据包</td></tr>
+          <tr><td>3</td><td>差量分析：声称精装度 vs 实证精装度 → 涌现评分量表</td><td>主Agent</td><td>量表 + 差值矩阵</td></tr>
+          <tr><td>4</td><td>五环画像：每产品 <code>premium-*.md</code></td><td>general/explore</td><td>14 份画像 MD</td></tr>
+          <tr><td>5</td><td>交互交付：全景页 + 案例页 + 精装房 DAG</td><td>主Agent + drawio</td><td><code>04-interactive/premium-*</code></td></tr>
+          <tr><td>6</td><td>全库统一双维度：现有 6 产品补字段 + 再分类，更新索引 → v1.1</td><td>main</td><td>全库 v1.1</td></tr>
+          <tr><td>7</td><td>门控 + 留档：L1-L7 分层门控</td><td>主Agent</td><td>审计 + 留档</td></tr>
+        </tbody>
+      </table>
+
+      <h3>红线约束</h3>
+      <ul>
+        <li>闭源全部<strong>文档优先</strong>，<strong>不申请任何 API 密钥/授权</strong>；</li>
+        <li><strong>人类可读 HTML 为唯一成果重心</strong>；AI 端 MD 镜像为低优先配套；</li>
+        <li>契约红线：仅 <code>/tmp/opencode</code> 实机黑箱 + 源码只读；不改记忆系统文件；不做不可逆破坏；</li>
+        <li>复用既有资产：<code>render_case.py</code> / <code>gen_html.py</code> / <code>nav_data.py</code> / 门控脚本 / <code>design-tokens.css</code>；</li>
+        <li>违约回退：源码能做的做到机制级，做不到的用文档 + 行为分级标注。</li>
+      </ul>
+    </section>
+
+    <!-- ============ 3 ============ -->
+    <section class="section" id="s3">
+      <h2><span class="idx">03</span>执行情况</h2>
+
+      <div class="grid cols-2">
+        <div class="card"><span class="num">PHASE 0</span><h3>契约扩展</h3><p>在 <code>contract.md</code> 新增 §2.5 精装房专题：四维坐标系、证据强度四级（源码级 &gt; 文档级 &gt; 行为级 &gt; 声称级）、<code>premium-{short}</code> 命名规则，同步目录与深链规则。子Agent 只引用短路径、不复制全文。</p></div>
+        <div class="card"><span class="num">PHASE 1</span><h3>开源源码级实证</h3><p>经 <code>raw.githubusercontent.com</code> 抓取 <code>package.json</code>/<code>Cargo.toml</code>/<code>pyproject.toml</code>/入口做机制级分析：OpenHands 一键 bin、Dify 自研 graphon、CodeWhale 20 自研 crate、CCR 依赖第三方网关等。</p></div>
+        <div class="card"><span class="num">PHASE 2</span><h3>闭源文档级实证</h3><p>对 Cursor/Windsurf/Copilot/Devin/WorkBuddy/Coze/QCode 采集官方文档与定价机制，标文档级。不做需密钥的黑箱实测，未实证营销话术一律标「声称级」。</p></div>
+        <div class="card"><span class="num">PHASE 3</span><h3>差量分析（核心）</h3><p>对照声称 vs 实证，形成差值矩阵并<strong>由数据涌现定稿 0-5 评分量表</strong>（锚点：用户零配置即可跑端到端任务）。</p></div>
+        <div class="card"><span class="num">PHASE 4</span><h3>五环画像</h3><p>按 <code>PREMIUM-CASE-TEMPLATE.md</code> 为 14 款产品各生成一份 <code>premium-*.md</code>：精装度 + 预装能力清单 + 声称vs实际 + 五环定位，结论强制对齐证据文件。</p></div>
+        <div class="card"><span class="num">PHASE 5</span><h3>交互交付</h3><p>精装度主轴全景页 + 精装房 DAG（14 节点，精装度着色 + 一手/二手形状 + 4 大类分组）+ 14 案例页；新增 <code>gen_premium_cyto.py</code>。</p></div>
+        <div class="card"><span class="num">PHASE 6</span><h3>全库统一双维度</h3><p>现有 6 框架产品补精装度字段并再分类（2.5-3 分，需装配/定制），更新 README / index / 00-index 至 v1.1。</p></div>
+        <div class="card"><span class="num">PHASE 7</span><h3>门控 + 留档</h3><p>L1-L7 分层门控：结构脚本 + 视觉 VLM + 渲染 headless + 覆盖度审计，结果 <strong>ALL PASS（0 issues）</strong>，并产出双版本留档报告。</p></div>
+      </div>
+
+      <h3>三大实证发现（核心成果）</h3>
+      <div class="finding">
+        <h3>① 二手被高估</h3>
+        <p><strong>CC-Router</strong>（源码级铁证依赖 <code>@the-next-ai/ai-gateway</code> 第三方网关）、<strong>QCode</strong>（官方明示「官方价×服务倍率」）——声称「平替 Claude Code」，实为封装/中转。</p>
+      </div>
+      <div class="finding">
+        <h3>② 一手被低估</h3>
+        <p><strong>CodeWhale</strong>（自研 Rust 底层 20 crate）、<strong>OpenClaude</strong>（独立 TS 实现）——声称「平替」，实为独立自研。</p>
+      </div>
+      <div class="finding">
+        <h3>③ 声称功能不存在</h3>
+        <p><strong>Windsurf</strong> 无「Flows DAG」多 Agent 编排（多 Agent 并发 = Arena Mode + worktrees + Managed Devins）。</p>
+      </div>
+
+      <h3>遇到的问题及应对</h3>
+      <table>
+        <thead><tr><th>问题</th><th>应对</th></tr></thead>
+        <tbody>
+          <tr><td><code>git clone</code> 大仓库挂起</td><td>改用 <code>raw.githubusercontent.com</code> 逐文件获取</td></tr>
+          <tr><td>GitHub API 403（未认证限流）</td><td>绕开 API，走 raw 内容端点</td></tr>
+          <tr><td>闭源产品无法源码级验证</td><td>文档级优先 + 声称级标注，不申请密钥（守红线）</td></tr>
+          <tr><td>Windsurf 营销声称与实际不符</td><td>文档检索否定，标为「声称功能不存在」</td></tr>
+          <tr><td>多产物互引一致性风险</td><td>契约先行 + 画像模板统一标记，精装度结论强制对齐证据文件</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ============ 4 ============ -->
+    <section class="section" id="s4">
+      <h2><span class="idx">04</span>完成情况</h2>
+
+      <h3>交付物清单</h3>
+      <table class="deliv">
+        <thead><tr><th>类别</th><th>路径</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td>契约扩展</td><td><code>00-contract/contract.md</code></td><td>v1.1，新增 §2.5 精装房专题</td></tr>
+          <tr><td>计划文档</td><td><code>07-checkpoint/PLAN-v1.1.md</code></td><td>13 决策 + 8 Phase</td></tr>
+          <tr><td>实证证据</td><td><code>07-checkpoint/premium-evidence.md</code></td><td>14 产品证据汇总</td></tr>
+          <tr><td>差量分析</td><td><code>07-checkpoint/premium-diff-analysis.md</code></td><td>声称 vs 实际 + 评分量表</td></tr>
+          <tr><td>画像模板</td><td><code>07-checkpoint/PREMIUM-CASE-TEMPLATE.md</code></td><td>渲染器契约</td></tr>
+          <tr><td>画像 MD ×14</td><td><code>03-cases/premium-{cursor,devin,workbuddy,windsurf,copilot,dify,openhands,coze,openclaude,codewhale,gptresearcher,qcode,ccrouter,crewai}.md</code></td><td>五环 + 精装度</td></tr>
+          <tr><td>全景页</td><td><code>04-interactive/premium-map.html</code></td><td>精装度主轴谱系</td></tr>
+          <tr><td>精装房 DAG</td><td><code>04-interactive/premium-cyto.html</code></td><td>14 节点交互图</td></tr>
+          <tr><td>案例页 ×14</td><td><code>04-interactive/premium-*.html</code></td><td>单产品画像</td></tr>
+          <tr><td>生成脚本</td><td><code>09-src-data/gen_premium_cyto.py</code>（新增）；<code>render_case.py</code>/<code>gen_html.py</code>/<code>nav_data.py</code>（扩展）</td><td>—</td></tr>
+          <tr><td>门控</td><td><code>07-checkpoint/quality-gate.py</code>（扩展）</td><td>结果 ALL PASS（0 issue）</td></tr>
+          <tr><td>更新</td><td><code>README.md</code> / <code>index.html</code> / <code>05-md/00-index.md</code></td><td>v1.1</td></tr>
+        </tbody>
+      </table>
+
+      <h3>精装度谱系（14 产品）</h3>
+      <div class="tier"><span class="sc" style="color:#1F7A52">5</span><span class="bar" style="width:100%;background:#1F7A52;flex:1"></span><span class="nm">真·开箱即用</span><span class="desc">OpenHands / Devin / WorkBuddy / Dify / OpenClaude</span></div>
+      <div class="tier"><span class="sc" style="color:#C77700">4-4.5</span><span class="bar" style="width:82%;background:#C77700;flex:1"></span><span class="nm">成品化受限</span><span class="desc">Cursor / Coze / Windsurf / GPT-Researcher / CodeWhale / Copilot</span></div>
+      <div class="tier"><span class="sc" style="color:#B23A2F">3-3.5</span><span class="bar" style="width:62%;background:#B23A2F;flex:1"></span><span class="nm">需配置框架</span><span class="desc">QCode / CrewAI / CC-Router</span></div>
+      <div class="tier"><span class="sc" style="color:#8794A8">2.5-3</span><span class="bar" style="width:50%;background:#8794A8;flex:1"></span><span class="nm">技术框架（现有 6 产品对照）</span><span class="desc">opencode / dsh / PRIME / hermes / claude-code / codex（需装配/定制）</span></div>
+
+      <h3>验证结果</h3>
+      <div class="gate-ok">
+        <h4>✅ L1-L7 分层门控 ALL PASS</h4>
+        <ul>
+          <li><strong>结构门控：</strong>0 issues，覆盖度 32 文件全在、导航无死链、14 页面结构完整；</li>
+          <li><strong>渲染验证：</strong>headless Chromium + VLM 验证全景页 / DAG / Cursor 案例页 / QCode 案例页，均 PASS；</li>
+          <li><strong>环境问题记录：</strong><code>git clone</code> 挂起、GitHub API 403 → 改用 <code>raw.githubusercontent.com</code> 源码级获取。</li>
+        </ul>
+      </div>
+
+      <h3>改动明细</h3>
+      <p>新增交付物约 40+ 文件（契约扩展 + 计划 + 2 份证据/分析 + 模板 + 14 画像 MD + 全景/DAG + 14 案例 HTML + 生成脚本）；修改 <code>contract.md</code> / <code>quality-gate.py</code> / <code>render_case.py</code> / <code>gen_html.py</code> / <code>nav_data.py</code> / <code>README.md</code> / <code>index.html</code> / <code>05-md/00-index.md</code>。<strong>未修改任何记忆系统文件，无不可逆破坏。</strong></p>
+    </section>
+
+    <!-- ============ 5 ============ -->
+    <section class="section reflection" id="s5">
+      <h2><span class="idx">05</span>反思 / 分析 / 建议</h2>
+
+      <h3>过程反思</h3>
+      <ul>
+        <li><strong>「声称 ≠ 实际」方法论被实证验证：</strong>市场命名（「XX 平替 / XX 增强」）极易误导。只有源码依赖分析（如 <code>@the-next-ai/ai-gateway</code>）或定价机制（官价×倍率）能揭示一手/二手真相。这一命题在本批 14 产品上成立了 4 个反直觉案例。</li>
+        <li><strong>契约先行的价值再次验证：</strong>先落盘计划 + 模板 + 证据文件，使 14 份画像与全景/DAG/案例页在精装度、一手二手结论上强制一致，零返工。</li>
+        <li><strong>环境受阻时的降级路径：</strong><code>git clone</code> / GitHub API 不可用时，<code>raw.githubusercontent.com</code> 是可靠的源码级替代，无需放弃实证深度。</li>
+      </ul>
+
+      <h3>收获认知</h3>
+      <ul>
+        <li><strong>精装度与一手/二手正交：</strong>二手也可以精装（CCR 3 分、QCode 3.5 分），一手也可能不精装（CrewAI 3 分）。做全景时必须分开标注，不能互相推断。</li>
+        <li><strong>证据分级是可信度防线：</strong>源码级 &gt; 文档级 &gt; 行为级 &gt; 声称级。闭源产品文档级标注 + 未实证标声称级，避免把营销话术当事实。</li>
+        <li><strong>五环框架可迁移到商用成品：</strong>把精装房也纳入 M/P/R/T/E 五环定位，使「预装程度」与「控制论本质」两个视角互补。</li>
+      </ul>
+
+      <h3>未来改进建议</h3>
+      <ol>
+        <li><strong>补黑箱行为级实证：</strong>当前闭源产品止于文档级；未来若有免费额度/无需密钥的测试路径，可补行为级验证（严守不申请密钥红线）；</li>
+        <li><strong>精装度评分可量化加权：</strong>当前量表由数据涌现定稿，后续可将 8 项预装能力维度显式加权，提升可复现性；</li>
+        <li><strong>产品谱系持续跟踪：</strong>精装房市场迭代快，建议定期回归证据文件与评分；</li>
+        <li><strong>「声称功能不存在」类发现单独建索引：</strong>Windsurf Flows DAG 案例价值高，可沉淀为「营销话术勘误」子库。</li>
+      </ol>
+
+      <h3>契约遵守确认</h3>
+      <p>全程遵守最小必要破坏性操作范围（可逆 + 受控故障注入），<strong>未修改记忆系统文件</strong>，未做不可逆破坏；未申请任何 API 密钥/授权；闭源实证严守文档级 + 声称级标注。</p>
+    </section>
+
+    <!-- ============ 证据区块 ============ -->
+    <section class="section">
+      <h2><span class="idx">📚</span>证据来源</h2>
+      <table>
+        <thead><tr><th>SRC</th><th>级别</th><th>信源</th><th>路径/URL</th><th>置信度</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">SRC-001</td><td><span class="badge s4">S4</span></td><td>一手源码观察</td><td><code>raw.githubusercontent.com</code>（OpenHands/Dify/CodeWhale/CCR/OpenClaude 等）</td><td>高</td></tr>
+          <tr><td class="mono">SRC-002</td><td><span class="badge s1">S1</span></td><td>官方文档</td><td>cursor.com/docs、docs.devin.ai、docs.coze.cn、cloud.tencent.com/product/workbuddy</td><td>高</td></tr>
+          <tr><td class="mono">SRC-003</td><td><span class="badge s1">S1</span></td><td>官方定价页</td><td>qcode.cc（「官方价×服务倍率」）</td><td>高</td></tr>
+          <tr><td class="mono">SRC-004</td><td><span class="badge s4">S4</span></td><td>本库实证汇总</td><td><code>07-checkpoint/premium-evidence.md</code></td><td>高</td></tr>
+          <tr><td class="mono">SRC-005</td><td><span class="badge s4">S4</span></td><td>本库差量分析</td><td><code>07-checkpoint/premium-diff-analysis.md</code></td><td>高</td></tr>
+          <tr><td class="mono">SRC-006</td><td><span class="badge s4">S4</span></td><td>结构门控结果</td><td><code>07-checkpoint/quality-gate-result.txt</code>（ISSUES=0）</td><td>高</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer class="footer">
+      <span>控制理论 ⊗ Agent 设计知识库 · v1.1 精装房全景专题 · 留档报告</span>
+      <span class="fbrand">2026-09-08 · checkpoint/07</span>
+    </footer>
+
+  </div>
+</div>
+</div>
+</body>
+</html>

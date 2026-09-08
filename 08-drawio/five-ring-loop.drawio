@@ -1,0 +1,73 @@
+<mxfile host="drawio" modified="2026-09-07T00:00:00.000Z" agent="drawio-worker" version="24.7.8" type="device">
+  <diagram id="five-ring-loop" name="五环控制回路">
+    <mxGraphModel dx="1200" dy="860" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1160" pageHeight="790" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="&lt;b&gt;五环控制回路&lt;/b&gt; — Agent 作为被控系统的闭环控制架构（契约 00-contract/contract.md）" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#2c3e50;" vertex="1" parent="1">
+          <mxGeometry x="40" y="12" width="1080" height="36" as="geometry"/>
+        </mxCell>
+        <mxCell id="ref" value="&lt;b&gt;目标 r&lt;/b&gt;&lt;br&gt;设定值 / 参考指令" style="ellipse;whiteSpace=wrap;html=1;fillColor=#7f8c8d;strokeColor=#5d6d7e;fontColor=#ffffff;fontFamily=Microsoft YaHei;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="50" y="110" width="130" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="P" value="&lt;b&gt;P 规划/分层控制&lt;/b&gt;&lt;br&gt;分层控制 · 慢快双速&lt;br&gt;任务分解 / 里程碑设定&lt;br&gt;(ch-planning)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2980b9;strokeColor=#1f6390;fontColor=#ffffff;fontFamily=Microsoft YaHei;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="280" y="90" width="210" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="T" value="&lt;b&gt;T 工具调用/执行器&lt;/b&gt;&lt;br&gt;容错 · 鲁棒性&lt;br&gt;调用失败 / 冗余仲裁&lt;br&gt;(ch-tool)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#8e44ad;strokeColor=#6c2f8b;fontColor=#ffffff;fontFamily=Microsoft YaHei;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="580" y="90" width="210" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="world" value="&lt;b&gt;世界 / 环境&lt;/b&gt;&lt;br&gt;被控对象 (Plant)&lt;br&gt;任务执行的载体" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#95a5a6;strokeColor=#7f8c8d;fontColor=#ffffff;fontFamily=Microsoft YaHei;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="890" y="90" width="210" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="E" value="&lt;b&gt;E 评估/传感器&lt;/b&gt;&lt;br&gt;验证器 · 信噪比&lt;br&gt;Critic / 质量评估&lt;br&gt;(ch-eval)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e74c3c;strokeColor=#c0392b;fontColor=#ffffff;fontFamily=Microsoft YaHei;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="890" y="540" width="210" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="M" value="&lt;b&gt;M 记忆/状态估计&lt;/b&gt;&lt;br&gt;状态估计 · 观测噪声&lt;br&gt;工作记忆 / 信念更新&lt;br&gt;(ch-memory)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#16a085;strokeColor=#12876f;fontColor=#ffffff;fontFamily=Microsoft YaHei;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="580" y="540" width="210" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="R" value="&lt;b&gt;R 反思/反馈闭环&lt;/b&gt;&lt;br&gt;反馈闭环 · 误差收敛&lt;br&gt;自我反思 / 偏航补偿&lt;br&gt;(ch-reflection)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f39c12;strokeColor=#d68910;fontColor=#ffffff;fontFamily=Microsoft YaHei;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="280" y="540" width="210" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="subP" value="&lt;i&gt;MPC 滚动 / 慢快双速&lt;/i&gt;" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Microsoft YaHei;fontSize=11;fontColor=#34495e;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="280" y="235" width="210" height="48" as="geometry"/>
+        </mxCell>
+        <mxCell id="subT" value="&lt;i&gt;看门狗 / 限幅 / 冗余仲裁&lt;/i&gt;" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Microsoft YaHei;fontSize=11;fontColor=#34495e;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="580" y="235" width="210" height="48" as="geometry"/>
+        </mxCell>
+        <mxCell id="subM" value="&lt;i&gt;卡尔曼滤波 / 信息蒸馏&lt;/i&gt;" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Microsoft YaHei;fontSize=11;fontColor=#34495e;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="580" y="685" width="210" height="48" as="geometry"/>
+        </mxCell>
+        <mxCell id="subR" value="&lt;i&gt;PID 三通道（P 即时 / I 累积 / D 预判）&lt;/i&gt;" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Microsoft YaHei;fontSize=11;fontColor=#34495e;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="280" y="685" width="210" height="48" as="geometry"/>
+        </mxCell>
+        <mxCell id="subE" value="&lt;i&gt;Critic 传感器 / 信噪比 / 低通滤波&lt;/i&gt;" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Microsoft YaHei;fontSize=11;fontColor=#34495e;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="890" y="685" width="210" height="48" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_ref_p" value="指令" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2980b9;strokeWidth=2;endArrow=classic;fontColor=#2980b9;fontFamily=Microsoft YaHei;fontSize=11;" edge="1" parent="1" source="ref" target="P">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_p_t" value="规划动作" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2980b9;strokeWidth=2;endArrow=classic;fontColor=#2980b9;fontFamily=Microsoft YaHei;fontSize=11;" edge="1" parent="1" source="P" target="T">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_t_w" value="执行" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2980b9;strokeWidth=2;endArrow=classic;fontColor=#2980b9;fontFamily=Microsoft YaHei;fontSize=11;" edge="1" parent="1" source="T" target="world">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_w_e" value="被控量输出" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#16a085;strokeWidth=2;endArrow=classic;fontColor=#16a085;fontFamily=Microsoft YaHei;fontSize=11;" edge="1" parent="1" source="world" target="E">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_e_m" value="测量" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#16a085;strokeWidth=2;endArrow=classic;fontColor=#16a085;fontFamily=Microsoft YaHei;fontSize=11;" edge="1" parent="1" source="E" target="M">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_m_r" value="状态 / 记忆" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#16a085;strokeWidth=2;endArrow=classic;fontColor=#16a085;fontFamily=Microsoft YaHei;fontSize=11;" edge="1" parent="1" source="M" target="R">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_r_p" value="修正量" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#f39c12;strokeWidth=2;endArrow=classic;dashed=1;fontColor=#d68910;fontFamily=Microsoft YaHei;fontSize=11;" edge="1" parent="1" source="R" target="P">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_r_t" value="修正量" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#f39c12;strokeWidth=2;endArrow=classic;dashed=1;fontColor=#d68910;fontFamily=Microsoft YaHei;fontSize=11;" edge="1" parent="1" source="R" target="T">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

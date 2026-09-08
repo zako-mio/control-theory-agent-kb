@@ -1,0 +1,67 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>理论：分层控制与慢快双速 — 控制理论⊗Agent知识库</title>
+<link rel="stylesheet" href="assets/design-tokens.css"></head>
+<body><div class="shell">
+<aside class="sidebar">
+ 
+<div class="sidebar-brand">
+  <div class="mark"><span class="dot"></span><h1>控制理论 ⊗ Agent</h1></div>
+  <p>五大核心环 · 6 框架 + 14 精装房 · 6 实验组</p>
+</div>
+ <nav class="sidebar-nav"><div class="grp">入门</div><a class="" href="../index.html"><span class="mag">00</span>门户入口</a><div class="grp">概览</div><a class="" href="index.html"><span class="mag">01</span>总览</a><a class="" href="index_cyto.html"><span class="mag">02</span>交互DAG</a><div class="grp">核心</div><a class="" href="framework.html"><span class="mag">03</span>框架</a><div class="grp">理论</div><a class="" href="theory-closed-loop.html"><span class="mag">04</span>理论:闭环反馈</a><a class="" href="theory-state-est.html"><span class="mag">05</span>理论:状态估计</a><a class="" href="theory-pid.html"><span class="mag">06</span>理论:PID</a><a class="" href="theory-robust.html"><span class="mag">07</span>理论:鲁棒控制</a><a class="active" href="theory-hierarchical.html"><span class="mag">08</span>理论:分层控制</a><div class="grp">案例</div><a class="" href="case-opencode.html"><span class="mag">09</span>案例:opencode</a><a class="" href="case-dsh.html"><span class="mag">10</span>案例:dsh</a><a class="" href="case-prime.html"><span class="mag">11</span>案例:PRIME</a><a class="" href="case-hermes.html"><span class="mag">12</span>案例:hermes</a><a class="" href="case-claude-code.html"><span class="mag">13</span>案例:claude-code</a><a class="" href="case-codex.html"><span class="mag">14</span>案例:codex</a><div class="grp">实验</div><a class="" href="exp-opencode.html"><span class="mag">15</span>实验:opencode</a><a class="" href="exp-dsh.html"><span class="mag">16</span>实验:dsh</a><a class="" href="exp-prime.html"><span class="mag">17</span>实验:PRIME</a><a class="" href="exp-hermes.html"><span class="mag">18</span>实验:hermes</a><a class="" href="exp-claude-code.html"><span class="mag">19</span>实验:claude-code</a><a class="" href="exp-codex.html"><span class="mag">20</span>实验:codex</a><div class="grp">精装房全景</div><a class="" href="premium-map.html"><span class="mag">21</span>精装房全景</a><a class="" href="premium-cyto.html"><span class="mag">22</span>精装房DAG</a><a class="" href="premium-cursor.html"><span class="mag">23</span>精装:Cursor</a><a class="" href="premium-devin.html"><span class="mag">24</span>精装:Devin</a><a class="" href="premium-workbuddy.html"><span class="mag">25</span>精装:WorkBuddy</a><a class="" href="premium-windsurf.html"><span class="mag">26</span>精装:Windsurf</a><a class="" href="premium-copilot.html"><span class="mag">27</span>精装:Copilot</a><a class="" href="premium-dify.html"><span class="mag">28</span>精装:Dify</a><a class="" href="premium-openhands.html"><span class="mag">29</span>精装:OpenHands</a><a class="" href="premium-coze.html"><span class="mag">30</span>精装:Coze</a><a class="" href="premium-openclaude.html"><span class="mag">31</span>精装:OpenClaude</a><a class="" href="premium-codewhale.html"><span class="mag">32</span>精装:CodeWhale</a><a class="" href="premium-gptresearcher.html"><span class="mag">33</span>精装:GPT-Researcher</a><a class="" href="premium-qcode.html"><span class="mag">34</span>精装:QCode</a><a class="" href="premium-ccrouter.html"><span class="mag">35</span>精装:CC-Router</a><a class="" href="premium-crewai.html"><span class="mag">36</span>精装:CrewAI</a>
+ </nav>
+</aside>
+<div class="main">
+<div class="main-topbar"><div class="crumb"><b>理论：分层控制与慢快双速</b> · 控制理论 ⊗ Agent</div></div>
+<div class="main-content">
+<header class="topic"><div class="crumb">理论证据包 · 31 知识点</div><h1>理论：分层控制与慢快双速</h1></header>
+<span class='kicker'>Theory · 控制理论证据包</span><p class='breadcrumb'><a href='index.html'>总览</a> › 理论</p>
+<div class="kt-card">
+<h3>分层控制结构（时间尺度分层） <span class="chip">KT-ctrl-041</span></h3>
+<p><strong>定义</strong>分层控制将系统控制分为多个时间尺度/抽象层：上层以较慢采样率做策略层决策，下层以较快速度执行高频动作层任务；决策层与执行层在时间尺度上解耦。</p>
+<p><strong>数学</strong>时间尺度分离模型含慢变量 x（上层）与快变量 z（下层），ẋ=f(x,z,u)，ε·ż=g(x,z,u)，ε 为小参数；上层用慢时间尺度 τ=εt 决策，下层在原时间尺度执行。</p>
+<div class="mapping">Agent 映射：Agent 的慢/快双速控制器。高层 Planner（慢、低频、抽象，负责目标规划与策略选择）+ 低层 Executor（快、高频、具体，负责每步动作/工具调用）。与 Daily/Deep variant（快/慢思考）及 Planner-Executor 架构同构。</div>
+<div class="evidence"><h4>📚 证据来源</h4><table><thead><tr><th>SRC</th><th>级别</th><th>信源</th></tr></thead><tbody><tr><td class='mono'>SRC-041a</td><td><span class='badge s1'>S1</span></td><td>MIT OCW 6.231 Bertsekas Dynamic Programming</td></tr><tr><td class='mono'>SRC-041b</td><td><span class='badge s2'>S2</span></td><td>Sutton &amp; Barto《RL: An Introduction》Ch.17</td></tr></tbody></table></div>
+</div>
+<div class="kt-card">
+<h3>递阶/多层控制 <span class="chip">KT-ctrl-042</span></h3>
+<p><strong>定义</strong>多层控制按层级组织控制器，每层对下层施加约束/目标（上级约束下级），上层解决协调问题，下层保持自主性。Mesarović 提出「交互预判原理」，上层修正下层耦合变量达成全局最优。</p>
+<p><strong>数学</strong>上层协调变量 λ 优化全局 min_u J(u)=ΣJ_i(u_i)，s.t. g_i(u_i,λ)≤0；下层在给定 λ 下独立求子问题 min J_i(u_i)；上层更新 λ 逼近全局最优（Interaction Prediction Principle）。</p>
+<div class="mapping">Agent 映射：多层 Agent 栈。策略规划层（定目标+约束）与各领域子 Agent 层（父层约束下独立执行）；上层通过 skills/上下文约束下层决策空间。父 Agent 委派子 Agent=上层施约束、下层自主解。</div>
+<div class="evidence"><h4>📚 证据来源</h4><table><thead><tr><th>SRC</th><th>级别</th><th>信源</th></tr></thead><tbody><tr><td class='mono'>SRC-HIER-01</td><td><span class='badge s1'>S1</span></td><td>Mesarović, Macko &amp; Takahara《Theory of Hierarchical, Multilevel Systems》(1970)</td></tr><tr><td class='mono'>SRC-HIER-02</td><td><span class='badge s1'>S1</span></td><td>Mesarović et al. &quot;Two Coordination Principles...&quot; Automatica 6(1970) 323-331 (Interaction Prediction Principle)</td></tr><tr><td class='mono'>SRC-HIER-03</td><td><span class='badge s1'>S1</span></td><td>Mesarović &quot;Multilevel Systems and Concepts in Process Control&quot; Proc. IEEE 58(1) 1970 111-125</td></tr></tbody></table></div>
+</div>
+<div class="kt-card">
+<h3>时间尺度分离（慢决策/快动作） <span class="chip">KT-ctrl-043</span></h3>
+<p><strong>定义</strong>系统可分解为时间尺度分离的快/慢两组动力学：慢子系统携带宏观决策状态，快子系统携带微观执行状态；通过奇摄动方法在 ε→0 极限下将快动态在慢流形上投影掉，简化设计。</p>
+<p><strong>数学</strong>奇摄动标准形 ẋ=f(x,z,u)（慢），εż=g(x,z,u)（快）；令 z=h(x,u) 为 g=0 的准稳态流形，降阶模型 ẋ=f(x,h(x,u),u)；ε>0 时边界层误差以 O(ε) 收敛。</p>
+<div class="mapping">Agent 映射：慢变量=高成本/低频率/抽象的 Planner（主干任务规划）；快变量=低成本/高频率/具体的 Executor（单步工具调用）。ε 对应快/慢层调用成本或频率比。快控制器在慢控制器给定的准稳态流形上做最优动作。</div>
+<div class="evidence"><h4>📚 证据来源</h4><table><thead><tr><th>SRC</th><th>级别</th><th>信源</th></tr></thead><tbody><tr><td class='mono'>SRC-043a</td><td><span class='badge s2'>S2</span></td><td>Wikipedia Singular Perturbation</td></tr><tr><td class='mono'>SRC-043b</td><td><span class='badge s2'>S2</span></td><td>Sutton &amp; Barto《RL: An Introduction》Ch.17.2</td></tr></tbody></table></div>
+</div>
+<div class="kt-card">
+<h3>MPC 与滚动时域优化（RHC） <span class="chip">KT-ctrl-044</span></h3>
+<p><strong>定义</strong>MPC 每个采样时刻基于当前状态与预测模型，在有限预测时域 N 内求解开环最优控制问题，但只执行第一步结果；随后时域前移、状态更新，问题重新求解，又称「滚动时域控制」。</p>
+<p><strong>数学</strong>min Σ_{k=0}^{N-1}ℓ(x_k,u_k)+Φ(x_N)，s.t. x_{k+1}=f(x_k,u_k)，x_k∈X，u_k∈U；仅执行 u₀*，下一时刻以新状态重新求解（时域前移一格）。</p>
+<div class="mapping">Agent 映射：与 ReAct/规划-反思循环极度同构。MPC 预测时域内求解→只执行一步→状态更新→重新规划 = ReAct 的 Thought→Action+Observation→更新上下文→重新规划。预测时域 N≈前瞻步数；代价函数 J≈推理目标/评分；模型≈LLM world-model。</div>
+<div class="evidence"><h4>📚 证据来源</h4><table><thead><tr><th>SRC</th><th>级别</th><th>信源</th></tr></thead><tbody><tr><td class='mono'>SRC-044a</td><td><span class='badge s2'>S2</span></td><td>Wikipedia Model Predictive Control</td></tr><tr><td class='mono'>SRC-044b</td><td><span class='badge s2'>S2</span></td><td>Camacho &amp; Bordons《Model Predictive Control》</td></tr><tr><td class='mono'>SRC-044c</td><td><span class='badge s1'>S1</span></td><td>ReAct (Yao et al., ICLR 2023, arXiv:2210.03629)</td></tr></tbody></table></div>
+</div>
+<div class="kt-card">
+<h3>规划-执行解耦（Plan-and-Execute） <span class="chip">KT-ctrl-045</span></h3>
+<p><strong>定义</strong>将任务求解拆成两个解耦阶段：上层规划器（Planner）在初始/当前状态生成高层步骤序列（plan），下层执行器（Executor）逐步骤执行并把实际结果/观察反馈回规划器，使规划器可修正或重规划。</p>
+<p><strong>数学</strong>规划器 π_plan(s,g)=(a₁,…,a_n)；执行器逐步 a_t=π_exe(a_t,o_t)，o_t 为执行后观察；两层通过契约接口（plan 级 vs 动作级）交换。</p>
+<div class="mapping">Agent 映射：精确对应 Agent 的 Plan-and-Replan 方法论：高层 Planner（慢、任务级规划，生成 milestone/契约文件）+ 低层 Executor（快、单步执行/工具调用）；观察反馈回调 Planner 重规划=MPC 滚动修正落地。</div>
+<div class="evidence"><h4>📚 证据来源</h4><table><thead><tr><th>SRC</th><th>级别</th><th>信源</th></tr></thead><tbody><tr><td class='mono'>SRC-045a</td><td><span class='badge s1'>S1</span></td><td>ReAct (Yao et al., ICLR 2023, arXiv:2210.03629)</td></tr><tr><td class='mono'>SRC-045b</td><td><span class='badge s2'>S2</span></td><td>Sutton &amp; Barto《RL: An Introduction》Ch.17.2</td></tr></tbody></table></div>
+</div>
+<div class="kt-card">
+<h3>分层强化学习 / options / SMDP <span class="chip">KT-ctrl-046</span></h3>
+<p><strong>定义</strong>分层 RL 通过把 MDP 分层为子任务/选项（option）实现时序抽象。选项是 ⟨I,π,β⟩ 元组：I 是触发状态集，π 是闭环子策略，β 是终止条件函数。选项在 SMDP 上取多个时间步执行，低层动作是选项特例（β≡0）。</p>
+<p><strong>数学</strong>选项 ω=⟨I_ω,π_ω,β_ω⟩；分层 Bellman v(s)=Σ_{ω∈Ω(s)}π(ω|s)[r(s,ω)+Σ_s' p(s'|s,ω)v(s')]；选项转移 p(s'|s,ω)=Σ_{k=1}^∞γ^k·Pr{S_k=s',τ=k|S₀=s}，奖励 r(s,ω)=E[R₁+γR₂+…+γ^{τ−1}R_τ]。</p>
+<div class="mapping">Agent 映射：直接对应 Agent 分层语义。高层策略从 options 集合（=skills/子 Agent 能力原语）里选一个子任务执行；子任务=一个 skill/工具调用序列（对应 option 内部策略 π），直到完成条件（对应 β）。时序抽象把多步细节折叠成高层动作。</div>
+<div class="evidence"><h4>📚 证据来源</h4><table><thead><tr><th>SRC</th><th>级别</th><th>信源</th></tr></thead><tbody><tr><td class='mono'>SRC-046a</td><td><span class='badge s1'>S1</span></td><td>Sutton &amp; Barto《RL: An Introduction》Ch.17.2</td></tr><tr><td class='mono'>SRC-046b</td><td><span class='badge s1'>S1</span></td><td>Sutton, Precup &amp; Singh 1999 AIJ 112(1-2)</td></tr></tbody></table></div>
+</div>
+<div class="pager"><a href="theory-robust.html">← 理论:鲁棒控制</a><a class="next" href="case-opencode.html">案例:opencode</a></div>
+<footer class="footer">
+<span>控制理论 ⊗ Agent 设计知识库 · v1.1 精装房全景版（6 框架 + 14 精装房）</span>
+<span class="fbrand">data: 09-src-data · contract: 00-contract</span>
+</footer>
+</div></div></div></body></html>

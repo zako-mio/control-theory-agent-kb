@@ -1,0 +1,135 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>五大核心环映射框架 — 控制理论⊗Agent知识库</title>
+<link rel="stylesheet" href="assets/design-tokens.css"></head>
+<body><div class="shell">
+<aside class="sidebar">
+ 
+<div class="sidebar-brand">
+  <div class="mark"><span class="dot"></span><h1>控制理论 ⊗ Agent</h1></div>
+  <p>五大核心环 · 6 框架 + 14 精装房 · 6 实验组</p>
+</div>
+ <nav class="sidebar-nav"><div class="grp">入门</div><a class="" href="../index.html"><span class="mag">00</span>门户入口</a><div class="grp">概览</div><a class="" href="index.html"><span class="mag">01</span>总览</a><a class="" href="index_cyto.html"><span class="mag">02</span>交互DAG</a><div class="grp">核心</div><a class="active" href="framework.html"><span class="mag">03</span>框架</a><div class="grp">理论</div><a class="" href="theory-closed-loop.html"><span class="mag">04</span>理论:闭环反馈</a><a class="" href="theory-state-est.html"><span class="mag">05</span>理论:状态估计</a><a class="" href="theory-pid.html"><span class="mag">06</span>理论:PID</a><a class="" href="theory-robust.html"><span class="mag">07</span>理论:鲁棒控制</a><a class="" href="theory-hierarchical.html"><span class="mag">08</span>理论:分层控制</a><div class="grp">案例</div><a class="" href="case-opencode.html"><span class="mag">09</span>案例:opencode</a><a class="" href="case-dsh.html"><span class="mag">10</span>案例:dsh</a><a class="" href="case-prime.html"><span class="mag">11</span>案例:PRIME</a><a class="" href="case-hermes.html"><span class="mag">12</span>案例:hermes</a><a class="" href="case-claude-code.html"><span class="mag">13</span>案例:claude-code</a><a class="" href="case-codex.html"><span class="mag">14</span>案例:codex</a><div class="grp">实验</div><a class="" href="exp-opencode.html"><span class="mag">15</span>实验:opencode</a><a class="" href="exp-dsh.html"><span class="mag">16</span>实验:dsh</a><a class="" href="exp-prime.html"><span class="mag">17</span>实验:PRIME</a><a class="" href="exp-hermes.html"><span class="mag">18</span>实验:hermes</a><a class="" href="exp-claude-code.html"><span class="mag">19</span>实验:claude-code</a><a class="" href="exp-codex.html"><span class="mag">20</span>实验:codex</a><div class="grp">精装房全景</div><a class="" href="premium-map.html"><span class="mag">21</span>精装房全景</a><a class="" href="premium-cyto.html"><span class="mag">22</span>精装房DAG</a><a class="" href="premium-cursor.html"><span class="mag">23</span>精装:Cursor</a><a class="" href="premium-devin.html"><span class="mag">24</span>精装:Devin</a><a class="" href="premium-workbuddy.html"><span class="mag">25</span>精装:WorkBuddy</a><a class="" href="premium-windsurf.html"><span class="mag">26</span>精装:Windsurf</a><a class="" href="premium-copilot.html"><span class="mag">27</span>精装:Copilot</a><a class="" href="premium-dify.html"><span class="mag">28</span>精装:Dify</a><a class="" href="premium-openhands.html"><span class="mag">29</span>精装:OpenHands</a><a class="" href="premium-coze.html"><span class="mag">30</span>精装:Coze</a><a class="" href="premium-openclaude.html"><span class="mag">31</span>精装:OpenClaude</a><a class="" href="premium-codewhale.html"><span class="mag">32</span>精装:CodeWhale</a><a class="" href="premium-gptresearcher.html"><span class="mag">33</span>精装:GPT-Researcher</a><a class="" href="premium-qcode.html"><span class="mag">34</span>精装:QCode</a><a class="" href="premium-ccrouter.html"><span class="mag">35</span>精装:CC-Router</a><a class="" href="premium-crewai.html"><span class="mag">36</span>精装:CrewAI</a>
+ </nav>
+</aside>
+<div class="main">
+<div class="main-topbar"><div class="crumb"><b>五大核心环映射框架</b> · 控制理论 ⊗ Agent</div></div>
+<div class="main-content">
+<header class="topic"><div class="crumb">框架 · 核心</div><h1>五大核心环映射框架</h1></header>
+<p class='breadcrumb'><a href='index.html'>总览</a> › 框架</p>
+<div class="signal">
+  <div class="signal-head"><span class="label">System Loop · 五环构成一个 Agent 控制回路</span><span class="tag">FRAMEWORK</span></div>
+  <svg viewBox="0 0 900 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="五环控制回路">
+    <defs><marker id="arrf" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#7E8CA5"/></marker></defs>
+    <path d="M60 170 L210 170 L420 170" stroke="#3B4B66" stroke-width="1.5" fill="none" marker-end="url(#arrf)"/>
+    <path d="M420 170 L420 90 L540 90" stroke="#3B4B66" stroke-width="1.5" fill="none" marker-end="url(#arrf)"/>
+    <path d="M540 90 L780 90" stroke="#3B4B66" stroke-width="1.5" fill="none" marker-end="url(#arrf)"/>
+    <path d="M780 90 L780 170 L660 170" stroke="#3B4B66" stroke-width="1.5" fill="none" marker-end="url(#arrf)"/>
+    <path d="M660 170 L420 170" stroke="#3B4B66" stroke-width="1.5" fill="none" marker-end="url(#arrf)"/>
+    <path d="M240 170 L240 90" stroke="#C77700" stroke-width="1.5" stroke-dasharray="4 4" fill="none" marker-end="url(#arrf)"/>
+    <g font-family="var(--font-mono)" font-size="12" fill="#E6EAF2">
+      <rect x="210" y="150" width="120" height="40" rx="7" fill="#1E5AA8"/><text x="270" y="175" text-anchor="middle">P 规划/分层</text>
+      <rect x="420" y="70" width="120" height="40" rx="7" fill="#5B4B9B"/><text x="480" y="95" text-anchor="middle">T 工具/执行</text>
+      <rect x="660" y="150" width="120" height="40" rx="7" fill="#B23A2F"/><text x="720" y="175" text-anchor="middle">E 评估/传感</text>
+      <rect x="420" y="150" width="120" height="40" rx="7" fill="#1F7A52"/><text x="480" y="175" text-anchor="middle">M 记忆/状态</text>
+      <rect x="540" y="150" width="120" height="40" rx="7" fill="#C77700"/><text x="600" y="175" text-anchor="middle">R 反思/反馈</text>
+      <text x="60" y="176" fill="#7E8CA5" font-size="11">目标 r</text>
+    </g>
+  </svg>
+  <div class="signal-legend">
+    <span><i style="background:#1E5AA8"></i>P 规划</span><span><i style="background:#5B4B9B"></i>T 执行</span>
+    <span><i style="background:#B23A2F"></i>E 评估</span><span><i style="background:#1F7A52"></i>M 记忆</span>
+    <span><i style="background:#C77700"></i>R 反思</span>
+  </div>
+</div>
+<span class="kicker">Framework · 五环映射框架</span>
+<h1 class="display">五大核心环，构成一个<br>Agent 控制回路。</h1>
+<p class="lead">E 决定反馈信号质量 → R 决定纠偏量 → P/T 决定轨迹 → M 决定"我以为我在哪"。任一环失效，闭环即破。</p>
+<div class="insight"><strong>上下文（Core）</strong>：五环不是五个孤立 map，而是一条闭环信号链——把 Agent 当作被控系统，控制理论是它的建模语言。</div>
+
+<div class="ring-section" id="ring-M">
+  <div class="ring-head">
+    <span class="ring-tag M">M</span>
+    <div class="ring-title">
+      <h2>M 环 · 记忆 / 状态估计</h2>
+      <span class="ring-ctrl">状态观测器 / 卡尔曼</span>
+    </div>
+    <span class="ring-tag-mono">KT-ctrl-010~015</span>
+  </div>
+  <div class="ring-loc"><strong>控制部件：</strong>类比<strong>状态观测器 / 卡尔曼滤波器</strong>：Agent 无法直测 LLM 内部表示，只能靠 token 输出与外部反馈反推&quot;我现在处于哪个状态、我有多少把握&quot;。它负责在长上下文中<strong>保真推断信念 + 显式标注置信度</strong>，是其余四环全部决策的地基。</div>
+  <h3>核心控制概念</h3>
+  <table><thead><tr><th>概念</th><th>KT</th><th>一句话</th><th>Agent 承载</th></tr></thead><tbody><tr><td><strong>状态估计问题</strong></td><td class='mono'>KT-ctrl-010</td><td>从带噪/不完整观测估计隐藏真实状态</td><td>看到输出 y，推断隐藏信念 x（可观测性=任务可解性前提）</td></tr><tr><td><strong>卡尔曼滤波（预测-更新）</strong></td><td class='mono'>KT-ctrl-011</td><td>两阶段递推，按不确定度融合先验与新观测</td><td>记忆=预测(对话推进)+更新(新反馈)两阶段；K 增益=信多少；P 协方差=记忆置信度</td></tr><tr><td><strong>观测噪声 R vs 过程噪声 Q</strong></td><td class='mono'>KT-ctrl-012</td><td>Q/R 之比决定信模型预测还是信新证据</td><td>过程噪声=模型推理漂移/幻觉；观测噪声=工具返回可靠性；调 L=R/Q=调&quot;强先验&quot;vs&quot;新证据&quot;权重</td></tr><tr><td><strong>信息滤波 / 信息降维</strong></td><td class='mono'>KT-ctrl-014</td><td>以信息矩阵/信息向量的增量形式维护状态，天然丢弃冗余</td><td>上下文蒸馏=以&quot;增量信息&quot;而非原始证据累积，新证据按信噪比线性累加，天然压缩 prompt</td></tr><tr><td><strong>（关联）贝叶斯滤波/HMM</strong></td><td class='mono'>KT-ctrl-015</td><td>马尔可夫假设下预测×似然递推后验</td><td>逐轮对话=观测，上下文=后验，信念更新近乎与 token 流同构</td></tr><tr><td><strong>（关联）分离性原理</strong></td><td class='mono'>KT-ctrl-013</td><td>估计器与控制器解耦，估计误差过大会失真</td><td>感知/记忆模块(估计)与规划/行动模块(决策)解耦独立演进</td></tr></tbody></table>
+  
+  <h3>关键工程决策</h3><ul><li><strong>长上下文全塞 vs 蒸馏摘要</strong>：全塞保真但扰动/成本高；蒸馏省 token 但丢增量。→ 用 L 权重在两者间连续取值。</li><li><strong>信新证据 vs 信历史先验</strong>：任务漂移大→信观测；任务稳定→信预测。两难在于何时冻结先验。</li><li><strong>记忆置信度对齐</strong>：P 协方差是否与&quot;实际不确定度&quot;一致？估计过分自信（P 过小）会让 Agent 过度依赖私有认知。</li></ul>
+  <h3>设计范式</h3><div class="paradigm"><ul><li><strong>Kalman 式记忆管理</strong>：每轮执行 <code>predict()</code>（按对话进展推进信念）+ <code>update()</code>（用新工具结果/反馈校正），显式维护状态概率分布而非单一事实串。</li><li><strong>上下文的&quot;信息增量预算&quot;</strong>：将记忆建模为信息滤波器，仅保留使置信度提升超过阈值的证据，天然做掉冗余。</li></ul></div>
+</div>
+<div class="ring-section" id="ring-P">
+  <div class="ring-head">
+    <span class="ring-tag P">P</span>
+    <div class="ring-title">
+      <h2>P 环 · 规划 / 分层控制</h2>
+      <span class="ring-ctrl">慢速上层策略控制器</span>
+    </div>
+    <span class="ring-tag-mono">KT-ctrl-041~046</span>
+  </div>
+  <div class="ring-loc"><strong>控制部件：</strong>类比<strong>慢速上层策略控制器 / 时标分离的慢子系统</strong>：把长程目标在更慢的采样率上抽象成里程碑序列，交给更快的执行器逐条落地。它解决&quot;任务分解 + 里程碑设定，且能滚动修正&quot;。</div>
+  <h3>核心控制概念</h3>
+  <table><thead><tr><th>概念</th><th>KT</th><th>一句话</th><th>Agent 承载</th></tr></thead><tbody><tr><td><strong>分层控制结构（时标分层）</strong></td><td class='mono'>KT-ctrl-041</td><td>上层慢频做策略决策，下层快频做执行</td><td>Planner(慢/低频/抽象) + Executor(快/高频/具体)，同构于 Daily/Deep variant 与计划-执行架构</td></tr><tr><td><strong>时间尺度分离（奇摄动 ε）</strong></td><td class='mono'>KT-ctrl-043</td><td>慢变量带宏观状态、快变量带微观执行，ε→0 投影掉快动态</td><td>慢变量=Planner(高成本/低频/抽象)；快变量=Executor(低成本/高频/具体)；ε=两层调用频率/成本比</td></tr><tr><td><strong>MPC 滚动时域优化（RHC）</strong></td><td class='mono'>KT-ctrl-044</td><td>每个时刻在有限预测时域内求解，只执行第一步，状态更新后重解</td><td><code>考虑→行动→观察→更新→重规划</code> 的滚动循环；预测时域 N≈前瞻步数；模型≈LLM world-model</td></tr><tr><td><strong>规划-执行解耦（Plan-and-Execute）</strong></td><td class='mono'>KT-ctrl-045</td><td>Planner 生成高层步骤序列，Executor 逐步执行并把观察回馈重规划</td><td>Plan-and-Replan：高层慢 Planner 产 milestone/契约，低层快 Executor 单步执行，观察回调重规划=MPC 落地</td></tr><tr><td><strong>（关联）多层递阶控制</strong></td><td class='mono'>KT-ctrl-042</td><td>上层施约束/协调，下层保持自主，交互预判原理</td><td>父 Agent 经 skills/上下文约束子 Agent 决策空间，子 Agent 独立求解，父层更新协调变量 λ</td></tr><tr><td><strong>（关联）分层 RL / options / SMDP</strong></td><td class='mono'>KT-ctrl-046</td><td>选项 ⟨I,π,β⟩ 实现时序抽象</td><td>高层从 skills/能力原语集合选子任务，子任务=一个 skill 序列直到终止 β</td></tr></tbody></table>
+  
+  <h3>关键工程决策</h3><ul><li><strong>快速执行 vs 滚动重规划</strong>：执行更激进又勤重规划→进度快但抖动大；慢速慎规划→稳但可能偏离。MPC 式&quot;前瞻几步、各走一步&quot;是折中。</li><li><strong>规划时域 N（前瞻步数）的选择</strong>：N 太大→成本/缓存压力；N 太小→短视、无全局。</li><li><strong>规划-执行解耦 vs 端到端</strong>：解耦利于分工与回溯，但需契约接口；端到端省层数但难定位错误环节。</li><li><strong>上层能否真正&quot;下限约束&quot;</strong>：多层级若上层只管表述、不下达可执行约束，则退化为单层。</li></ul>
+  <h3>设计范式</h3><div class="paradigm"><ul><li><strong>MPC 式滚动规划</strong>：每次只执行规划的首个动作（前瞻 N 步），观察真实结果后以新状态滚动重解——即 ReAct/反思循环的理论骨架。</li><li><strong>Options 式技能抽象</strong>：把一个落地 skill 封装为带触发集 I/子策略 π/终止条件 β 的&quot;选项&quot;，作为高层动作原语；上层只选 options、不钻细节。</li></ul></div>
+</div>
+<div class="ring-section" id="ring-R">
+  <div class="ring-head">
+    <span class="ring-tag R">R</span>
+    <div class="ring-title">
+      <h2>R 环 · 反思 / 反馈闭环</h2>
+      <span class="ring-ctrl">反馈控制器（PID/校正律）</span>
+    </div>
+    <span class="ring-tag-mono">KT-ctrl-002~026</span>
+  </div>
+  <div class="ring-loc"><strong>控制部件：</strong>类比<strong>反馈控制器（校正律 / PID）</strong>：把&quot;实际输出 y&quot;与&quot;设定值 r&quot;比较得误差 e，据此生成修正量回灌执行。它解决&quot;自我反思、错误回馈、长期偏航补偿&quot;，是闭环的核心驱动。</div>
+  <h3>核心控制概念</h3>
+  <table><thead><tr><th>概念</th><th>KT</th><th>一句话</th><th>Agent 承载</th></tr></thead><tbody><tr><td><strong>负反馈闭环结构</strong></td><td class='mono'>KT-ctrl-002</td><td>e = r − y，控制律基于误差生成校正</td><td>目标/规格=设定值 r；工具/评估=传感器 y；动作=执行器；策略/prompt=控制律；误差=执行与目标偏差</td></tr><tr><td><strong>PID 三环节</strong></td><td class='mono'>KT-ctrl-020</td><td>P=即时纠偏，I=累积纠偏，D=趋势预判</td><td>三种反思机制：P=按当前偏差即时修正；I=对历史偏航累积补偿；D=对错误趋势超前刹车</td></tr><tr><td><strong>（细分）比例 P / 积分 I / 微分 D</strong></td><td class='mono'>KT-ctrl-021/022/023</td><td>Kp 即时、Ki 消除稳态误差、Kd 抑制超调</td><td>反思强度三档：Kp 过大→震荡；Ki 累积→防 windup(记忆过饱和)；Kd 提前→防过度修正</td></tr><tr><td><strong>误差收敛与反馈校正律</strong></td><td class='mono'>KT-ctrl-004</td><td>校正步进随误差迭代使 e 收敛</td><td>自纠迭代=每轮算期望 vs 实际偏差，改 prompt/换策略缩 e；收敛保证=步进方向与误差一致避免震荡</td></tr><tr><td><strong>稳态误差 / 超调</strong></td><td class='mono'>KT-ctrl-025</td><td>SSE 是仅靠 P 无法归零；overshoot 是修正过度</td><td>任务收敛=瞬态(初始震荡)→稳态带；overshoot=修正过度需 D 预判；稳态误差=缺 I 累积</td></tr><tr><td><strong>（进阶）PID 整定 / LQR</strong></td><td class='mono'>KT-ctrl-024/026</td><td>ZN 试探临界震荡回退；LQR 状态空间全局最优</td><td>校准反思力度阈值；升级为含成本函数权衡(短期修正 vs 过度干预)的全局最优修正</td></tr></tbody></table>
+  
+  <h3>关键工程决策</h3><ul><li><strong>即时纠错 vs 防震荡</strong>：Kp 大、纠错猛→快但可能反复；Kp 小→稳但收敛慢。需权衡&quot;反应速度&quot;与&quot;稳定性&quot;。</li><li><strong>历史错误记忆的累积上限</strong>：I 项累积本质是&quot;反复被提醒的旧错&quot;，无上限则 windup——对陈旧错误过度纠偏。</li><li><strong>反思频率（何时重算误差）</strong>：每步反思成本高；只在偏离超阈值或里程碑点反思更省。调 Kp/Ki/Kd 本质=调反思 trigger 与强度。</li><li><strong>误差信号是否可信</strong>：若 E 环信号嘈杂，R 环放大噪音则会震荡——放大前先过滤（见 E 环）。</li></ul>
+  <h3>设计范式</h3><div class="paradigm"><ul><li><strong>PID 式反思调节</strong>：把反思模块显式拆成 P/I/D 三通道——P 通道看当下偏差，I 通道累计历史偏差（附带 windup 限幅），D 通道预测误差趋势。逐环校准增益、出现震荡即回退（ZN 式经验）。</li><li><strong>误差收敛的&quot;稳态带&quot;验收</strong>：定义可接受的误差带 |e|≤ε_des，入带即判收敛；避免&quot;无休止反思却不达标&quot;的空转。</li></ul></div>
+</div>
+<div class="ring-section" id="ring-T">
+  <div class="ring-head">
+    <span class="ring-tag T">T</span>
+    <div class="ring-title">
+      <h2>T 环 · 工具调用 / 执行器</h2>
+      <span class="ring-ctrl">执行器+安全阀+仲裁</span>
+    </div>
+    <span class="ring-tag-mono">KT-ctrl-030~035</span>
+  </div>
+  <div class="ring-loc"><strong>控制部件：</strong>类比<strong>执行器 + 安全阀 + 冗余仲裁器</strong>：把规划出的动作以有限幅、容错、仲裁的方式落地到真实环境。它解决&quot;工具调用失败、冗余仲裁、看门狗限幅&quot;，是唯一直接接触外界的环节。</div>
+  <h3>核心控制概念</h3>
+  <table><thead><tr><th>概念</th><th>KT</th><th>一句话</th><th>Agent 承载</th></tr></thead><tbody><tr><td><strong>安全边际/硬约束限幅（输入饱和/看门狗）</strong></td><td class='mono'>KT-ctrl-034</td><td>执行器输出受硬限幅，windup 需 anti-windup，看门狗超限即拦截</td><td>工具调用频率/预算/rate-limit 硬上限；限幅器=限重试/并行数/token/成本；看门狗=超预算/权限即终止并降级</td></tr><tr><td><strong>冗余与仲裁（NMR/TMR/表决）</strong></td><td class='mono'>KT-ctrl-033</td><td>复制冗余组件+多数表决，容忍单点故障；异质冗余抗共因错误</td><td>多 LLM 互为校验；异质冗余=不同模型/模板/工具链抵消系统性偏置；仲裁器定义一致判定阈值(如 2/3 置信)</td></tr><tr><td><strong>鲁棒稳定性 vs 标称稳定性</strong></td><td class='mono'>KT-ctrl-031</td><td>标称稳定=理想模型下能完成；鲁棒稳定=不确定性集合内不失控</td><td>标称=理想输入流程总完成；鲁棒=prompt 改写/参数变/工具异常时编排不死循环</td></tr><tr><td><strong>鲁棒控制方法（H∞/μ综合/滑模）</strong></td><td class='mono'>KT-ctrl-032</td><td>H∞ 最小化 worst-case 增益；μ综合结构化处理；滑模对干扰不变</td><td>H∞=把 worst-case 失败成本当首要优化目标；μ=对某类必超时/必格式错针对性建模；滑模=触发保护规则后强制切稳定容错态并保持</td></tr><tr><td><strong>（基础）模型不确定性</strong></td><td class='mono'>KT-ctrl-030</td><td>标称模型与实际系统的偏差（参数/未建模/外部干扰）</td><td>Agent 是可被标称模型，输出受 prompt 措辞/窗口/漂移影响；API 延迟/限流是外部干扰；需预留稳定裕度与降级路径</td></tr></tbody></table>
+  
+  <h3>关键工程决策</h3><ul><li><strong>快速执行 vs 容错代价</strong>：异质冗余/仲裁提升可靠但翻成本与延迟；单执行快但容错弱。按失败成本定冗余度。</li><li><strong>限幅 vs 完成任务</strong>：硬阈值防失控但也可能截断必要动作；宽阈值资源风险大——看门狗边界要贴实际预算。</li><li><strong>统一兜底 vs 针对性建模</strong>：μ综合提示对&quot;结构性必错项&quot;专项兜底（某工具必超时、某输入必格式错），比笼统重试更省。</li><li><strong>容错状态是否可退出</strong>：滑模一旦切入保护态，需设计&quot;何时才能复位回正常流程&quot;，否则永久卡死。</li></ul>
+  <h3>设计范式</h3><div class="paradigm"><ul><li><strong>执行器硬限幅 + 看门狗</strong>：为所有执行器定义 u_sat（频率/并行/预算/token/成本），叠加看门狗硬保护，超限即降级。</li><li><strong>异质冗余 + 多数仲裁（NMR/TMR）</strong>：关键决策用 ≥3 个不同模型/模板/工具链生成，仲裁阈值设 2/3；用异质化抵消共模/系统性偏置。</li></ul></div>
+</div>
+<div class="ring-section" id="ring-E">
+  <div class="ring-head">
+    <span class="ring-tag E">E</span>
+    <div class="ring-title">
+      <h2>E 环 · 评估 / 传感器</h2>
+      <span class="ring-ctrl">测量环节+验证器</span>
+    </div>
+    <span class="ring-tag-mono">KT-ctrl-001~006</span>
+  </div>
+  <div class="ring-loc"><strong>控制部件：</strong>类比<strong>测量环节 + 验证器</strong>：生产&quot;反馈信号 y&quot;，其信噪比直接决定整个回环能否收敛。它解决&quot;Critic 模块、验证器、反馈信号质量&quot;，是闭环里&quot;最容易被低估、却最致命&quot;的一环。</div>
+  <h3>核心控制概念</h3>
+  <table><thead><tr><th>概念</th><th>KT</th><th>一句话</th><th>Agent 承载</th></tr></thead><tbody><tr><td><strong>反馈系统灵敏度与鲁棒性基础</strong></td><td class='mono'>KT-ctrl-006</td><td>S=(I+L)⁻¹ 刻画对模型误差敏感度；高回路增益降敏感；留相位/增益裕度</td><td>强校验=高回路增益降低对基座模型误差(幻觉/工具波动)敏感；评估阈值留裕度避免临界震荡</td></tr><tr><td><strong>扰动观测器 DOB</strong></td><td class='mono'>KT-ctrl-035</td><td>在线估计外部扰动并在基线输出中减去；Q(s) 低通滤波限噪</td><td>用历史执行结果实时评估环境偏移，从决策中减去感知偏差；低通滤波=容忍瞬时噪声而非反应过度</td></tr><tr><td><strong>（交叉）观测噪声 R（信噪比）</strong></td><td class='mono'>KT-ctrl-012</td><td>R 刻画测量环节噪声，决定信号可信度</td><td>反馈信号质量=传感器信噪比；按信号可信度决定是否让 R 环放大它</td></tr><tr><td><strong>（交叉）开环 vs 闭环</strong></td><td class='mono'>KT-ctrl-001</td><td>闭环靠&quot;测输出&quot;校正，无传感器则退化开环</td><td>没有评估器=开环=错误不可纠；E 环是&quot;闭环与否&quot;的开关</td></tr><tr><td><strong>（交叉）稳定性/误差遗忘</strong></td><td class='mono'>KT-ctrl-003</td><td>渐进稳定=偏差被遗忘，评估层防错误积累</td><td>评估器需具&quot;误差遗忘&quot;特性，防错误沿闭环逐圈放大（Lyapunov/BIBO 类比）</td></tr></tbody></table>
+  
+  <h3>关键工程决策</h3><ul><li><strong>信号放大量 vs 误判惩罚</strong>：Critic 越灵敏→纠错越快但噪声被放大→震荡；越钝→漏错多。灵敏度 S 与阈值裕度需权衡。</li><li><strong>高成本强验证 vs 低成本弱验证</strong>：每步都跑强 Critic→成本高；只在里程碑查→可能漏错。按任务失败成本定验证密度。</li><li><strong>单评审器 vs 多评审器仲裁</strong>：同一模型自评有系统性偏置（共模错误），评估也需异质化（与 T 环冗余呼应）。</li><li><strong>评估标准是否可变化</strong>：若误差信号本身不可靠，任何反馈到 R 环的放大都是灾难。</li></ul>
+  <h3>设计范式</h3><div class="paradigm"><ul><li><strong>Critic 即传感器 + 低通滤波</strong>：评估模块当作&quot;带噪声传感器&quot;设计——先低通平滑、按信噪比加权、再交由 R 环放大，避免振荡。</li><li><strong>DOB 式&quot;感知偏差补偿&quot;</strong>：在线估计工具/环境当前偏移，从决策中减去偏差；用 Q(s) 低通容忍瞬时噪声、只对持续偏差做补偿。</li></ul></div>
+</div>
+<div class="pager"><a href="index.html">← 总览</a><a class="next" href="theory-closed-loop.html">理论:闭环反馈</a></div>
+<footer class="footer">
+<span>控制理论 ⊗ Agent 设计知识库 · v1.1 精装房全景版（6 框架 + 14 精装房）</span>
+<span class="fbrand">data: 09-src-data · contract: 00-contract</span>
+</footer>
+</div></div></div></body></html>

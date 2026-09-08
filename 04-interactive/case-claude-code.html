@@ -1,0 +1,97 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>案例：claude-code — 控制理论⊗Agent知识库</title>
+<link rel="stylesheet" href="assets/design-tokens.css"></head>
+<body><div class="shell">
+<aside class="sidebar">
+ 
+<div class="sidebar-brand">
+  <div class="mark"><span class="dot"></span><h1>控制理论 ⊗ Agent</h1></div>
+  <p>五大核心环 · 6 框架 + 14 精装房 · 6 实验组</p>
+</div>
+ <nav class="sidebar-nav"><div class="grp">入门</div><a class="" href="../index.html"><span class="mag">00</span>门户入口</a><div class="grp">概览</div><a class="" href="index.html"><span class="mag">01</span>总览</a><a class="" href="index_cyto.html"><span class="mag">02</span>交互DAG</a><div class="grp">核心</div><a class="" href="framework.html"><span class="mag">03</span>框架</a><div class="grp">理论</div><a class="" href="theory-closed-loop.html"><span class="mag">04</span>理论:闭环反馈</a><a class="" href="theory-state-est.html"><span class="mag">05</span>理论:状态估计</a><a class="" href="theory-pid.html"><span class="mag">06</span>理论:PID</a><a class="" href="theory-robust.html"><span class="mag">07</span>理论:鲁棒控制</a><a class="" href="theory-hierarchical.html"><span class="mag">08</span>理论:分层控制</a><div class="grp">案例</div><a class="" href="case-opencode.html"><span class="mag">09</span>案例:opencode</a><a class="" href="case-dsh.html"><span class="mag">10</span>案例:dsh</a><a class="" href="case-prime.html"><span class="mag">11</span>案例:PRIME</a><a class="" href="case-hermes.html"><span class="mag">12</span>案例:hermes</a><a class="active" href="case-claude-code.html"><span class="mag">13</span>案例:claude-code</a><a class="" href="case-codex.html"><span class="mag">14</span>案例:codex</a><div class="grp">实验</div><a class="" href="exp-opencode.html"><span class="mag">15</span>实验:opencode</a><a class="" href="exp-dsh.html"><span class="mag">16</span>实验:dsh</a><a class="" href="exp-prime.html"><span class="mag">17</span>实验:PRIME</a><a class="" href="exp-hermes.html"><span class="mag">18</span>实验:hermes</a><a class="" href="exp-claude-code.html"><span class="mag">19</span>实验:claude-code</a><a class="" href="exp-codex.html"><span class="mag">20</span>实验:codex</a><div class="grp">精装房全景</div><a class="" href="premium-map.html"><span class="mag">21</span>精装房全景</a><a class="" href="premium-cyto.html"><span class="mag">22</span>精装房DAG</a><a class="" href="premium-cursor.html"><span class="mag">23</span>精装:Cursor</a><a class="" href="premium-devin.html"><span class="mag">24</span>精装:Devin</a><a class="" href="premium-workbuddy.html"><span class="mag">25</span>精装:WorkBuddy</a><a class="" href="premium-windsurf.html"><span class="mag">26</span>精装:Windsurf</a><a class="" href="premium-copilot.html"><span class="mag">27</span>精装:Copilot</a><a class="" href="premium-dify.html"><span class="mag">28</span>精装:Dify</a><a class="" href="premium-openhands.html"><span class="mag">29</span>精装:OpenHands</a><a class="" href="premium-coze.html"><span class="mag">30</span>精装:Coze</a><a class="" href="premium-openclaude.html"><span class="mag">31</span>精装:OpenClaude</a><a class="" href="premium-codewhale.html"><span class="mag">32</span>精装:CodeWhale</a><a class="" href="premium-gptresearcher.html"><span class="mag">33</span>精装:GPT-Researcher</a><a class="" href="premium-qcode.html"><span class="mag">34</span>精装:QCode</a><a class="" href="premium-ccrouter.html"><span class="mag">35</span>精装:CC-Router</a><a class="" href="premium-crewai.html"><span class="mag">36</span>精装:CrewAI</a>
+ </nav>
+</aside>
+<div class="main">
+<div class="main-topbar"><div class="crumb"><b>案例：claude-code</b> · 控制理论 ⊗ Agent</div></div>
+<div class="main-content">
+<header class="topic"><div class="crumb">产品控制论画像</div><h1>案例：claude-code</h1></header>
+<p class='breadcrumb'><a href='index.html'>总览</a> › 案例</p>
+<div class="signal">
+  <div class="signal-head"><span class="label">Product Portrait · 控制论画像</span><span class="tag">claude-code</span></div>
+  <span class="kicker" style="font-family:var(--font-mono);letter-spacing:.12em;color:#7E8CA5;font-size:11px">CASE</span>
+  <h1 style="font-size:26px;margin:8px 0 10px;color:#fff;letter-spacing:-.02em">claude-code（Claude Code）控制论画像</h1>
+  <p style="color:#CBD4E2;max-width:720px;line-height:1.7;font-size:15px;margin:0">把用户的自然语言目标，通过「分层管理文件（CLAUDE.md 层级）+ 计划模式 + 结构化工作流」分解为可验证的子目标与里程碑序列。</p>
+</div>
+
+<div class="ring-section" id="ring-SP">
+  <div class="ring-head">
+    <span class="ring-tag" style="background:#1E5AA8">SP</span>
+    <div class="ring-title"><h2>S 环 — 设定值 / 用户意图分解</h2><span class="ring-ctrl">用户意图 → 可验证子目标</span></div>
+  </div>
+  <div class="ring-loc"><strong>承担角色：</strong>把用户的自然语言目标，通过「分层管理文件（CLAUDE.md 层级）+ 计划模式 + 结构化工作流」分解为可验证的子目标与里程碑序列。</div>
+  <h3>关键机制</h3><ul><li><strong>CLAUDE.md 层级上下文</strong>：用户级 <code>~/.claude/CLAUDE.md</code> → 项目根 <code>CLAUDE.md</code> → 嵌套目录 <code>CLAUDE.md</code>，支持 <code>@import</code> 拉取；受管 <code>claudeMd</code> 设置可注入（CHANGELOG L131）。</li><li><strong>Plan mode / 计划模式</strong>：<code>/plan &lt;描述&gt;</code> 进入计划模式，产出 plan 文件，经 <code>ExitPlanMode</code>＋权限确认弹窗审批后切换实现模式（CHANGELOG L3121/L4081/L4600）。</li><li><strong>feature-dev 插件 7 阶段工作流</strong>：Discovery → Codebase Exploration（并行 code-explorer）→ Clarifying Questions（&quot;DO NOT SKIP&quot;）→ Architecture Design（并行 code-architect）→ Implementation（&quot;DO NOT START WITHOUT USER APPROVAL&quot;）→ Quality Review（3 个 code-reviewer）→ Summary。</li><li><strong>TodoWrite 里程碑追踪</strong>：<code>feature-dev.md</code> 核心原则 &quot;Use TodoWrite: Track all progress throughout&quot;。</li><li><strong>System prompt 设计模式</strong>：<code>plugin-dev/skills/agent-development/references/system-prompt-design.md</code> 规定每个子代理 system prompt 必须含 &quot;Core Responsibilities / Process / Quality Standards / Output Format&quot;。</li></ul>
+  <div class="mapping-box"><strong>控制论映射：</strong>KT-ctrl-041/044（分层/MPC 的 r 信号）；CLAUDE.md 层级等同于上层对下层施约束的协调变量（KT-ctrl-042 多层递阶）。</div>
+  <div class='ring-sw'><strong>强</strong>——分层约束体系成熟，plan mode 制度化为独立状态，feature-dev 做真正设定值收敛。<strong>弱</strong>——设定值分解仍强依赖模型自律，内核无硬性&quot;分解校验器&quot;。</div>
+</div>
+<div class="ring-section" id="ring-E">
+  <div class="ring-head">
+    <span class="ring-tag" style="background:#B23A2F">E</span>
+    <div class="ring-title"><h2>E 环 — 评估 / 传感器（★ 最薄弱 / 最有争议）</h2><span class="ring-ctrl">评估/传感器</span></div>
+  </div>
+  <div class="ring-loc"><strong>承担角色：</strong>没有常驻内置 Critic；&quot;执行达标&quot;的测量<strong>以外挂 hooks/插件</strong>在<strong>特定时点</strong>（PostToolUse、Stop、git commit）触发。</div>
+  <h3>关键机制</h3><ul><li><strong>独立 Critic 最佳样例 = security-guidance 插件</strong>（<code>plugins/security-guidance/</code>）：三层的真·多阶段验证器——层1 <code>patterns.py</code> 正则规则（PostToolUse 对 Edit/Write 即时扫描危险模式）；层2 <code>llm.py</code> 的 LLM diff 审阅（Stop 钩子用 <code>git stash create</code> 基线，送独立 LLM 分析后退出码 2 强制继续修复）；层3 <code>review_api.py</code> 的 agentic commit 审阅（两阶段 investigat→self-refute）。</li><li><strong>code-review 插件的置信度加权</strong>：4 个并行代理分别审 CLAUDE.md 合规 + bug 扫描；每个 issue 打 0–100 置信度分，&lt;80 阈值过滤误报；再用独立验证子代理二次确认。</li><li><strong>pr-review-toolkit</strong>：设 <code>silent-failure-hunter.md</code> + <code>type-design-analyzer.md</code>（类型设计 1–10 评分）等 6 个测评 agent。</li><li><strong>Stop 钩子强制验收</strong>：<code>hook-development/references/patterns.md</code> Pattern 2/6——<code>Stop</code> 钩子&quot;Review transcript；若改了代码则验证是否跑了测试；未跑则 block&quot;。<strong>注意：这是钩子模式，不是内置自动触发</strong>。</li><li><strong>PreCompact 钩子</strong>：压缩前拦截/保留关键信息。</li></ul>
+  <div class="mapping-box"><strong>控制论映射：</strong>KT-ctrl-006（灵敏度/鲁棒性，置信度阈值=回路增益）+ KT-ctrl-012（观测噪声 R，置信度=信噪比）+ KT-ctrl-035（DOB，investigate→refute）。</div>
+  <div class='ring-sw'><strong>强</strong>——借助插件层实现真正异质、跨上下文、带置信度与自反证的独立 Critic。<strong>弱</strong>——<strong>无内置、非常驻</strong>：核心主循环不自带 test/lint 强制触发，不自带每步 Critic。&quot;跑不跑测试&quot;依赖模型自觉或加 Stop 钩子。<strong>E 环是贴片式的</strong>，不开插件时几乎退化为&quot;开环&quot;。</div>
+</div>
+<div class="ring-section" id="ring-T">
+  <div class="ring-head">
+    <span class="ring-tag" style="background:#5B4B9B">T</span>
+    <div class="ring-title"><h2>T 环 — 执行器 / 工具调用容错</h2><span class="ring-ctrl">工具调用/执行器</span></div>
+  </div>
+  <div class="ring-loc"><strong>承担角色：</strong>以「Pre/PostToolUse 钩子仲裁 + 权限模式 + 沙箱 + 预算看门狗 + 超时」把工具调用硬限幅、容错地落地。</div>
+  <h3>关键机制</h3><ul><li><strong>PreToolUse 钩子仲裁</strong>（<code>hook-development/SKILL.md</code> L127-153）：工具执行前可 <code>approve/deny/ask</code>（<code>permissionDecision</code>），甚至 <code>updatedInput</code> 改写工具入参；支持 regex <code>matcher</code> 按工具名/参数匹配。</li><li><strong>权限/沙箱三层</strong>（<code>examples/settings/</code>）：<code>settings-strict.json</code> 用 <code>ask</code>/<code>deny</code>、<code>disableBypassPermissionsMode</code>；<code>settings-bash-sandbox.json</code> 强制 Bash 进沙箱（<code>sandbox.enabled</code>、<code>network.allowedDomains</code> 白名单）。</li><li><strong>预算看门狗</strong>（CHANGELOG L1208/L1312/L1206）：<code>--max-budget-usd</code> 达到上限后&quot;新 spawn 被拒＋运行中后台 agent 被停&quot;；<code>CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS</code>(默认 20) 限制并发；</li><li><strong>超时</strong>：钩子配置 <code>timeout: 30/60/180</code>；后台子代理不再受一小时时限。</li><li><strong>asyncRewake 异步审阅</strong>：后台安全审阅完成后 <code>rewakeMessage</code> 唤醒主会话处理，不阻塞主流程。</li><li><strong>富余复杂度控制</strong>：subagent 隔离（worktree/isolation）、<code>maxTurns</code>、<code>CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH</code> 控制嵌套深度——防递归爆炸。</li></ul>
+  <div class="mapping-box"><strong>控制论映射：</strong>KT-ctrl-034（饱和/看门狗/anti-windup）+ KT-ctrl-033（冗余仲裁）+ KT-ctrl-031/032（鲁棒稳定）。</div>
+  <div class='ring-sw'><strong>强</strong>——T 环是 claude-code 最发达的一环：hooks 是最丰富的拦截点/安全阀系统，三类执行器、权限确认、沙箱、预算看门狗、超时、异步降级一应俱全。<strong>弱</strong>——钩子体系复杂配置面大；安全强度高度依赖用户是否启用；沙箱仅作用于 Bash 工具（Read/Write/MCP 仍在沙箱外）。</div>
+</div>
+<div class="ring-section" id="ring-M">
+  <div class="ring-head">
+    <span class="ring-tag" style="background:#1F7A52">M</span>
+    <div class="ring-title"><h2>M 环 — 记忆 / 状态估计</h2><span class="ring-ctrl">记忆/状态估计</span></div>
+  </div>
+  <div class="ring-loc"><strong>承担角色：</strong>通过「CLAUDE.md 分层上下文 + SessionStart 注入 + 自动压缩(/compact) + 长上下文窗口 + 子代理隔离转录」维护&quot;我在哪、我知道什么&quot;。</div>
+  <h3>关键机制</h3><ul><li><strong>CLAUDE.md 层级即上下文树</strong>：多级 + <code>@import</code>；<code>/doctor</code> 能&quot;检出可裁剪的已提交 CLAUDE.md&quot;——信息降维/蒸馏工具。</li><li><strong>SessionStart 钩子装载上下文</strong>：会话开始注入 <code>additionalContext</code> 或写入 <code>$CLAUDE_ENV_FILE</code>。</li><li><strong>Compaction 自动压缩</strong>：auto-compact 在 1M 窗口约 967K tokens 触发，<code>/compact</code> 手动，<code>/context</code> 显示 token 占用，<code>PreCompact</code> 钩子 block/保留关键信息。</li><li><strong>长上下文窗口</strong>：1M 上下文（Opus/Fable），<code>CLAUDE_CODE_DISABLE_1M_CONTEXT</code> 强制 hold 到 200K。</li><li><strong>子代理隔离转录与记忆释放</strong>：subagent 独立 transcript，可 resume/fork；CHANGELOG L679 &quot;subagent 工具结果在离开显示窗口后被释放，修复长会话无界内存增长&quot;——带遗忘的记忆回收。</li></ul>
+  <div class="mapping-box"><strong>控制论映射：</strong>KT-ctrl-011（Kalman 预测-更新）+ KT-ctrl-014（信息滤波）+ KT-ctrl-010（状态估计）+ KT-ctrl-042（分层递阶）。</div>
+  <div class='ring-sw'><strong>强</strong>——CLAUDE.md 层级上下文是最突出的记忆设计，被 code-review/feature-dev/security-guidance 三方依赖；压缩体系工程化程度高；子代理转录隔离。<strong>弱</strong>——几乎不显式维护&quot;信念置信度/协方差&quot;；压缩是长度阈值驱动而非&quot;信息增量/信噪比&quot;驱动；分层记忆权重（Q/R）没有显式表达。</div>
+</div>
+<div class="ring-section" id="ring-P">
+  <div class="ring-head">
+    <span class="ring-tag" style="background:#1E5AA8">P</span>
+    <div class="ring-title"><h2>P 环 — 规划 / 分层控制</h2><span class="ring-ctrl">规划/分层控制</span></div>
+  </div>
+  <div class="ring-loc"><strong>承担角色：</strong>慢速规划层（plan mode＋架构agent）产出里程碑/方案，快速执行层（实现＋子代理逐条落地），滚动推进。</div>
+  <h3>关键机制</h3><ul><li><strong>Plan mode = 慢速上层控制器</strong>：独立状态（plan 文件＋ExitPlanMode＋审批），只允许读/只读 Bash（CHANGELOG L1179/L1712），禁止写文件——时标分离的慢层。</li><li><strong>feature-dev 分层规划</strong>：code-explorer（探索）→ 多方案 code-architect（Minimal/Clean/Pragmatic 三方案）→ 用户选型 → 实现 → 多 code-reviewer。</li><li><strong>子代理委派 = Options 抽象</strong>：<code>Task</code> 工具 + <code>subagent_type</code> + agent frontmatter；嵌套深度受限制。多子代理并行即并行规划。</li><li><strong>MPC 式滚动</strong>：feature-dev 每阶段&quot;规划→问用户→批准→再走下一步&quot;，plan mode 压缩后不丢状态。</li><li><strong>TodoWrite 里程碑序列</strong>贯穿 feature-dev 全 7 阶段。</li></ul>
+  <div class="mapping-box"><strong>控制论映射：</strong>KT-ctrl-041（分层控制时标）+ KT-ctrl-043（时间尺度分离 ε）+ KT-ctrl-044（MPC 滚动重规划）+ KT-ctrl-045（规划-执行解耦）。</div>
+  <div class='ring-sw'><strong>强</strong>——P 环完整且体系化：plan mode＋多方案架构设计＋审批门＋todo 里程碑，真正&quot;慢规划/快执行&quot;与时标分离。<strong>弱</strong>——规划仍强依赖模型与用户交互；plan 里程碑可验证性未内置校验；MPC 预测时域 N 由工作流硬编码（7 阶段）。</div>
+</div>
+<div class="ring-section" id="ring-R">
+  <div class="ring-head">
+    <span class="ring-tag" style="background:#C77700">R</span>
+    <div class="ring-title"><h2>R 环 — 反思 / 反馈闭环</h2><span class="ring-ctrl">反思/反馈闭环</span></div>
+  </div>
+  <div class="ring-loc"><strong>承担角色：</strong>通过 Stop/SubagentStop 钩子拦截&quot;退出&quot;，把评审/测试结果回灌给主循环，强制&quot;没达标不结束&quot;。</div>
+  <h3>关键机制</h3><ul><li><strong>Stop 钩子 = 反馈闭环的闸门</strong>（<code>hook-development/SKILL.md</code> L181-209）：主 agent 想停时触发，可返回 <code>approve</code> 或 <code>block</code>＋reason；block 则拒绝停止、驱动继续迭代。</li><li><strong>security-guidance Stop 钩子（纠偏）</strong>：用 <code>asyncRewake</code> 把 LLM 审阅发现的漏洞回灌，退出码 2 强制继续修复。</li><li><strong>ralph-wiggum = 显式自指迭代环</strong>（<code>plugins/ralph-wiggum/</code>）：Stop 钩子反复喂给 Claude 同一个 prompt 直到输出 completion promise；<code>--max-iterations</code> 是积分项上限（anti-windup）。</li><li><strong>code-review / security-guidance 自反证</strong>：validate 子代理 &amp; <code>AGENTIC_REFUTE_SYSTEM</code> 对候选 finding 主动&quot;证伪&quot;——R 环放大前先滤波。</li><li><strong>PostToolUse 错误回灌</strong>：code-quality 钩子把 lint 结果 <code>exit 2</code> 喂回；<code>systemMessage</code> 注入上下文。</li></ul>
+  <div class="mapping-box"><strong>控制论映射：</strong>KT-ctrl-002（负反馈闭环）+ KT-ctrl-020（PID 三环节）+ KT-ctrl-004（误差收敛）+ KT-ctrl-025（稳态误差/超调）。</div>
+  <div class='ring-sw'><strong>强</strong>——利用 hooks&quot;拦截退出&quot;能力做出真正持续的纠偏闭环；multi-layer findings 回灌 + evidence-base 认定让纠偏有依据；ralph-loop 的 integral 循环与 completion-promise 稳态带是经典控制式设计。<strong>弱</strong>——反思是&quot;事件驱动、事后触发&quot;而非&quot;增益可调的 PID&quot;（无 Kp/Ki/Kd 显式整定）；主循环自反思仍主要靠 prompt 引导（open-loop），显式反馈控制在 Stop 时点而非每步。</div>
+</div>
+<div class="ring-section summary-block">
+  <div class="ring-head"><span class="ring-tag" style="background:#C77700">★</span><div class="ring-title"><h2>控制论画像总结</h2></div></div>
+  <div class="case-verdict"><strong>整体范式：</strong>| 环 | 承担角色 | 骨架 | KT-id | 强/弱 |</div>
+  <ul><li>把 Critic（E）与反思（R）从内核剥离，放进 hooks/插件层，用「置信度阈值 + 两阶段 investigate/refute + 多异质代理」充当带噪传感器的低通滤波与偏差补偿（对应 DOB/KT-ctrl-035）。</li><li>记忆/状态（M）有优秀的上下文树（CLAUDE.md 层级）与压缩工具，但未做信念置信度——提示&quot;记忆管理&quot;与&quot;状态估计置信度&quot;是独立两层。</li><li>T 环 hooks 是最完整的执行器安全阀参考模板，可作为&quot;限幅器 + 看门狗&quot;的可落地蓝本。</li></ul>
+</div>
+<div class="pager"><a href="case-hermes.html">← 案例:hermes</a><a class="next" href="case-codex.html">案例:codex</a></div>
+<footer class="footer">
+<span>控制理论 ⊗ Agent 设计知识库 · v1.1 精装房全景版（6 框架 + 14 精装房）</span>
+<span class="fbrand">data: 09-src-data · contract: 00-contract</span>
+</footer>
+</div></div></div></body></html>

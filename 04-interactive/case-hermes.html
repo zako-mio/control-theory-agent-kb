@@ -1,0 +1,97 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>案例：hermes — 控制理论⊗Agent知识库</title>
+<link rel="stylesheet" href="assets/design-tokens.css"></head>
+<body><div class="shell">
+<aside class="sidebar">
+ 
+<div class="sidebar-brand">
+  <div class="mark"><span class="dot"></span><h1>控制理论 ⊗ Agent</h1></div>
+  <p>五大核心环 · 6 框架 + 14 精装房 · 6 实验组</p>
+</div>
+ <nav class="sidebar-nav"><div class="grp">入门</div><a class="" href="../index.html"><span class="mag">00</span>门户入口</a><div class="grp">概览</div><a class="" href="index.html"><span class="mag">01</span>总览</a><a class="" href="index_cyto.html"><span class="mag">02</span>交互DAG</a><div class="grp">核心</div><a class="" href="framework.html"><span class="mag">03</span>框架</a><div class="grp">理论</div><a class="" href="theory-closed-loop.html"><span class="mag">04</span>理论:闭环反馈</a><a class="" href="theory-state-est.html"><span class="mag">05</span>理论:状态估计</a><a class="" href="theory-pid.html"><span class="mag">06</span>理论:PID</a><a class="" href="theory-robust.html"><span class="mag">07</span>理论:鲁棒控制</a><a class="" href="theory-hierarchical.html"><span class="mag">08</span>理论:分层控制</a><div class="grp">案例</div><a class="" href="case-opencode.html"><span class="mag">09</span>案例:opencode</a><a class="" href="case-dsh.html"><span class="mag">10</span>案例:dsh</a><a class="" href="case-prime.html"><span class="mag">11</span>案例:PRIME</a><a class="active" href="case-hermes.html"><span class="mag">12</span>案例:hermes</a><a class="" href="case-claude-code.html"><span class="mag">13</span>案例:claude-code</a><a class="" href="case-codex.html"><span class="mag">14</span>案例:codex</a><div class="grp">实验</div><a class="" href="exp-opencode.html"><span class="mag">15</span>实验:opencode</a><a class="" href="exp-dsh.html"><span class="mag">16</span>实验:dsh</a><a class="" href="exp-prime.html"><span class="mag">17</span>实验:PRIME</a><a class="" href="exp-hermes.html"><span class="mag">18</span>实验:hermes</a><a class="" href="exp-claude-code.html"><span class="mag">19</span>实验:claude-code</a><a class="" href="exp-codex.html"><span class="mag">20</span>实验:codex</a><div class="grp">精装房全景</div><a class="" href="premium-map.html"><span class="mag">21</span>精装房全景</a><a class="" href="premium-cyto.html"><span class="mag">22</span>精装房DAG</a><a class="" href="premium-cursor.html"><span class="mag">23</span>精装:Cursor</a><a class="" href="premium-devin.html"><span class="mag">24</span>精装:Devin</a><a class="" href="premium-workbuddy.html"><span class="mag">25</span>精装:WorkBuddy</a><a class="" href="premium-windsurf.html"><span class="mag">26</span>精装:Windsurf</a><a class="" href="premium-copilot.html"><span class="mag">27</span>精装:Copilot</a><a class="" href="premium-dify.html"><span class="mag">28</span>精装:Dify</a><a class="" href="premium-openhands.html"><span class="mag">29</span>精装:OpenHands</a><a class="" href="premium-coze.html"><span class="mag">30</span>精装:Coze</a><a class="" href="premium-openclaude.html"><span class="mag">31</span>精装:OpenClaude</a><a class="" href="premium-codewhale.html"><span class="mag">32</span>精装:CodeWhale</a><a class="" href="premium-gptresearcher.html"><span class="mag">33</span>精装:GPT-Researcher</a><a class="" href="premium-qcode.html"><span class="mag">34</span>精装:QCode</a><a class="" href="premium-ccrouter.html"><span class="mag">35</span>精装:CC-Router</a><a class="" href="premium-crewai.html"><span class="mag">36</span>精装:CrewAI</a>
+ </nav>
+</aside>
+<div class="main">
+<div class="main-topbar"><div class="crumb"><b>案例：hermes</b> · 控制理论 ⊗ Agent</div></div>
+<div class="main-content">
+<header class="topic"><div class="crumb">产品控制论画像</div><h1>案例：hermes</h1></header>
+<p class='breadcrumb'><a href='index.html'>总览</a> › 案例</p>
+<div class="signal">
+  <div class="signal-head"><span class="label">Product Portrait · 控制论画像</span><span class="tag">hermes</span></div>
+  <span class="kicker" style="font-family:var(--font-mono);letter-spacing:.12em;color:#7E8CA5;font-size:11px">CASE</span>
+  <h1 style="font-size:26px;margin:8px 0 10px;color:#fff;letter-spacing:-.02em">Hermes Agent 控制论画像（Nous Research）</h1>
+  <p style="color:#CBD4E2;max-width:720px;line-height:1.7;font-size:15px;margin:0">hermes 把&quot;设定值&quot;定义为系统提示词中的<strong>验收契约</strong>——用户意图被分解为带显式&quot;接收标准 + 验证指令&quot;的任务模板，而非抽象目标。主要在提示词层 + 任务列表工具层落地，缺乏独立的形式化目标模型。</p>
+</div>
+
+<div class="ring-section" id="ring-SP">
+  <div class="ring-head">
+    <span class="ring-tag" style="background:#1E5AA8">SP</span>
+    <div class="ring-title"><h2>设定值（用户意图 → 可验证子目标分解）</h2><span class="ring-ctrl">用户意图 → 可验证子目标</span></div>
+  </div>
+  <div class="ring-loc"><strong>承担角色：</strong>hermes 把&quot;设定值&quot;定义为系统提示词中的<strong>验收契约</strong>——用户意图被分解为带显式&quot;接收标准 + 验证指令&quot;的任务模板，而非抽象目标。主要在提示词层 + 任务列表工具层落地，缺乏独立的形式化目标模型。</div>
+  <h3>关键机制</h3><ul><li><strong><code>TASK_COMPLETION_GUIDANCE</code></strong>（<code>agent/prompt_builder.py:349</code>）：设定值是&quot;可工作的产物、由真实工具输出背书&quot;，明确禁止写了 stub/计划就停。</li><li><strong><code>OPENAI_MODEL_EXECUTION_GUIDANCE</code> → <code>&lt;verification&gt;</code> 块</strong>（<code>agent/prompt_builder.py:433</code>）：完成标准显式列为 5 条——Correctness/Grounding/Formatting/Safety/Completion；&quot;done&quot; 意味着每个具名验收标准都被验证过。</li><li><strong><code>&lt;external_state_verification&gt;</code> 块</strong>（<code>prompt_builder.py:442</code>）：对外部写操作追加&quot;读回验证目标后才算达成&quot;的硬性验收。</li><li><strong><code>tools/todo_tool.py::TodoStore</code></strong>：内存版修订化任务列表，支持四态 + <code>parent</code> 嵌套子任务，跨越上下文压缩后自动重注入。</li><li><strong><code>/plan</code></strong>（<code>agent/plan_prompt.py</code>）：规划模式将目标分解为&quot;bite-sized 任务 + 精确文件路径 + 带预期输出的验证命令 + TDD 循环&quot;。</li></ul>
+  <div class="mapping-box"><strong>控制论映射：</strong>KT-ctrl-002（负反馈闭环，目标/规格=设定值 r）+ KT-ctrl-045（规划-执行解耦）；收敛判据指向 KT-ctrl-025（稳态误差验收）。</div>
+  <div class='ring-sw'><strong>强</strong>——Completion 验收标准工程化（验证/外部写回读/计数器 hard-assert），是&quot;设定值直接携带验证协议&quot;的优秀范例。<strong>弱</strong>——分解靠 prompt 模板与 todo 工具&quot;人肉续写&quot;，无独立 planner 模型或形式化任务图；验证依赖 LLM 自律（<code>verify_on_stop</code> 默认 OFF 且仅覆盖 coding 场景）。</div>
+</div>
+<div class="ring-section" id="ring-E">
+  <div class="ring-head">
+    <span class="ring-tag" style="background:#B23A2F">E</span>
+    <div class="ring-title"><h2>E 环 — 传感器 / 评估（Critic / 验证器 / 反馈信号质量）</h2><span class="ring-ctrl">评估/传感器</span></div>
+  </div>
+  <div class="ring-loc"><strong>承担角色：</strong>hermes 的 E 环是<strong>最被认真对待的独立基础设施</strong>——它把&quot;验证器/Critic&quot;做成了一整套<strong>运行时的证据台账 + 回合末门控 + 独立评审器</strong>。它确实拥有独立的 Critic 系统，这是与 opencode/dsh 最本质的区别。</div>
+  <h3>关键机制</h3><ul><li><strong><code>agent/verification_evidence.py</code></strong>：独立验证证据台账（<code>verification_evidence.db</code> 持久化）。被动记录&quot;agent 实际证明了什么&quot;——按 session 记录命令类型（lint/typecheck/build/test）、退出码、输出摘要。Deliberately passive：从不跑测试、从不阻塞完成。</li><li><strong><code>agent/verification_stop.py</code></strong>：回合末验证门控（<code>verify_on_stop</code>）。编辑代码后若模型想结束而缺&quot;新验证证据&quot;，注入合成 follow-up 提示。排除 prose-only 避免噪音；<code>max_attempts=2</code> 防无限纠缠。</li><li><strong><code>agent/verify/runner.py</code> + <code>recipes.py</code> + <code>environment.py</code></strong>：<code>hermes verify</code> 命令，针对项目 recipe 跑完整验证流水线，产出 <code>VerifyResult</code>（逐 phase 的 exit_code/duration/output_tail + readiness HTTP probe）。</li><li><strong><code>agent/review_engine.py</code></strong>：<code>/review</code> 独立评审器——spawn 一个 full-privilege 后台 subagent，充当&quot;独立 senior reviewer&quot;，读取最近消息 + 打开 PR/diff/跑测试，产出结构化 review 与 verdict。</li><li><strong><code>agent/coding_context.py</code></strong>：<code>ProjectFacts</code> 自动探测 <code>verify_commands</code>，把验证命令作为结构化事实暴露。</li><li><strong><code>agent/file_safety.py</code> / <code>file_operations._verify_written_hash</code></strong>：写文件后哈希回读验证——工具层的&quot;写后验真&quot;传感器。</li></ul>
+  <div class="mapping-box"><strong>控制论映射：</strong>KT-ctrl-035（扰动观测器 DOB）+ KT-ctrl-006（灵敏度/鲁棒性基础）+ KT-ctrl-012（观测噪声 R）+ KT-ctrl-001（开环 vs 闭环）。</div>
+  <div class='ring-sw'><strong>强（相对最被重视）</strong>——持久化证据台账 + 回合末门控 + 独立 <code>hermes verify</code> 强验证器 + 独立 <code>/review</code> 评审器 + 工具层写后回读哈希，形成多层传感器。<strong>弱</strong>——①部分默认关闭（<code>verify_on_stop</code> 默认 OFF，opt-in）；②<code>verification_evidence</code> 是&quot;被动台账&quot;（记账但不裁决）；③<code>/review</code> 和 <code>hermes verify</code> 是用户/命令触发的离线强验证，不在默认回合循环内自动跑。</div>
+</div>
+<div class="ring-section" id="ring-T">
+  <div class="ring-head">
+    <span class="ring-tag" style="background:#5B4B9B">T</span>
+    <div class="ring-title"><h2>T 环 — 执行器 / 工具（工具调用容错）</h2><span class="ring-ctrl">工具调用/执行器</span></div>
+  </div>
+  <div class="ring-loc"><strong>承担角色：</strong>hermes 的 T 环是<strong>工程密度极高</strong>的一环——工具执行有完整的并发/超时/授权门控/看门狗/容错状态机，围绕 <code>agent/tool_executor.py</code>（84KB）与 <code>agent/turn_*.py</code> 组织。</div>
+  <h3>关键机制</h3><ul><li><strong><code>agent/tool_executor.py</code></strong>：完整工具执行中间件——并发批处理（<code>_ConcurrentBatch</code>）、顺序执行门控（<code>_StartOrderGate</code>）、活动心跳（<code>_run_with_activity_heartbeat</code>）、超时/取消结果（<code>_ToolTimeoutResult</code>/<code>_ToolCancelledResult</code>）、授权门（<code>_ConcurrentToolAuthorizationGate</code>）。</li><li><strong><code>agent/iteration_budget.py</code></strong>：迭代预算硬限幅——每个 agent（父 500 次、子 50 次）线程安全计数器，超限则停止。</li><li><strong><code>agent/deadline.py</code></strong>：看门狗级 deadline 管理——<code>run_bounded_sync/async</code>、<code>kill_process_tree</code>、标记 backend suspect、超时诊断 dump。</li><li><strong><code>agent/turn_tool_validation.py</code></strong>：未知工具名（auto-repair + <strong>3-strike partial exit</strong>）与畸形 JSON 参数（retry→recovery），<code>mixed_invalid_batch</code> 半错误保留。</li><li><strong><code>agent/tool_guardrails.py</code> + <code>tools/approval.py</code></strong>：危险命令审批、self-repo 保护、SSRF 防护。</li><li><strong><code>agent/moa_loop.py</code>（Mixture-of-Agents）+ <code>tools/delegate_tool.py</code> 并行 fan-out</strong>：多参考模型聚合，best-of-N 异构采样——异质冗余/多数表决实例。</li></ul>
+  <div class="mapping-box"><strong>控制论映射：</strong>KT-ctrl-034（安全边际/硬约束限幅）+ KT-ctrl-033（冗余与仲裁 NMR/TMR）+ KT-ctrl-031/032（鲁棒稳定 vs H∞）+ KT-ctrl-030（模型不确定性）。</div>
+  <div class='ring-sw'><strong>强（五环中第二强）</strong>——工具层容错工程复杂度罕见：并发/顺序门控、心跳、deadline、空响应预算、3-strike 退出、授权门、guardrails 一应俱全。<strong>弱</strong>——大量容错面向&quot;工具调用/LLM 输出&quot;而非&quot;任务语义&quot;；无显式 worst-case 成本权衡面。</div>
+</div>
+<div class="ring-section" id="ring-M">
+  <div class="ring-head">
+    <span class="ring-tag" style="background:#1F7A52">M</span>
+    <div class="ring-title"><h2>M 环 — 记忆 / 状态估计（会话/上下文管理）</h2><span class="ring-ctrl">记忆/状态估计</span></div>
+  </div>
+  <div class="ring-loc"><strong>承担角色：</strong>hermes 自称&quot;唯一内置学习闭环的代理&quot;，M 环是它的<strong>招牌与最强项</strong>——记忆不是单一 context 串，而是<strong>多层记忆架构</strong>（工作记忆/平滑压缩/持久 MEMORY.md/跨会话搜索/外置 memory provider/技能图谱），配合严格的 prompt-caching 不变式。</div>
+  <h3>关键机制</h3><ul><li><strong>两层压缩</strong>（<code>agent/compression_facade.py</code> + <code>conversation_compression.py</code> + <code>turn_context_compaction.py</code>）：gateway 会话卫生（85% 阈值）+ agent <code>ContextCompressor</code>（50% 阈值）。算法先剪旧工具结果（不调 LLM），再选边界，再用 auxiliary 压缩模型生成结构化摘要。</li><li><strong><code>agent/context_compressor.py</code>（282KB）</strong>：上下文状态估计核心——带 <code>MEMORY.md/USER.md always authoritative</code> 注入、<code>[SKILL_PRUNED]</code> 标记、检查点摘要、provider 侧 native 压缩路径。</li><li><strong><code>agent/memory_manager.py</code> + <code>memory_provider.py</code></strong>：插件化记忆。内置 provider 恒开 + 最多一个外部 provider，支持多钩子。</li><li><strong><code>tools/memory_tool.py</code></strong>：持久精炼记忆（MEMORY.md=agent 笔记 / USER.md=用户画像），作为会话开始的 FROZEN 快照注入 system prompt；会话中写盘但绝不改 prompt（prefix cache 不变式）。</li><li><strong>跨会话记忆</strong>：<code>session_search</code>（FTS5 会话搜索）+ <code>agent/background_review.py</code>（每轮 fork 一个 agent 问&quot;该存/改哪个 memory/skill?&quot;）+ <code>curator.py</code> + <code>learning_graph.py</code>（技能自动创建/改进图谱）。</li><li><strong>prompt-cache 不变式</strong>（AGENTS.md）：system prompt 字节稳定，唯一允许的 context 变异是 compression。</li></ul>
+  <div class="mapping-box"><strong>控制论映射：</strong>KT-ctrl-011（卡尔曼滤波预测-更新）+ KT-ctrl-014（信息滤波/信息降维）+ KT-ctrl-012（Q/R 权重）+ KT-ctrl-013（分离性原理）。记忆带置信度标记（<code>[SKILL_PRUNED]</code>、<code>VERIFIED_DISPLAY</code>）——符合&quot;记忆必须带 P 协方差&quot;。</div>
+  <div class='ring-sw'><strong>强（五环中最强，最高密度）</strong>——真正 Kalman 式多层记忆：工作上下文↔持久记忆↔跨会话↔外置 provider↔技能图谱，每层有明确冻结/权威性/置信度标记。<strong>弱</strong>——无显式&quot;不确定性/P 协方差数值&quot;模型（是离散标记而非连续置信度）；记忆增强依赖后台 fork（可能延迟/丢弃）。</div>
+</div>
+<div class="ring-section" id="ring-P">
+  <div class="ring-head">
+    <span class="ring-tag" style="background:#1E5AA8">P</span>
+    <div class="ring-title"><h2>P 环 — 规划 / 分层（慢/快双速规划）</h2><span class="ring-ctrl">规划/分层控制</span></div>
+  </div>
+  <div class="ring-loc"><strong>承担角色：</strong>hermes 的 P 环是<strong>混合型</strong>——没有独立&quot;慢 planner 模型&quot;，而是 skill/工具/委派组织成的分层：高层靠 <code>delegate_task</code>（orchestrator/leaf）做委派分层，中层靠 skill 时序抽象，低层靠 todo 工具+子代理执行。规划与执行在执行循环内耦合。</div>
+  <h3>关键机制</h3><ul><li><strong><code>tools/delegate_tool.py</code>（Subagent Architecture）</strong>：委派分层核心。spawn 独立 AIAgent 子代理：leaf 或 orchestrator 角色、<code>max_spawn_depth</code>（默认 1）、单任务 &amp; 批量并行模式、<code>output_schema</code> 机器校验契约。父代理只见委派调用+摘要——信息隔离分层。</li><li><strong><code>tools/delegate_tool_toolsets.py</code></strong>：子代理能力空间约束（<code>DELEGATE_BLOCKED_TOOLS</code> 禁递归 delegation、kanban）。</li><li><strong>skills 即 options</strong>（<code>SKILLS_GUIDANCE</code>、<code>agent/curator.py</code>）：非平凡工作流自动存档为 skill，作为选项/原语供高层复用——KT-ctrl-046 options 时序抽象。</li><li><strong><code>/plan</code>（<code>agent/plan_prompt.py</code>）</strong>：慢速规划模式，产出 <code>.hermes/plans/*.md</code>。但非滚动重规划。</li><li><strong><code>agent/kanban_stop.py</code> + kanban 工具</strong>：任务图编排——<code>kanban_create</code> 显式 <code>parents=[...]</code> 表达依赖、<code>kanban_request_review</code> 释放下游 lane、orchestrator 角色专门做&quot;路由而非实现&quot;。</li></ul>
+  <div class="mapping-box"><strong>控制论映射：</strong>KT-ctrl-045（规划-执行解耦）+ KT-ctrl-046（options/SMDP）+ KT-ctrl-041/043（分层控制/时标分离）+ KT-ctrl-042（多层递阶控制）。滚动重规划（MPC KT-ctrl-044）<strong>较弱</strong>——<code>/plan</code> 不自动滚动、无&quot;前瞻 N 步只走 1 步&quot;机制。</div>
+  <div class='ring-sw'><strong>中偏弱（相对自身各环节最弱）</strong>——委派分层强大，但缺乏 MPC 式滚动重规划、无独立 planner 模型、无预测时域 N 概念；默认是 ReAct 式单循环（<code>conversation_loop.py</code> 就是 <code>while api_call_count &lt; max_iterations</code>）。<strong>若五环有短板，P 环是相对最弱的一环</strong>。</div>
+</div>
+<div class="ring-section" id="ring-R">
+  <div class="ring-head">
+    <span class="ring-tag" style="background:#C77700">R</span>
+    <div class="ring-title"><h2>R 环 — 反思 / 反馈闭环（多轮自我纠偏）</h2><span class="ring-ctrl">反思/反馈闭环</span></div>
+  </div>
+  <div class="ring-loc"><strong>承担角色：</strong>hermes 的 R 环是<strong>多层、非侵入</strong>的——反思通过独立 fork 的后台评审/后台记忆 review 实现，与主循环解耦，避免污染 prefix-cache；同时在 prompt 层建筑了一套&quot;自证/纠错&quot;纪律。</div>
+  <h3>关键机制</h3><ul><li><strong><code>agent/background_review.py</code></strong>：每轮 fork 后评估反思——<code>AIAgent.run_conversation</code> 每轮可能 spawn daemon 线程，重放快照问&quot;应保存/更新哪个 skill/memory?&quot;。写直达 memory+skill store，主对话与 prompt cache 从不动。</li><li><strong><code>agent/review_engine.py</code> + <code>review_idle_queue.py</code></strong>：<code>/review</code> 独立评审（用户触发）——spawn 独立 full-privilege subagent 对最近工作做&quot;独立 senior reviewer&quot;结构化审查。</li><li><strong><code>agent/verification_stop.py</code> + <code>verify_hooks.py</code></strong>：回合末纠偏反馈——编辑代码后缺新验证证据时，注入&quot;运行验证→读失败→修复→总结&quot;的继续指令，<code>max_verify_nudges=3</code> 限幅。</li><li><strong>prompt 层纠错纪律</strong>（<code>prompt_builder.py</code>）：<code>&lt;verification&gt;</code> 逐条自检、<code>&lt;external_state_verification&gt;</code> 写后回读、<code>&lt;literal_preservation&gt;</code> 不&quot;修复&quot;畸形 token、<code>&lt;missing_context&gt;</code> 不猜。</li><li><strong><code>agent/curator.py</code> + <code>learning_graph.py</code></strong>：技能自改进——curator 对 skill 做 LLM review，改进技能内容（I 项累积纠偏）。 ## Hermes 控制论画像总结 &gt; <strong>一句话</strong>：hermes 是<strong>鲁棒控制 + 多传感器 + 观测器型</strong>Agent，M/T/E 三环工程密度远超同行；若与 opencode/dsh 对比，<strong>E 环由&quot;最弱&quot;反转为&quot;有专属基础设施&quot;</strong>，而相对短板落在了 P 环（滚动规划缺失）。</li></ul>
+  <div class="mapping-box"><strong>控制论映射：</strong>KT-ctrl-020（PID 三环节：P=即时纠偏、I=background review 累积补偏、D=verification 预判超调）+ KT-ctrl-004（误差收敛）+ KT-ctrl-022（积分 I/防 windup）+ KT-ctrl-025（稳态误差/超调）。</div>
+  <div class='ring-sw'><strong>中强</strong>——背景评审&quot;fork 不污染缓存 + 不动主循环&quot;设计优雅；PID 三环节影子齐全。<strong>弱</strong>——反思主要是异步/后台/用户触发（background_review 有 2s 取消窗口、/review 需手动、verify_on_stop 默认 OFF），主循环内缺&quot;每步算误差→调 prompt&quot;的显式校正步；反思依赖 LLM 自我认知而非确定性误差信号。</div>
+</div>
+<div class="ring-section summary-block">
+  <div class="ring-head"><span class="ring-tag" style="background:#C77700">★</span><div class="ring-title"><h2>控制论画像总结</h2></div></div>
+  <div class="case-verdict"><strong>整体范式：</strong><strong>整体范式</strong>：hermes 是一个<strong>「强状态估计（M）× 强传感器（E）× 强执行容错（T）的鲁棒闭环」</strong>，控制哲学是&quot;工程化传感器 + 多层记忆 + 不破坏缓存的异步反思&quot;。整体更接近 <strong>「 Kalman 式状态估计 + DOB 式感知偏差补偿 + 看门狗限幅」的鲁棒控制范式</strong>，而非 MPC 式滚动规划范式。</div>
+  
+</div>
+<div class="pager"><a href="case-prime.html">← 案例:PRIME</a><a class="next" href="case-claude-code.html">案例:claude-code</a></div>
+<footer class="footer">
+<span>控制理论 ⊗ Agent 设计知识库 · v1.1 精装房全景版（6 框架 + 14 精装房）</span>
+<span class="fbrand">data: 09-src-data · contract: 00-contract</span>
+</footer>
+</div></div></div></body></html>
