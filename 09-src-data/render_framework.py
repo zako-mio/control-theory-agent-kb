@@ -101,27 +101,52 @@ def render_framework(md, title):
     hero = """
 <div class="signal">
   <div class="signal-head"><span class="label">System Loop · 五环构成一个 Agent 控制回路</span><span class="tag">FRAMEWORK</span></div>
-  <svg viewBox="0 0 900 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="五环控制回路">
-    <defs><marker id="arrf" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#7E8CA5"/></marker></defs>
-    <path d="M60 170 L210 170 L420 170" stroke="#3B4B66" stroke-width="1.5" fill="none" marker-end="url(#arrf)"/>
-    <path d="M420 170 L420 90 L540 90" stroke="#3B4B66" stroke-width="1.5" fill="none" marker-end="url(#arrf)"/>
-    <path d="M540 90 L780 90" stroke="#3B4B66" stroke-width="1.5" fill="none" marker-end="url(#arrf)"/>
-    <path d="M780 90 L780 170 L660 170" stroke="#3B4B66" stroke-width="1.5" fill="none" marker-end="url(#arrf)"/>
-    <path d="M660 170 L420 170" stroke="#3B4B66" stroke-width="1.5" fill="none" marker-end="url(#arrf)"/>
-    <path d="M240 170 L240 90" stroke="#C77700" stroke-width="1.5" stroke-dasharray="4 4" fill="none" marker-end="url(#arrf)"/>
-    <g font-family="var(--font-mono)" font-size="12" fill="#E6EAF2">
-      <rect x="210" y="150" width="120" height="40" rx="7" fill="#1E5AA8"/><text x="270" y="175" text-anchor="middle">P 规划/分层</text>
-      <rect x="420" y="70" width="120" height="40" rx="7" fill="#5B4B9B"/><text x="480" y="95" text-anchor="middle">T 工具/执行</text>
-      <rect x="660" y="150" width="120" height="40" rx="7" fill="#B23A2F"/><text x="720" y="175" text-anchor="middle">E 评估/传感</text>
-      <rect x="420" y="150" width="120" height="40" rx="7" fill="#1F7A52"/><text x="480" y="175" text-anchor="middle">M 记忆/状态</text>
-      <rect x="540" y="150" width="120" height="40" rx="7" fill="#C77700"/><text x="600" y="175" text-anchor="middle">R 反思/反馈</text>
-      <text x="60" y="176" fill="#7E8CA5" font-size="11">目标 r</text>
+  <svg viewBox="0 0 900 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="五环控制回路：目标 r 指令 → P 规划 → T 执行 → 世界/环境 → E 评估 → M 记忆 → R 反思，修正量回馈 P/T">
+    <defs>
+      <marker id="arrF" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" fill="#5B9BD5"/>
+      </marker>
+      <marker id="arrM" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" fill="#3FBF8A"/>
+      </marker>
+      <marker id="arrC" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" fill="#E0A030"/>
+      </marker>
+    </defs>
+    <g font-family="var(--font-mono),ui-monospace,monospace" font-size="12.5" font-weight="600" text-anchor="middle">
+      <rect x="20" y="48" width="92" height="44" rx="22" fill="none" stroke="#7E8CA5" stroke-width="1.5"/>
+      <text x="66" y="75" fill="#CBD4E2">目标 r</text>
+      <rect x="150" y="48" width="132" height="44" rx="8" fill="#2F74BE"/>
+      <text x="216" y="75" fill="#FFFFFF">P 规划/分层</text>
+      <rect x="320" y="48" width="132" height="44" rx="8" fill="#7263C8"/>
+      <text x="386" y="75" fill="#FFFFFF">T 工具/执行</text>
+      <rect x="490" y="48" width="132" height="44" rx="8" fill="#627187"/>
+      <text x="556" y="75" fill="#FFFFFF">世界/环境</text>
+      <rect x="150" y="196" width="132" height="44" rx="8" fill="#A85F00"/>
+      <text x="216" y="223" fill="#FFFFFF">R 反思/反馈</text>
+      <rect x="320" y="196" width="132" height="44" rx="8" fill="#1F7A52"/>
+      <text x="386" y="223" fill="#FFFFFF">M 记忆/状态</text>
+      <rect x="490" y="196" width="132" height="44" rx="8" fill="#C64A3C"/>
+      <text x="556" y="223" fill="#FFFFFF">E 评估/传感</text>
     </g>
+    <path d="M112 70 H150" stroke="#5B9BD5" stroke-width="1.8" fill="none" marker-end="url(#arrF)"/>
+    <path d="M282 70 H320" stroke="#5B9BD5" stroke-width="1.8" fill="none" marker-end="url(#arrF)"/>
+    <path d="M452 70 H490" stroke="#5B9BD5" stroke-width="1.8" fill="none" marker-end="url(#arrF)"/>
+    <path d="M556 92 V196" stroke="#3FBF8A" stroke-width="1.8" fill="none" marker-end="url(#arrM)"/>
+    <path d="M490 218 H452" stroke="#3FBF8A" stroke-width="1.8" fill="none" marker-end="url(#arrM)"/>
+    <path d="M320 218 H282" stroke="#3FBF8A" stroke-width="1.8" fill="none" marker-end="url(#arrM)"/>
+    <path d="M216 196 V92" stroke="#E0A030" stroke-width="1.7" stroke-dasharray="5 4" fill="none" marker-end="url(#arrC)"/>
+    <path d="M250 196 V156 Q250 144 262 144 H374 Q386 144 386 156 V92" stroke="#E0A030" stroke-width="1.7" stroke-dasharray="5 4" fill="none" marker-end="url(#arrC)"/>
   </svg>
   <div class="signal-legend">
-    <span><i style="background:#1E5AA8"></i>P 规划</span><span><i style="background:#5B4B9B"></i>T 执行</span>
-    <span><i style="background:#B23A2F"></i>E 评估</span><span><i style="background:#1F7A52"></i>M 记忆</span>
-    <span><i style="background:#C77700"></i>R 反思</span>
+    <span><i style="background:#2F74BE"></i>P 规划</span><span><i style="background:#7263C8"></i>T 执行</span>
+    <span><i style="background:#C64A3C"></i>E 评估</span><span><i style="background:#1F7A52"></i>M 记忆</span>
+    <span><i style="background:#A85F00"></i>R 反思</span><span><i style="background:#627187"></i>世界/环境</span>
+  </div>
+  <div class="signal-legend" style="margin-top:8px">
+    <span><i style="width:22px;height:0;border-radius:0;border-top:2px solid #5B9BD5"></i>前向指令链</span>
+    <span><i style="width:22px;height:0;border-radius:0;border-top:2px solid #3FBF8A"></i>反馈/测量链</span>
+    <span><i style="width:22px;height:0;border-radius:0;border-top:2px dashed #E0A030"></i>修正量回馈</span>
   </div>
 </div>
 <span class="kicker">Framework · 五环映射框架</span>
