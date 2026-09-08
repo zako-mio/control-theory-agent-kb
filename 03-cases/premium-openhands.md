@@ -1,11 +1,11 @@
 # OpenHands (All Hands AI) — 精装房控制论画像
 
 > 定位：自托管编码 Agent 控制中心（Agent Canvas UI + 多后端 + 子 Agent 预设 + 沙箱 + 自动化）　｜　厂商：All Hands AI　｜　分类：开源成品化　｜　审计日期：2026-09-08
-> 精装度：5/5　｜　一手/二手：一手　｜　证据强度：源码级
+> 精装度：4.2/5　｜　一手/二手：一手　｜　证据强度：源码级
 
 ## 0. 精装度评估（Premium Score）
 
-**综合评分**：5/5 — 开源自研的编码 Agent 成品，**`npm install -g @openhands/agent-canvas` 或 `docker run` 一键起**，预装 Agent Canvas UI + 沙箱 + 子 Agent 预设 + 技能/工具集 + 自动化仓库 + 多后端切换，零配置即跑端到端任务。
+**综合评分**：4.2/5 — 开源自研的编码 Agent 成品，**`npm install -g @openhands/agent-canvas` 或 `docker run` 一键起**，预装 Agent Canvas UI + 沙箱 + 子 Agent 预设 + 技能/工具集 + 自动化仓库 + 多后端切换，零配置即跑端到端任务。
 
 **预装能力清单**：
 | 维度 | 预装情况 | 依据 |
@@ -19,7 +19,7 @@
 | MCP生态 | ✅ | web_researcher 预设内置 `mcp_servers.fetch`（uvx）+ 工具注册表（源码级） |
 | 记忆 | 部分 | SDK `context.condenser`（LLMSummarizingCondenser）+ 会话状态；无显式置信度信念状态（源码级） |
 
-**声称 vs 实际**：官方声称「The self-hosted developer control center for coding agents and automations」 → **源码级证实为自研一手成品**：`package.json`（name=`@openhands/agent-canvas` v1.16.0，bin=`agent-canvas`），`software-agent-sdk/pyproject.toml` 明确 4 个 workspace 自研包（`openhands-sdk` / `openhands-tools` / `openhands-workspace` / `openhands-agent-server`）；子 Agent 预设见 `openhands-tools/openhands/tools/preset/subagents/{default,code_explorer,web_researcher,bash_runner}.md`。与 `premium-evidence.md` 一致：**一手 + 精装度 5 + 源码级**。
+**声称 vs 实际**：官方声称「The self-hosted developer control center for coding agents and automations」 → **源码级证实为自研一手成品**：`package.json`（name=`@openhands/agent-canvas` v1.16.0，bin=`agent-canvas`），`software-agent-sdk/pyproject.toml` 明确 4 个 workspace 自研包（`openhands-sdk` / `openhands-tools` / `openhands-workspace` / `openhands-agent-server`）；子 Agent 预设见 `openhands-tools/openhands/tools/preset/subagents/{default,code_explorer,web_researcher,bash_runner}.md`。与 `premium-evidence.md` 一致：**一手 + 精装度 4.2 + 源码级**。
 
 ---
 
@@ -71,7 +71,7 @@
 
 **控制论映射**：KT-ctrl-034（安全边际/硬约束限幅，Docker 沙箱 + 依赖护栏）+ KT-ctrl-033（冗余与仲裁，多 Agent 后端可切换）+ KT-ctrl-031（鲁棒稳定性，沙箱隔离防污染主机）+ KT-ctrl-030（模型不确定性，多后端降级）。
 
-**强弱项**：⭐⭐**最突出**——工具集最丰富（19 类目录）、Docker 沙箱 + 多后端 + 依赖护栏构成完整「限幅 + 隔离 + 冗余」，是精装度 5 的支柱。⚠️**弱**——Option 1「Without a Sandbox」默认直跑主机文件系统（README 明确警告），沙箱需用户主动选 Docker。
+**强弱项**：⭐⭐**最突出**——工具集最丰富（19 类目录）、Docker 沙箱 + 多后端 + 依赖护栏构成完整「限幅 + 隔离 + 冗余」，是精装度 4.2 的支柱。⚠️**弱**——Option 1「Without a Sandbox」默认直跑主机文件系统（README 明确警告），沙箱需用户主动选 Docker。
 
 ---
 
@@ -131,11 +131,11 @@
 
 **整体范式**：**自研 SDK 驱动的自托管编码 Agent 控制中心——丰富工具执行器 + Docker 沙箱 + 多级子 Agent 委派 + 多后端/自动化，开箱即用的 Agent 工厂**。
 
-**最突出的环**：**T 环（19 类工具 + Docker 沙箱 + 多 Agent 后端）与 P 环（planning 预设 + task/delegate 多级委派 + 子 Agent 预设）**——执行器丰富度与分层委派是精装度 5 的两大支柱。
+**最突出的环**：**T 环（19 类工具 + Docker 沙箱 + 多 Agent 后端）与 P 环（planning 预设 + task/delegate 多级委派 + 子 Agent 预设）**——执行器丰富度与分层委派是精装度 4.2 的两大支柱。
 
 **最薄弱的环**：**E 环（评估/传感器）**——统一 Observation + TaskOutcome 已较结构化，但缺每步强制的独立 Critic；评估质量仍受限于 Agent 自报。
 
-**精装房结论**：OpenHands 是「**一手满分精装房，源码级铁证齐全**」——`package.json`（`@openhands/agent-canvas` v1.16.0，bin 一键）+ `software-agent-sdk` 4 自研 workspace 包 + 19 类工具 + 子 Agent 预设 4 角色 + Docker 沙箱 + 依赖安全护栏（`exclude-newer=7days` + 多条 CVE 约束）。它给架构师的启示是：**「成品化」的硬指标是「一键可跑 + 预装工具/沙箱/多 Agent + 自研底层包」，OpenHands 四项全中**；短板在评估（E）独立性与沙箱默认关闭（Option 1 无沙箱需用户主动选 Docker）。
+**精装房结论**：OpenHands 是「**一手高精装房（4.2），源码级铁证齐全**」——`package.json`（`@openhands/agent-canvas` v1.16.0，bin 一键）+ `software-agent-sdk` 4 自研 workspace 包 + 19 类工具 + 子 Agent 预设 4 角色 + Docker 沙箱 + 依赖安全护栏（`exclude-newer=7days` + 多条 CVE 约束）。它给架构师的启示是：**「成品化」的硬指标是「一键可跑 + 预装工具/沙箱/多 Agent + 自研底层包」，OpenHands 四项全中**；短板在评估（E）独立性与沙箱默认关闭（Option 1 无沙箱需用户主动选 Docker）。
 
 ---
 

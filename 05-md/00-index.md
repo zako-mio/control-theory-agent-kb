@@ -102,24 +102,25 @@
 
 ## 精装房全景专题（v1.1，14 产品）
 
-**核心命题**：声称 ≠ 实际。坐标系：精装度 0-5（主轴）× 一手/二手（标签）× 4 大类 × 五环定位。
+**核心命题**：声称 ≠ 实际。坐标系：精装度 0-5（主轴，**v2.0 加权模型**）× 一手/二手（标签）× 4 大类 × 五环定位。
+评分模型：硬门槛前置（端到端可跑 0/1）+ 8 维加权 + 一票否决，详见 `07-checkpoint/premium-scoring-model.md`。
 
 | 产品 | 精装度 | 一手/二手 | 大类 | 证据级 | 画像 |
 |------|:---:|:---:|------|:---:|------|
-| OpenHands | 5 | 一手 | 开源成品化 | 源码级 | `03-cases/premium-openhands.md` |
+| OpenHands | 4.2 | 一手 | 开源成品化 | 源码级 | `03-cases/premium-openhands.md` |
 | Devin | 5 | 一手 | 第一方成品 | 文档级 | `03-cases/premium-devin.md` |
-| WorkBuddy | 5 | 一手 | 第一方成品 | 文档级 | `03-cases/premium-workbuddy.md` |
-| Dify | 5 | 一手 | 低代码平台 | 源码级 | `03-cases/premium-dify.md` |
-| OpenClaude | 5 | 一手 | 二次封装 | 源码级 | `03-cases/premium-openclaude.md` |
-| Cursor | 4.5 | 一手 | 第一方成品 | 文档级 | `03-cases/premium-cursor.md` |
-| Coze扣子 | 4.5 | 一手 | 低代码平台 | 文档级 | `03-cases/premium-coze.md` |
+| WorkBuddy | 4.6 | 一手 | 第一方成品 | 文档级 | `03-cases/premium-workbuddy.md` |
+| Dify | 4.3 | 一手 | 低代码平台 | 源码级 | `03-cases/premium-dify.md` |
+| OpenClaude | 3.8 | 一手 | 二次封装 | 源码级 | `03-cases/premium-openclaude.md` |
+| Cursor | 4.4 | 一手 | 第一方成品 | 文档级 | `03-cases/premium-cursor.md` |
+| Coze扣子 | 4.2 | 一手 | 低代码平台 | 文档级 | `03-cases/premium-coze.md` |
 | Windsurf | 4 | 一手 | 第一方成品 | 文档级 | `03-cases/premium-windsurf.md` |
-| GPT-Researcher | 4 | 一手 | 开源成品化 | 源码级 | `03-cases/premium-gptresearcher.md` |
-| CodeWhale | 4 | 一手 | 二次封装 | 源码级 | `03-cases/premium-codewhale.md` |
-| GitHub Copilot | 3.75 | 一手 | 第一方成品 | 文档级 | `03-cases/premium-copilot.md` |
-| QCode | 3.5 | 二手 | 二次封装 | 文档级 | `03-cases/premium-qcode.md` |
+| GPT-Researcher | 3.7 | 一手 | 开源成品化 | 源码级 | `03-cases/premium-gptresearcher.md` |
+| CodeWhale | 3.5 | 一手 | 二次封装 | 源码级 | `03-cases/premium-codewhale.md` |
+| GitHub Copilot | 4.1 | 一手 | 第一方成品 | 文档级 | `03-cases/premium-copilot.md` |
+| QCode | 1.4 | 二手 | 二次封装 | 文档级 | `03-cases/premium-qcode.md` |
 | CrewAI | 3 | 一手 | 开源成品化 | 源码级 | `03-cases/premium-crewai.md`（证据见证据文件） |
-| CC-Router | 3 | 二手 | 二次封装 | 源码级 | `03-cases/premium-ccrouter.md` |
+| CC-Router | 2.1 | 二手 | 二次封装 | 源码级 | `03-cases/premium-ccrouter.md` |
 
 **三大实证发现**：
 1. **二手被高估**：CC-Router（源码级依赖 `@the-next-ai/ai-gateway`）、QCode（官价×倍率）
@@ -157,4 +158,4 @@
 | 理论 | `theory-closed-loop.html` / `theory-state-est.html` / `theory-pid.html` / `theory-robust.html` / `theory-hierarchical.html` | 5 分区理论页 |
 | 案例 | `case-opencode.html` / `case-dsh.html` / `case-prime.html` / `case-hermes.html` / `case-claude-code.html` / `case-codex.html` | 6 框架画像 |
 | 实验 | `exp-opencode.html` / `exp-dsh.html` / `exp-prime.html` / `exp-hermes.html` / `exp-claude-code.html` / `exp-codex.html` | 6 实验组记录 |
-| 精装房 | `premium-map.html` / `premium-cyto.html` + 14 个 `premium-{product}.html` | 全景/ DAG / 案例页 |
+| 精装房 | `premium-map.html` / `premium-cyto.html` / `premium-cursor.html` / `premium-devin.html` / `premium-workbuddy.html` / `premium-windsurf.html` / `premium-copilot.html` / `premium-dify.html` / `premium-openhands.html` / `premium-coze.html` / `premium-openclaude.html` / `premium-codewhale.html` / `premium-gptresearcher.html` / `premium-qcode.html` / `premium-ccrouter.html` / `premium-crewai.html` | 全景/ DAG / 14 案例页 |

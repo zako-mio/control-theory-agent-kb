@@ -30,7 +30,7 @@
     <div class="ring-title"><h2>精装度评估</h2><span class="ring-ctrl">Premium Score</span></div>
   </div>
   <div class="prem-scorecard">
-    <div class="prem-score" style="color:#C77700">4/5</div>
+    <div class="prem-score" style="color:#C77700">3.5/5</div>
     <div class="prem-reason">自研 20 个 crate 的 Rust 底层 + FLEET 多 Agent 团队 + MCP/hooks/execpolicy/workflow 预装齐全，属&quot;高度自研的成品化运行时&quot;；扣分在于缺独立 Critic 与完整沙箱隔离，评估环受限。</div>
   </div>
   <div class="prem-chips"><span class="prem-chip">分类：二次封装(实为自研)</span><span class="prem-chip">一手/二手：一手(自研 Rust 底层)</span><span class="prem-chip">证据强度：源码级</span></div>
@@ -85,7 +85,7 @@
   <div class="ring-loc"><strong>承担角色：</strong>由「FLEET 多 Agent 团队 + <code>crates/workflow</code> 工作流编排 + <code>crates/agent</code> 角色分工」承担，是<strong>典型的多主体分层编排</strong>。</div>
   <h3>关键机制</h3><ul><li><strong>FLEET 团队分层</strong>：<code>crates/agent</code> 的 FLEET 把任务分给多个角色 agent，上层协调、下层执行，构成递阶控制（源码级）。</li><li><strong>workflow 慢速编排</strong>：<code>crates/workflow</code> 定义节点序列，作为&quot;慢规划器&quot;给出里程碑（源码级）。</li><li><strong>agent 快速执行</strong>：单个 agent 在节点内快速调用工具落地（源码级）。</li><li><strong>hooks 协调约束</strong>：<code>crates/hooks</code> 在节点切换处注入协调规则（源码级）。</li></ul>
   <div class="mapping-box"><strong>控制论映射：</strong>KT-ctrl-041（分层控制/时标分层）/ KT-ctrl-045（规划-执行解耦）/ KT-ctrl-046（options/SMDP，角色即能力原语）。</div>
-  <div class='ring-sw'>🟢 强——FLEET + workflow 提供显式多 Agent 分层编排，是精装度 4 的核心支撑；<strong>弱</strong>——编排为流程定义式，缺 MPC 式滚动重规划（执行中自动回上层重算）。</div>
+  <div class='ring-sw'>🟢 强——FLEET + workflow 提供显式多 Agent 分层编排，是精装度 3.5 的核心支撑；<strong>弱</strong>——编排为流程定义式，缺 MPC 式滚动重规划（执行中自动回上层重算）。</div>
 </div>
 <div class="ring-section" id="ring-R">
   <div class="ring-head">

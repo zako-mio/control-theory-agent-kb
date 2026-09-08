@@ -215,7 +215,7 @@ def render_case(md, product):
     if ms:
         lines=[l.strip() for l in ms.group(1).split('\n') if l.strip()]
         lead = inline(lines[0]) if lines else ''
-        rest=''.join(f'<li>{inline(x.lstrip("- ").strip())}</li>' for x in lines[1:] if x.startswith('-'))
+        rest=''.join(f'<li>{inline(x.lstrip("- ").strip())}</li>' for x in lines[1:] if x.startswith('-') and x.lstrip("- ").strip())
         summary_block=f"""
 <div class="ring-section summary-block">
   <div class="ring-head"><span class="ring-tag" style="background:#C77700">★</span><div class="ring-title"><h2>控制论画像总结</h2></div></div>

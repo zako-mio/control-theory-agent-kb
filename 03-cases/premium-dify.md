@@ -1,11 +1,11 @@
 # Dify (LangGenius) — 精装房控制论画像
 
 > 定位：开源 LLM 应用开发平台（可视化工作流 + RAG 流水线 + Agent + 模型管理 + LLMOps）　｜　厂商：LangGenius　｜　分类：低代码平台　｜　审计日期：2026-09-08
-> 精装度：5/5　｜　一手/二手：一手　｜　证据强度：源码级
+> 精装度：4.3/5　｜　一手/二手：一手　｜　证据强度：源码级
 
 ## 0. 精装度评估（Premium Score）
 
-**综合评分**：5/5 — 开源自研的可视化 LLM 应用平台，**零配置 docker compose 一键起**，预装可视化画布 + 自研 graphon 编排引擎 + 133 路径 RAG 流水线 + 插件市场 + 1000+ 模型接入，属真·开箱即用成品。
+**综合评分**：4.3/5 — 开源自研的可视化 LLM 应用平台，**零配置 docker compose 一键起**，预装可视化画布 + 自研 graphon 编排引擎 + 133 路径 RAG 流水线 + 插件市场 + 1000+ 模型接入，属真·开箱即用成品。
 
 **预装能力清单**：
 | 维度 | 预装情况 | 依据 |
@@ -19,7 +19,7 @@
 | MCP生态 | ✅ | 插件体系（`api/core/plugin/`）+ 工具节点，可外接工具（源码级） |
 | 记忆 | 部分 | 会话变量 / 对话历史 + 知识库检索，无显式置信度信念状态（源码级） |
 
-**声称 vs 实际**：官方声称「开源 LLM 应用开发平台，可视化工作流 + RAG + Agent + 模型管理」 → **源码级证实为自研一手**：`api/pyproject.toml`（name=`dify-api` v1.17.0）**无 langchain 依赖**，编排核心依赖自研 `graphon==0.7.0`（`langgenius/graphon`，官方描述「Graph execution engine for agentic AI workflows」），`api/core/workflow/nodes/agent/agent_node.py` 直接 `from graphon.enums / graphon.nodes.base.node import Node`；`api/core/rag/` 共 133 个路径。**不是 LangChain 封装壳**，属一手满分精装（源码级）。
+**声称 vs 实际**：官方声称「开源 LLM 应用开发平台，可视化工作流 + RAG + Agent + 模型管理」 → **源码级证实为自研一手**：`api/pyproject.toml`（name=`dify-api` v1.17.0）**无 langchain 依赖**，编排核心依赖自研 `graphon==0.7.0`（`langgenius/graphon`，官方描述「Graph execution engine for agentic AI workflows」），`api/core/workflow/nodes/agent/agent_node.py` 直接 `from graphon.enums / graphon.nodes.base.node import Node`；`api/core/rag/` 共 133 个路径。**不是 LangChain 封装壳**，属一手高精装（4.3，源码级）。
 
 ---
 
@@ -71,7 +71,7 @@
 
 **控制论映射**：KT-ctrl-034（安全边际/硬约束限幅，human_input 审批 + 部署侧权限）+ KT-ctrl-033（冗余与仲裁，多 provider/多工具可切换）+ KT-ctrl-030（模型不确定性，插件/工具异常需降级）。
 
-**强弱项**：🟢 **强**——graphon 图调度 + 10 类节点 + 插件 + 50+ 工具 + BaaS 出口，执行器丰富度极高，是精装度 5 的核心支撑。⚠️**弱**——缺 per-session 强沙箱，高风险工具执行的隔离依赖部署方自行加固；无跨工具统一预算看门狗。
+**强弱项**：🟢 **强**——graphon 图调度 + 10 类节点 + 插件 + 50+ 工具 + BaaS 出口，执行器丰富度极高，是精装度 4.3 的核心支撑。⚠️**弱**——缺 per-session 强沙箱，高风险工具执行的隔离依赖部署方自行加固；无跨工具统一预算看门狗。
 
 ---
 
@@ -130,11 +130,11 @@
 
 **整体范式**：**自研 graphon 图引擎驱动的可视化低代码平台——前馈式 DAG 编排 + 节点内动态执行 + 工程化反馈，开箱即用的 LLM 应用工厂**。
 
-**最突出的环**：**T 环（graphon 节点 + 插件 + 50+ 工具 + BaaS）与 P 环（可视化 DAG + Agent 策略 + 触发器）**——执行器丰富度与图形化规划是精装度 5 的两大支柱。
+**最突出的环**：**T 环（graphon 节点 + 插件 + 50+ 工具 + BaaS）与 P 环（可视化 DAG + Agent 策略 + 触发器）**——执行器丰富度与图形化规划是精装度 4.3 的两大支柱。
 
 **最薄弱的环**：**E 环（评估/传感器）**——节点状态与检索相关性只能测「跑没跑、命中没」，缺独立 Critic 测「目标达成没」；耦合地让 R 环退化为「错误回灌 + 人工修正」。
 
-**精装房结论**：Dify 是「**一手满分精装房，且是罕见的『真自研低代码平台』**」——源码级铁证：`api/pyproject.toml` 无 langchain，编排核心为自研 `graphon==0.7.0`，`agent_node.py` 直接依赖 graphon 基类，`api/core/rag/` 133 路径、插件 42 文件、工作流 104 文件、多向量库 30+ workspace。它给架构师的启示是：**「低代码平台」不等于「套壳」——看 `pyproject.toml` 的依赖即可鉴别：依赖 graphon 而非 LangChain，就是一手自研的硬证据**。短板仅在评估（E）与置信度记忆（M）。
+**精装房结论**：Dify 是「**一手高精装房（4.3），且是罕见的『真自研低代码平台』**」——源码级铁证：`api/pyproject.toml` 无 langchain，编排核心为自研 `graphon==0.7.0`，`agent_node.py` 直接依赖 graphon 基类，`api/core/rag/` 133 路径、插件 42 文件、工作流 104 文件、多向量库 30+ workspace。它给架构师的启示是：**「低代码平台」不等于「套壳」——看 `pyproject.toml` 的依赖即可鉴别：依赖 graphon 而非 LangChain，就是一手自研的硬证据**。短板仅在评估（E）与置信度记忆（M）。
 
 ---
 

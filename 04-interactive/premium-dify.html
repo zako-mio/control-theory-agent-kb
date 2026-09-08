@@ -26,16 +26,16 @@
 
 <div class="ring-section premium-block" id="premium-score">
   <div class="ring-head">
-    <span class="ring-tag" style="background:#1F7A52">装</span>
+    <span class="ring-tag" style="background:#C77700">装</span>
     <div class="ring-title"><h2>精装度评估</h2><span class="ring-ctrl">Premium Score</span></div>
   </div>
   <div class="prem-scorecard">
-    <div class="prem-score" style="color:#1F7A52">5/5</div>
+    <div class="prem-score" style="color:#C77700">4.3/5</div>
     <div class="prem-reason">开源自研的可视化 LLM 应用平台，<strong>零配置 docker compose 一键起</strong>，预装可视化画布 + 自研 graphon 编排引擎 + 133 路径 RAG 流水线 + 插件市场 + 1000+ 模型接入，属真·开箱即用成品。</div>
   </div>
   <div class="prem-chips"><span class="prem-chip">分类：低代码平台</span><span class="prem-chip">一手/二手：一手</span><span class="prem-chip">证据强度：源码级</span></div>
   <table class="prem-table"><thead><tr><th>维度</th><th>预装情况</th><th>依据</th></tr></thead><tbody><tr><td>多Agent编排</td><td class="prem-ok">✅</td><td class="prem-ev">工作流 <code>agent</code> / <code>agent_v2</code> 节点 + Agent 策略（Function Calling / ReAct），<code>api/core/workflow/nodes/agent/agent_node.py</code>（源码级）</td></tr><tr><td>Skill库</td><td class="prem-ok">✅</td><td class="prem-ev">插件市场 + 50+ 内置工具（README「50+ built-in tools for AI agents」）、<code>api/core/plugin/</code>（42 文件，源码级）</td></tr><tr><td>工作流编排</td><td class="prem-ok">✅</td><td class="prem-ev">可视化画布（web/ 前端）+ 自研 <code>graphon==0.7.0</code> 图执行引擎，10 类内置节点（源码级）</td></tr><tr><td>模型接入</td><td class="prem-ok">✅</td><td class="prem-ev">数百专有/开源 LLM 接入（README「hundreds of proprietary / open-source LLMs」），多 provider（源码级）</td></tr><tr><td>一键部署</td><td class="prem-ok">✅</td><td class="prem-ev"><code>docker/docker-compose.yaml</code> + <code>docker compose up -d</code> 一键起，4 核 4G 最低要求（源码级）</td></tr><tr><td>沙箱/隔离</td><td class="prem-part">部分</td><td class="prem-ev">容器化部署隔离，但非 per-session 强沙箱；Agent 工具执行依赖部署侧权限（源码级）</td></tr><tr><td>MCP生态</td><td class="prem-ok">✅</td><td class="prem-ev">插件体系（<code>api/core/plugin/</code>）+ 工具节点，可外接工具（源码级）</td></tr><tr><td>记忆</td><td class="prem-part">部分</td><td class="prem-ev">会话变量 / 对话历史 + 知识库检索，无显式置信度信念状态（源码级）</td></tr></tbody></table>
-  <div class="prem-claim"><strong>声称 vs 实际：</strong>官方声称「开源 LLM 应用开发平台，可视化工作流 + RAG + Agent + 模型管理」 → <strong>源码级证实为自研一手</strong>：<code>api/pyproject.toml</code>（name=<code>dify-api</code> v1.17.0）<strong>无 langchain 依赖</strong>，编排核心依赖自研 <code>graphon==0.7.0</code>（<code>langgenius/graphon</code>，官方描述「Graph execution engine for agentic AI workflows」），<code>api/core/workflow/nodes/agent/agent_node.py</code> 直接 <code>from graphon.enums / graphon.nodes.base.node import Node</code>；<code>api/core/rag/</code> 共 133 个路径。<strong>不是 LangChain 封装壳</strong>，属一手满分精装（源码级）。</div>
+  <div class="prem-claim"><strong>声称 vs 实际：</strong>官方声称「开源 LLM 应用开发平台，可视化工作流 + RAG + Agent + 模型管理」 → <strong>源码级证实为自研一手</strong>：<code>api/pyproject.toml</code>（name=<code>dify-api</code> v1.17.0）<strong>无 langchain 依赖</strong>，编排核心依赖自研 <code>graphon==0.7.0</code>（<code>langgenius/graphon</code>，官方描述「Graph execution engine for agentic AI workflows」），<code>api/core/workflow/nodes/agent/agent_node.py</code> 直接 <code>from graphon.enums / graphon.nodes.base.node import Node</code>；<code>api/core/rag/</code> 共 133 个路径。<strong>不是 LangChain 封装壳</strong>，属一手高精装（4.3，源码级）。</div>
 </div>
 <div class="ring-section" id="ring-SP">
   <div class="ring-head">
@@ -65,7 +65,7 @@
   <div class="ring-loc"><strong>承担角色：</strong>把工作流节点以「图调度 + 插件/工具调用」方式落地，是唯一直接接触外部世界的执行器。</div>
   <h3>关键机制</h3><ul><li><strong>graphon 图调度执行</strong>：自研引擎按 DAG 依赖顺序调度节点，支持分支/并行/条件（源码级）。</li><li><strong>10 类内置节点</strong>：<code>agent</code>、<code>agent_v2</code>、<code>datasource</code>、<code>human_input</code>、<code>knowledge_index</code>、<code>knowledge_retrieval</code>、<code>trigger_plugin</code>、<code>trigger_schedule</code>、<code>trigger_webhook</code>（<code>api/core/workflow/nodes/</code>）——执行动作开箱即用（源码级）。</li><li><strong>插件执行层</strong>：<code>api/core/plugin/impl/plugin.py</code> + <code>plugin_service.py</code> 把外部插件作为执行器纳入图（源码级）。</li><li><strong>50+ 内置工具</strong>：README「Dify provides 50+ built-in tools for AI agents, such as Google Search, DALL·E, Stable Diffusion and WolframAlpha」（源码级）。</li><li><strong>human_input 节点</strong>：人工介入节点作为「审批/仲裁」执行器，为高风险动作留人工闸门（源码级）。</li><li><strong>BaaS 执行出口</strong>：所有能力均有对应 API（README「Backend-as-a-Service」），执行结果可被外部业务系统消费（源码级）。</li></ul>
   <div class="mapping-box"><strong>控制论映射：</strong>KT-ctrl-034（安全边际/硬约束限幅，human_input 审批 + 部署侧权限）+ KT-ctrl-033（冗余与仲裁，多 provider/多工具可切换）+ KT-ctrl-030（模型不确定性，插件/工具异常需降级）。</div>
-  <div class='ring-sw'>🟢 <strong>强</strong>——graphon 图调度 + 10 类节点 + 插件 + 50+ 工具 + BaaS 出口，执行器丰富度极高，是精装度 5 的核心支撑。⚠️<strong>弱</strong>——缺 per-session 强沙箱，高风险工具执行的隔离依赖部署方自行加固；无跨工具统一预算看门狗。</div>
+  <div class='ring-sw'>🟢 <strong>强</strong>——graphon 图调度 + 10 类节点 + 插件 + 50+ 工具 + BaaS 出口，执行器丰富度极高，是精装度 4.3 的核心支撑。⚠️<strong>弱</strong>——缺 per-session 强沙箱，高风险工具执行的隔离依赖部署方自行加固；无跨工具统一预算看门狗。</div>
 </div>
 <div class="ring-section" id="ring-M">
   <div class="ring-head">

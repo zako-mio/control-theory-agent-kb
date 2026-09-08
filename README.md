@@ -60,13 +60,16 @@ cd 04-interactive && python3 -m http.server 8321
 
 **四维坐标系**：精装度 0-5（主轴）× 一手/二手（标签）× 4 大类（分组）× 五环定位（控制本质）
 
-### 精装度谱系（14 产品）
+### 精装度谱系（14 产品，v2.0 加权模型）
+
+> 评分模型：**硬门槛前置（端到端可跑，0/1）+ 8 维加权（多Agent16/一键部署15/模型14/工作流13/Skill12/沙箱10/MCP10/记忆10）+ 一票否决（声称失实封顶4.0、纯中转封顶3.5）**。
+> 详见 [`07-checkpoint/premium-scoring-model.md`](07-checkpoint/premium-scoring-model.md) 与重算矩阵 [`07-checkpoint/premium-score-recompute.md`](07-checkpoint/premium-score-recompute.md)。
 
 | 分层 | 分值 | 产品 |
 |------|:---:|------|
-| 真·开箱即用 | 5 | OpenHands / Devin / WorkBuddy / Dify / OpenClaude |
-| 成品化受限 | 4-4.5 | Cursor / Coze / Windsurf / GPT-Researcher / CodeWhale / Copilot |
-| 需配置框架 | 3-3.5 | QCode / CrewAI / CC-Router |
+| 真·开箱即用 | ≥4.5 | Devin(5.0) / WorkBuddy(4.6) |
+| 成品化受限 | 3.5-4.5 | Cursor(4.4) / Dify(4.3) / OpenHands(4.2) / Coze(4.2) / Copilot(4.1) / Windsurf(4.0) / OpenClaude(3.8) / GPT-Researcher(3.7) / CodeWhale(3.5) |
+| 需装修/中转 | <3.5 | CrewAI(3.0) / CC-Router(2.1) / QCode(1.4) |
 | 技术框架（对照） | 2.5-3 | opencode / dsh / PRIME / hermes / claude-code / codex |
 
 ### 三大实证发现

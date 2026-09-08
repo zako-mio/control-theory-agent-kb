@@ -4,6 +4,7 @@
 """
 import json, os, re, sys, html
 sys.stdout.reconfigure(encoding='utf-8')
+import premium_scores as ps  # 精装房评分模型单一数据源
 
 BASE = "/home/zako-mio/opencode/archive/Mission-file/2026-09/0907-控制理论Agent设计知识库"
 OUT = os.path.join(BASE, "04-interactive")
@@ -342,22 +343,12 @@ def gen_exp(fname,title,md_file,prev,nxt):
     return page(title,"标准实验组","<p class='breadcrumb'><a href='index.html'>总览</a> › 实验</p>"+body,fname,prev,nxt)
 
 # 精装房数据（精装度主轴排序，供全景页）
+# 分值来自 09-src-data/premium_scores.py（硬门槛+8维加权+一票否决），禁止硬编码
 PREMIUM_DATA = [
     # (slug, 名称, 厂商, 精装度, 一手二手, 大类, 证据级, 关键结论)
-    ("openhands","OpenHands","All Hands AI",5.0,"一手","开源成品化","源码级","Agent Canvas UI+沙箱+子Agent预设+技能市场，真开箱即用成品"),
-    ("devin","Devin","Cognition",5.0,"一手","第一方成品","文档级","每session独立VM沙箱+Managed Devins并行+Dynamic Workflows(真DAG)"),
-    ("workbuddy","WorkBuddy","腾讯云",5.0,"一手","第一方成品","文档级","多Agent并行+7万Skills+托管底座+企业级安全治理"),
-    ("dify","Dify","LangGenius",5.0,"一手","低代码平台","源码级","自研graphon编排引擎+可视化画布+RAG+插件市场，无LangChain"),
-    ("openclaude","OpenClaude","Gitlawb",5.0,"一手","二次封装","源码级","200+模型开箱接入+agents/tasks+MCP，独立TS实现非CC封装"),
-    ("cursor","Cursor","Anysphere",4.5,"一手","第一方成品","文档级","Cloud Agents并行+Composer规划+MCP生态+语义索引"),
-    ("coze","Coze扣子","字节跳动",4.5,"一手","低代码平台","文档级","可视化工作流+单/多Agent+插件商店+知识库+长期记忆"),
-    ("windsurf","Windsurf/Devin Desktop","Cognition",4.0,"一手","第一方成品","文档级","Cascade agent+RAG索引+MCP+SKILL.md（无Flows DAG）"),
-    ("gptresearcher","GPT Researcher","assafelovic",4.0,"一手","开源成品化","源码级","Web UI+8-agent编排+报告生成，编排自研"),
-    ("codewhale","CodeWhale","Hmbown",4.0,"一手","二次封装","源码级","自研Rust底层，20个crate含agent/mcp/hooks/execpolicy"),
-    ("copilot","GitHub Copilot","GitHub/MS",3.75,"一手","第一方成品","文档级","Agent mode+Workspace任务化+多模型路由+MCP"),
-    ("qcode","QCode","qcode.cc",3.5,"二手","二次封装","文档级","一Key七模型族+Claude Code一键，官方价×服务倍率"),
-    ("crewai","CrewAI","CrewAI Inc",3.0,"一手","开源成品化","源码级","角色编排+工具库+JSON脚手架，需用户填角色流程"),
-    ("ccrouter","CC-Router","musistudio",3.0,"二手","二次封装","源码级","多provider路由，核心依赖@the-next-ai/ai-gateway网关"),
+    (p["slug"], p["name"], p["vendor"], ps.final(p["slug"]),
+     p["hand"], p["cat"], p["ev"], p["note"])
+    for p in ps.PRODUCTS
 ]
 
 # 现有 6 产品（技术框架）纳入同一坐标系 —— 均为开源、需装配/定制，精装度偏低
@@ -388,7 +379,7 @@ def gen_premium_map():
   <a class="pm-name" href="premium-{slug}.html">{name}</a>
   <span class="pm-vendor">{vendor}</span>
   <div class="pm-bar-wrap"><div class="pm-bar" style="width:{pct:.0f}%;background:{score_color(score)}"></div></div>
-  <span class="pm-score" style="color:{score_color(score)}">{score}</span>
+  <span class="pm-score" style="color:{score_color(score)}">{ps.fmt(score)}</span>
   {hand_badge(hand)}
   <span class="pm-cat">{cat}</span>
 </div>""")
@@ -418,19 +409,33 @@ def gen_premium_map():
         "二次封装":"声称『平替/增强XX』的发行版——实证区分：一手自研底层 vs 二手封装/中转（声称 vs 实际关键案例）",
     }
     for cat, rows in cats.items():
-        items = "".join(f'<li><a href="premium-{r[0]}.html">{r[1]}</a> <span class="pm-mini" style="color:{score_color(r[3])}">{r[3]}</span> {hand_badge(r[4])}</li>' for r in sorted(rows,key=lambda x:-x[3]))
+        items = "".join(f'<li><a href="premium-{r[0]}.html">{r[1]}</a> <span class="pm-mini" style="color:{score_color(r[3])}">{ps.fmt(r[3])}</span> {hand_badge(r[4])}</li>' for r in sorted(rows,key=lambda x:-x[3]))
         cat_cards.append(f"""
 <div class="pm-catcard">
   <h3>{cat} <span class="pm-count">{len(rows)}</span></h3>
   <p class="pm-catdesc">{cat_desc.get(cat,'')}</p>
   <ul>{items}</ul>
 </div>""")
+    # 分层速览（按 v2.0 加权模型动态生成）
+    tiers = {}
+    for slug, name, vendor, score, hand, cat, ev, note in data:
+        tiers.setdefault(ps.tier(score), []).append("%s(%s)" % (name, ps.fmt(score)))
+    tier_defs = [
+        ("真·开箱即用", "≥4.5", "预装 UI+多Agent+沙箱/工具+一键部署，零配置跑端到端"),
+        ("成品化受限", "3.5-4.5", "预装大部分能力，个别维度受限"),
+        ("需装修/中转", "&lt;3.5", "需填角色流程/依赖底座/纯中转，未达零配置门槛"),
+    ]
+    tier_cards = []
+    for t, rng, desc in tier_defs:
+        names = " / ".join(tiers.get(t, [])) or "—"
+        tier_cards.append(f'<div class="insight"><b>{t}（{rng}）</b><br>{desc}<br><span style="color:var(--muted)">{names}</span></div>')
+    tier_cards.append('<div class="insight"><b>实证方法</b><br>开源产品走源码级（raw.githubusercontent 依赖/入口/包壳）；闭源产品走文档级（官方文档）+ 声称级标注。</div>')
     body = f"""
 <div class="signal">
-  <div class="signal-head"><span class="label">Premium Housing · 精装房全景</span><span class="tag">v1.1 · {len(data)} product</span></div>
+  <div class="signal-head"><span class="label">Premium Housing · 精装房全景</span><span class="tag">v2.0 · {len(data)} product</span></div>
   <span class="kicker" style="font-family:var(--font-mono);letter-spacing:.12em;color:#7E8CA5;font-size:11px">PREMIUM</span>
   <h1 style="font-size:26px;margin:8px 0 10px;color:#fff;letter-spacing:-.02em">市面「精装房」Agent 全景</h1>
-  <p style="color:#CBD4E2;max-width:760px;line-height:1.7;font-size:15px;margin:0">核心命题：<b>声称 ≠ 实际</b>。以「精装度」为主轴（0-5 分），「一手/二手」为标签，「4 大类」为分组，「五环」定控制本质——用源码级/文档级实证，鉴别每款产品到底精装到什么程度。</p>
+  <p style="color:#CBD4E2;max-width:760px;line-height:1.7;font-size:15px;margin:0">核心命题：<b>声称 ≠ 实际</b>。以「精装度」为主轴（0-5 分，<b>v2.0 加权模型：硬门槛 + 8 维加权 + 一票否决</b>），「一手/二手」为标签，「4 大类」为分组，「五环」定控制本质——用源码级/文档级实证，鉴别每款产品到底精装到什么程度。</p>
 </div>
 
 <h2><span class="idx">01</span>精装度主轴（0-5 分，降序）</h2>
@@ -451,7 +456,7 @@ def gen_premium_map():
     <strong>声称功能不存在</strong>：Windsurf 被传有「Flows DAG」多Agent编排，官方文档检索证实<b>并无此功能</b>——多Agent并发靠 Arena Mode + worktrees + Managed Devins。
   </div>
   <div class="prem-claim" style="background:var(--signal-amber-bg);border-color:var(--signal-amber)">
-    <strong>精装度与一手/二手正交</strong>：二手也能精装（QCode 3.5），一手也可能不精装（CrewAI 3）——两根独立的轴，必须分开标注。
+    <strong>精装度与一手/二手正交</strong>：二手未必精装（QCode 1.4 / CC-Router 2.1），一手也未必精装（CrewAI 3.0）——两根独立的轴，必须分开标注。
   </div>
 </div>
 
@@ -460,14 +465,9 @@ def gen_premium_map():
 <div class="pm-axis">{''.join(fw_bars)}</div>
 
 <h2><span class="idx">05</span>精装度分层速览</h2>
-<div class="grid cols-2">
-  <div class="insight"><b>真·开箱即用（5 分）</b><br>OpenHands / Devin / WorkBuddy / Dify / OpenClaude——预装 UI+多Agent+沙箱/工具+一键部署，零配置跑端到端。</div>
-  <div class="insight"><b>成品化受限（4-4.5）</b><br>Cursor / Coze / Windsurf / GPT-Researcher / CodeWhale / Copilot——预装大部分能力，个别维度受限。</div>
-  <div class="insight"><b>需配置框架（3-3.5）</b><br>QCode / CrewAI / CC-Router——预装工具/配置，但需填角色流程或依赖底座。</div>
-  <div class="insight"><b>实证方法</b><br>开源产品走源码级（raw.githubusercontent 依赖/入口/包壳）；闭源产品走文档级（官方文档）+ 声称级标注。</div>
-</div>
+<div class="grid cols-2">{''.join(tier_cards)}</div>
 
-<p style="font-size:13px;color:var(--muted);margin-top:var(--space-5)">注：精装度以「用户零配置即可跑端到端任务」为核心锚点；证据强度分级：源码级 &gt; 文档级 &gt; 行为级 &gt; 声称级。详细证据见 <code>07-checkpoint/premium-evidence.md</code>。</p>
+<p style="font-size:13px;color:var(--muted);margin-top:var(--space-5)">注：精装度采用 <b>v2.0 加权模型</b>（硬门槛前置 + 8 维加权 + 一票否决），以「用户零配置即可跑端到端任务」为核心锚点；证据强度分级：源码级 &gt; 文档级 &gt; 行为级 &gt; 声称级。模型/权重/评分标准见 <code>07-checkpoint/premium-scoring-model.md</code>，重算矩阵见 <code>07-checkpoint/premium-score-recompute.md</code>，详细证据见 <code>07-checkpoint/premium-evidence.md</code>。</p>
 """
     return page("精装房全景","市面精装房 Agent 全景","<p class='breadcrumb'><a href='index.html'>总览</a> › 精装房全景</p>"+body,"premium-map",prev=None,nxt="premium-cyto")
 

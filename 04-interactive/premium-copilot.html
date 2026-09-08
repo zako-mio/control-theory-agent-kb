@@ -26,12 +26,12 @@
 
 <div class="ring-section premium-block" id="premium-score">
   <div class="ring-head">
-    <span class="ring-tag" style="background:#B23A2F">装</span>
+    <span class="ring-tag" style="background:#C77700">装</span>
     <div class="ring-title"><h2>精装度评估</h2><span class="ring-ctrl">Premium Score</span></div>
   </div>
   <div class="prem-scorecard">
-    <div class="prem-score" style="color:#B23A2F">3.5-4/5</div>
-    <div class="prem-reason"></div>
+    <div class="prem-score" style="color:#C77700">4.1/5</div>
+    <div class="prem-reason">第一方自研成品，预装 Cloud Agent（Actions 环境）、Agent 模式、多模型路由、MCP、GitHub 深度集成、Automations 与自定义 Agent；扣分项在于<strong>单次会话 59 分钟硬上限、单仓库单分支单 PR 限制、Automations 仅限私有/内部仓库</strong>，多 Agent 编排靠「并行独立会话」而非 DAG。</div>
   </div>
   <div class="prem-chips"><span class="prem-chip">分类：第一方成品</span><span class="prem-chip">一手/二手：一手</span><span class="prem-chip">证据强度：文档级</span></div>
   <table class="prem-table"><thead><tr><th>维度</th><th>预装情况</th><th>依据</th></tr></thead><tbody><tr><td>多Agent编排</td><td class="prem-part">部分</td><td class="prem-ev">可并行多个 Agent 会话 + 自定义 Agent 团队 + 第三方 Agent（Claude/Codex）；但每会话单仓库单分支单 PR，无 DAG 依赖编排（docs.github.com cloud-agent/about-coding-agent、agent-management、third-party-coding-agents）</td></tr><tr><td>Skill库</td><td class="prem-ok">✅</td><td class="prem-ev">Agent Skills 开放标准，<code>.github/skills</code>/<code>.claude/skills</code>/<code>.agents/skills</code> + <code>gh skill</code> 安装（docs.github.com about-agent-skills）</td></tr><tr><td>工作流编排</td><td class="prem-ok">✅</td><td class="prem-ev">Automations（定时/事件触发）+ GitHub Agentic Workflows（markdown 定义、编译为 Actions）+ Hooks（docs.github.com about-automations、about-github-agentic-workflows、hooks）</td></tr><tr><td>模型接入</td><td class="prem-ok">✅</td><td class="prem-ev">多模型选择 + Auto 自动选模型 + 第三方 Agent 模型（docs.github.com supported-models、auto-model-selection）</td></tr><tr><td>一键部署</td><td class="prem-ok">✅</td><td class="prem-ev">付费 Copilot 计划内即用；Cloud Agent 自动建分支/写提交/推送；GitHub Actions 环境自动拉起（docs.github.com about-coding-agent）</td></tr><tr><td>沙箱/隔离</td><td class="prem-ok">✅</td><td class="prem-ev">每会话独立 ephemeral 开发环境，由 GitHub Actions 驱动；Agentic Workflows 在防火墙容器内只读运行（docs.github.com about-coding-agent、about-github-agentic-workflows）</td></tr><tr><td>MCP生态</td><td class="prem-ok">✅</td><td class="prem-ev">仓库级 MCP 设置，GitHub MCP 与 Playwright MCP 默认启用；自定义 Agent 可配 mcp-servers（docs.github.com configure-mcp-servers、about-custom-agents）</td></tr><tr><td>记忆</td><td class="prem-part">部分</td><td class="prem-ev">Copilot Memory（公开预览）：仓库级事实 + 用户级偏好，带引用校验、28 天过期；仅 Pro/Pro+/Max 可启用（docs.github.com copilot-memory）</td></tr></tbody></table>

@@ -8,12 +8,10 @@ sys.stdout.reconfigure(encoding='utf-8')
 BASE = "/home/zako-mio/opencode/archive/Mission-file/2026-09/0907-控制理论Agent设计知识库"
 sys.path.insert(0, os.path.join(BASE, "09-src-data"))
 import nav_data as nd
+import premium_scores as ps
 
-# 精装度色阶
-def score_color(s):
-    if s >= 4.5: return '#1F7A52'      # 真精装 绿
-    if s >= 3.5: return '#C77700'      # 成品化受限 金
-    return '#B23A2F'                    # 需配置 红
+# 精装度色阶（与模型一致）
+score_color = ps.score_color
 
 # 分类色
 CAT_COLOR = {
@@ -24,21 +22,11 @@ CAT_COLOR = {
 }
 
 # 产品数据 (slug, 名称, 厂商, 精装度, 一手二手, 大类, 证据级, 结论)
+# 分值来自 09-src-data/premium_scores.py（硬门槛+8维加权+一票否决），禁止硬编码
 PRODUCTS = [
-    ("openhands","OpenHands","All Hands AI",5.0,"一手","开源成品化","源码级","Agent Canvas UI+沙箱+子Agent预设+技能市场"),
-    ("devin","Devin","Cognition",5.0,"一手","第一方成品","文档级","每session独立VM沙箱+Managed Devins+Dynamic Workflows"),
-    ("workbuddy","WorkBuddy","腾讯云",5.0,"一手","第一方成品","文档级","多Agent并行+7万Skills+托管底座"),
-    ("dify","Dify","LangGenius",5.0,"一手","低代码平台","源码级","自研graphon编排+可视化画布+RAG+插件市场"),
-    ("openclaude","OpenClaude","Gitlawb",5.0,"一手","二次封装","源码级","200+模型开箱+agents/tasks+MCP（实为自研）"),
-    ("cursor","Cursor","Anysphere",4.5,"一手","第一方成品","文档级","Cloud Agents并行+Composer+MCP+语义索引"),
-    ("coze","Coze扣子","字节跳动",4.5,"一手","低代码平台","文档级","可视化工作流+单/多Agent+插件商店+长期记忆"),
-    ("windsurf","Windsurf","Cognition",4.0,"一手","第一方成品","文档级","Cascade+RAG+MCP+SKILL.md（无Flows DAG）"),
-    ("gptresearcher","GPT-Researcher","assafelovic",4.0,"一手","开源成品化","源码级","Web UI+8-agent编排+报告生成"),
-    ("codewhale","CodeWhale","Hmbown",4.0,"一手","二次封装","源码级","自研Rust底层20crate（实为自研）"),
-    ("copilot","GitHub Copilot","GitHub/MS",3.75,"一手","第一方成品","文档级","Agent mode+Workspace+多模型路由+MCP"),
-    ("qcode","QCode","qcode.cc",3.5,"二手","二次封装","文档级","一Key七模型族（官价×倍率=二手）"),
-    ("crewai","CrewAI","CrewAI Inc",3.0,"一手","开源成品化","源码级","角色编排+工具库+JSON脚手架，需填流程"),
-    ("ccrouter","CC-Router","musistudio",3.0,"二手","二次封装","源码级","多provider路由（依赖第三方网关=二手）"),
+    (p["slug"], p["name"], p["vendor"], ps.final(p["slug"]),
+     p["hand"], p["cat"], p["ev"], p["note"])
+    for p in ps.PRODUCTS
 ]
 
 elements = []
@@ -56,7 +44,7 @@ for i,(cat, rows) in enumerate(cats.items()):
 # 产品节点
 for slug,name,vendor,score,hand,cat,ev,note in PRODUCTS:
     elements.append({"data":{
-        "id":f"p_{slug}","kind":"product","label":f"{name}\n{score}","color":score_color(score),
+        "id":f"p_{slug}","kind":"product","label":f"{name}\n{ps.fmt(score)}","color":score_color(score),
         "hand":hand,"cat":cat,"score":score,"vendor":vendor,"ev":ev,"note":note,"slug":slug
     }})
     # 边：产品 → 所属分类

@@ -1,11 +1,11 @@
 # GPT Researcher (assafelovic) — 精装房控制论画像
 
 > 定位：开源深度研究 Agent（Web UI + 8-agent 编排 + 多格式报告生成 + 引用溯源）　｜　厂商：assafelovic　｜　分类：开源成品化　｜　审计日期：2026-09-08
-> 精装度：4/5　｜　一手/二手：一手（编排自研，LangChain/LangGraph 底座）　｜　证据强度：源码级
+> 精装度：3.7/5　｜　一手/二手：一手（编排自研，LangChain/LangGraph 底座）　｜　证据强度：源码级
 
 ## 0. 精装度评估（Premium Score）
 
-**综合评分**：4/5 — 开源自研的深度研究成品，预装 Web UI（NextJS + FastAPI）+ Docker/Colab 一键 + MD/PDF/docx 多格式报告 + 8-agent 编排（LangGraph）+ 检索工具，开箱可跑端到端研究任务；扣分项在**通用性受限**（聚焦研究场景）、沙箱/隔离弱、编排依赖 LangGraph 底座。
+**综合评分**：3.7/5 — 开源自研的深度研究成品，预装 Web UI（NextJS + FastAPI）+ Docker/Colab 一键 + MD/PDF/docx 多格式报告 + 8-agent 编排（LangGraph）+ 检索工具，开箱可跑端到端研究任务；扣分项在**通用性受限**（聚焦研究场景）、沙箱/隔离弱、编排依赖 LangGraph 底座。
 
 **预装能力清单**：
 | 维度 | 预装情况 | 依据 |
@@ -19,7 +19,7 @@
 | MCP生态 | ✅ | `mcp-server/` + `pyproject.toml` 依赖 `mcp` / `langchain-mcp-adapters`（源码级） |
 | 记忆 | 部分 | `gpt_researcher/memory/` + `multi_agents/memory/draft.py`（DraftState）；无显式置信度（源码级） |
 
-**声称 vs 实际**：官方声称「the first open deep research agent designed for both web and local research」 → **源码级证实为自研编排 + 成品化**：`pyproject.toml`（name=`gpt-researcher` v0.15.1）依赖 `langchain` / `langgraph` 作**底座**，但 8-agent 编排与 `multi_agents/` 团队、`gpt_researcher/actions/`（8 个动作模块）、`backend/server/app.py`（16KB FastAPI）、`frontend/nextjs`（`gpt-researcher-ui` v0.1.74）均为自研。与 `premium-evidence.md` 一致：**一手（编排）+ 精装度 4 + 源码级**。**注意**：编排底座为 LangGraph（非完全自研引擎），这是它与 Dify（自研 graphon）的差异。
+**声称 vs 实际**：官方声称「the first open deep research agent designed for both web and local research」 → **源码级证实为自研编排 + 成品化**：`pyproject.toml`（name=`gpt-researcher` v0.15.1）依赖 `langchain` / `langgraph` 作**底座**，但 8-agent 编排与 `multi_agents/` 团队、`gpt_researcher/actions/`（8 个动作模块）、`backend/server/app.py`（16KB FastAPI）、`frontend/nextjs`（`gpt-researcher-ui` v0.1.74）均为自研。与 `premium-evidence.md` 一致：**一手（编排）+ 精装度 3.7 + 源码级**。**注意**：编排底座为 LangGraph（非完全自研引擎），这是它与 Dify（自研 graphon）的差异。
 
 ---
 
@@ -53,7 +53,7 @@
 
 **控制论映射**：KT-ctrl-006（反馈灵敏度/鲁棒性基础，Reviewer 独立校验降低对单模型的敏感）+ KT-ctrl-035（扰动观测器 DOB，Reviewer 在线研判草稿质量）+ KT-ctrl-012（观测噪声 R，检索/评审信号可信度）+ KT-ctrl-001（开环 vs 闭环）。
 
-**强弱项**：🟢 **强**（相对同类）——**有独立 Reviewer Agent + Revisor 修订闭环 + 评审次数上限**，是本产品 E 环的亮点，也是精装度 4 中「评估」维度少见的独立性。⚠️**弱**——Reviewer 与执行者用同一 SMART_LLM（README「only the SMART_LLM is used」），存在共模偏置；评审标准靠提示词承载，非结构化硬校验。
+**强弱项**：🟢 **强**（相对同类）——**有独立 Reviewer Agent + Revisor 修订闭环 + 评审次数上限**，是本产品 E 环的亮点，也是精装度 3.7 中「评估」维度少见的独立性。⚠️**弱**——Reviewer 与执行者用同一 SMART_LLM（README「only the SMART_LLM is used」），存在共模偏置；评审标准靠提示词承载，非结构化硬校验。
 
 ---
 
@@ -106,7 +106,7 @@
 
 **控制论映射**：KT-ctrl-041（分层控制结构）+ KT-ctrl-045（规划-执行解耦）+ KT-ctrl-044（MPC 滚动时域，Reviewer→Revisor 迭代）+ KT-ctrl-042（多层递阶控制，Chief Editor 协调）+ KT-ctrl-046（options/SMDP，子 Agent 角色=能力原语）。
 
-**强弱项**：⭐⭐**最突出**——planner-executor + Editor 大纲 + LangGraph 编排 + 8-agent 分工 + 并行子研究，分层规划与角色化编排是精装度 4 的核心支撑。⚠️**弱**——编排底座为 **LangGraph**（非完全自研引擎，依赖外部库）；规划时域 N 由 `max_sections` 固定，无图级滚动重规划。
+**强弱项**：⭐⭐**最突出**——planner-executor + Editor 大纲 + LangGraph 编排 + 8-agent 分工 + 并行子研究，分层规划与角色化编排是精装度 3.7 的核心支撑。⚠️**弱**——编排底座为 **LangGraph**（非完全自研引擎，依赖外部库）；规划时域 N 由 `max_sections` 固定，无图级滚动重规划。
 
 ---
 
@@ -131,11 +131,11 @@
 
 **整体范式**：**LangGraph 底座上的 8-agent 研究流水线——planner-executor 分层编排 + Reviewer-Revisor 评审闭环 + 多格式报告，开箱即用的深度研究工厂**。
 
-**最突出的环**：**P 环（planner-executor + Editor 大纲 + LangGraph 8-agent 编排）与 R 环（Reviewer→Revisor 评审-修订闭环）**——分层编排与显式评审闭环是精装度 4 的两大支柱，也是相对同类的差异点。
+**最突出的环**：**P 环（planner-executor + Editor 大纲 + LangGraph 8-agent 编排）与 R 环（Reviewer→Revisor 评审-修订闭环）**——分层编排与显式评审闭环是精装度 3.7 的两大支柱，也是相对同类的差异点。
 
 **最薄弱的环**：**T 环（执行器/沙箱）**——无 per-session 沙箱，爬取在宿主环境；工具集为研究专用，通用性受限。（注：E 环有独立 Reviewer，是难得的强项。）
 
-**精装房结论**：GPT Researcher 是「**一手（编排自研）、精装度 4、源码级证实的深度研究成品**」——`multi_agents/` 8-agent 团队 + LangGraph `StateGraph` 编排 + `backend/server/app.py` FastAPI + `frontend/nextjs` v0.1.74 Web UI + 多格式报告 + MCP 工具；**其编排底座为 LangGraph（非完全自研引擎）**，这是它与 Dify（自研 graphon）的关键差异，也是它精装度停在 4 而非 5 的原因之一（另有沙箱缺失）。它给架构师的启示是：**「评审-修订闭环」是 E/R 环可复用的优秀范式——独立 Reviewer + 修订上限，比多数产品的「错误重试」更接近真正的误差收敛控制**。
+**精装房结论**：GPT Researcher 是「**一手（编排自研）、精装度 3.7、源码级证实的深度研究成品**」——`multi_agents/` 8-agent 团队 + LangGraph `StateGraph` 编排 + `backend/server/app.py` FastAPI + `frontend/nextjs` v0.1.74 Web UI + 多格式报告 + MCP 工具；**其编排底座为 LangGraph（非完全自研引擎）**，这是它与 Dify（自研 graphon）的关键差异，也是它精装度停在 3.7 而非 5 的原因之一（另有沙箱缺失）。它给架构师的启示是：**「评审-修订闭环」是 E/R 环可复用的优秀范式——独立 Reviewer + 修订上限，比多数产品的「错误重试」更接近真正的误差收敛控制**。
 
 ---
 

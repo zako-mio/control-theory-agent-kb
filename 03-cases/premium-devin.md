@@ -119,7 +119,7 @@
 
 **最薄弱的环**：**M 环（记忆）**——Knowledge/Playbook/Skill 体系完整但为自由文本、无显式置信度、无自动引用校验过期；E 环虽有视频证据与截图循环，但视觉验证仍依赖识别、非自动量化。
 
-**精装房结论**：**5 分、一手、文档级证实、声称相符**——Devin 与 OpenHands/WorkBuddy/Dify 同处「真·开箱即用成品」档：预装 UI + 多 Agent + 沙箱/工具 + 一键部署，零配置即跑端到端。其区别于 4-4.5 分产品（Cursor/Windsurf）的关键在**真 DAG 编排（Dynamic Workflows）与每 session 独立 VM 沙箱**；区别于其他 5 分产品在于**Computer Use 全桌面能力 + 企业安全治理（Security Profiles/Outposts）**。需注意：满分是「预装度」意义上的满分，不等于「任意任务零失败」——官方明示「极难任务除外」「若你三小时能做完 Devin 多半也能」；且 Dynamic Workflows 成本高、需小切片试跑。结论为文档级，未经黑箱实测。
+**精装房结论**：**5 分、一手、文档级证实、声称相符**——Devin 与 WorkBuddy 同处「真·开箱即用」档（≥4.5），OpenHands/Dify 等紧随其后（成品化受限档）：预装 UI + 多 Agent + 沙箱/工具 + 一键部署，零配置即跑端到端。其区别于 4-4.5 分产品（Cursor/Windsurf）的关键在**真 DAG 编排（Dynamic Workflows）与每 session 独立 VM 沙箱**；区别于其他高分产品（如 WorkBuddy 4.6）在于**Computer Use 全桌面能力 + 企业安全治理（Security Profiles/Outposts）**。需注意：满分是「预装度」意义上的满分，不等于「任意任务零失败」——官方明示「极难任务除外」「若你三小时能做完 Devin 多半也能」；且 Dynamic Workflows 成本高、需小切片试跑。结论为文档级，未经黑箱实测。
 
 ---
 
