@@ -1,7 +1,7 @@
 # AI 索引 — 控制理论 ⊗ Agent 设计知识库 (00-index.md)
 
 > **AI 友好镜像**，检索优先走本目录（`05-md/`）。人类可读版在 `04-interactive/` + `03-cases/`。
-> 版本：v1.2.0（6 框架 + 14 精装房全景 + 自改造 opencode 变体）　创建：2026-09-07　v1.1 扩展：2026-09-08　v1.2 扩展：2026-09-09（自改造 opencode 变体专题）
+> 版本：v1.3.0（6 框架 + 14 精装房全景 + 自改造 opencode 变体）　创建：2026-09-07　v1.1 扩展：2026-09-08　v1.2 扩展：2026-09-09（自改造 opencode 变体专题）　v1.3 扩展：2026-09-11（自改造 opencode 变体复评）
 
 ## 知识库定位
 
@@ -101,6 +101,15 @@
 3. **各产品最弱环分化**——opencode/dsh/PRIME/claude-code = E，hermes/codex = P。
 4. **M 环普遍缺置信度（P 协方差）**——记忆多记事实不记"我有多确定"（PRIME 带版本/hermes 带离散标记相对最好）。
 5. **装配层可定向补齐内核弱环**——官方 opencode E/R 弱，经自改造（reflection/grill-me/search-worker/门控）E/R 反转，精装度 2.9→3.9（+1.0）。
+
+## 自改造 opencode 变体专题（v1.3）
+
+> 版本：v1.3（2026-09-11）。相对 v1.2：装配层由 9 agent / 28+11 双根 skill / 1 command 演进为 **10 agent / 45 skill 单根 / 2 command**，新增「架构判断三层栈」与「能力自我扩展 SOP」；复评确认属能力纵深增长、未跨评分模型 5 档阈值，**精装度维持 3.9**。
+
+- **口径**：10 agent（+6 专职 worker：pdf/drawio/architect/vision/reflection/search）/ 45 skill 单根统一（41 可加载，4 个 `_SKILL.md` 命名不达标未加载）/ 6 MCP / 2 command（reflection、arch）/ 5 instructions（新增 architecture-behavior.md，agent-protocol.md 并入 auto-mode.md）。
+- **新增纵深机制**：架构判断三层栈（architecture-judgment skill 167 节点离线 KG + architect-worker + architecture-behavior.md + `/arch` + `gate_architecture.py` ADR 门控）；能力自我扩展 SOP（`opencode-capability-extension`：诊断→双根统一→引用普查→契约先行→门控+冒烟→单一真相源+派生对账）。
+- **评分**：官方 2.9 → 自改造 3.9（Δ+1.0）维持不变；变体不参与 14 产品市售排名（见契约 §2.7）。
+- **权威文件**：画像 `03-cases/opencode-custom.md`、diff `03-cases/opencode-custom-diff.md`、实验 `06-experiments/opencode-custom.md`（实验 7-10）。
 
 ## 精装房全景专题（v1.1，14 产品）
 

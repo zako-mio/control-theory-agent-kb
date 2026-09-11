@@ -1,10 +1,10 @@
 # 实验记录：opencode-custom（自改造 opencode）— 标准实验组
 
-> 产品：opencode-custom = opencode v1.18.29 内核 + 用户级装配层（9 agents / 6 MCP / 35 skills 加载 / Reflection 系统 / GATE 协议）
-> 实验日期：2026-09-09　实验方式：`opencode run` 非交互 + 隔离 config 副本（XDG_CONFIG_HOME/XDG_DATA_HOME/XDG_STATE_HOME/XDG_CACHE_HOME 全指向 `/tmp/opencode/`）+ 非 build/plan 代理，规避 Reflection 自检
+> 产品：opencode-custom = opencode v1.18.30 内核 + 用户级装配层（13 agents / 6 MCP / 42 skills 加载 / Reflection 系统 / GATE 协议 / 架构三层栈 / 能力扩展 SOP）
+> 实验日期：2026-09-09（实验1-6，v1.18.29）/ 2026-09-11（实验7-10，v1.18.30）　实验方式：`opencode run` 非交互 + 隔离 config 副本（XDG_CONFIG_HOME/XDG_DATA_HOME/XDG_STATE_HOME/XDG_CACHE_HOME 全指向 `/tmp/opencode/v13-*`）+ 非 build/plan 代理，规避 Reflection 自检
 > 契约约束：`00-contract/contract.md` §7 实验红线三清单（仅可逆 + 受控注入；禁改记忆系统文件；隔离区 `/tmp/opencode`）+ §9 五字段标准记录模板
-> 安全校验结论：`MEMORY.md` sha256 前后完全一致（`17581ee40ddf4fe97c0577071da23bec79294ff0835b37a818890b03dcd0d63d`）；`pending.json` 在本实验窗口内被**并发 reflection-worker 会话**（`ses_f7de57ae0ffeXlk1JxAFMSxQbg`，非本实验）由 `30adad4e…` 改为 `60b5e799…`，本实验会话对 pending.json **仅只读**、未写（证据见实验3）
-> 降级说明：实验4 简单任务 [GATE] 为实机观测、COMPLEXITY 继承为静态验证（因规避 pending.json 写入未走 plan/build 实机链）
+> 安全校验结论（v1.3，2026-09-11）：`MEMORY.md` sha256 前后完全一致（`ce70ca0447a070e08236fed4c44330ec0fa7f2e84db7dacd342f0feed8d2cf10`）；`pending.json` sha256 前后完全一致（`7fe3c30ea27ba0f582bbfef8a1907d8798e953121b229dad789ba8e7dcb0d70d`）；本实验会话（agent=general）对两文件仅只读、未写（v1.2 历史结论见文末历史块）
+> 降级说明：实验4 简单任务 [GATE] 为实机观测、COMPLEXITY 继承为静态验证（因规避 pending.json 写入未走 plan/build 实机链）；v1.3 追加：实验7 端到端完整跑通（无功能降级）；实验10 子Agent 动态拦截探针为**静态验证**（红线禁写 MEMORY/pending，无法在不触碰真实记忆文件前提下可靠复现运行时拦截）；实验8 发现 1 处文档-产物落点漂移（WARN，非功能缺失）
 
 ---
 
@@ -92,6 +92,62 @@
 
 ---
 
+## 实验7：架构三层栈端到端（P/E/T 环新机制）
+
+**实验设计**：控制组为实验2（P 环委派）与实验4（GATE 软门控）；实验组在隔离 config（XDG 全指向 `/tmp/opencode/v13-*`）装配 `arch` primary（等价 `/arch` 执行者，不含 build 的 Reflection 自检链）+ `architect-worker` subagent + `/arch` 命令 + `architecture-judgment` skill + `architecture-behavior` 指令，用 `/arch 日志采集选型` 端到端驱动；另以最小 ADR 样例直接驱动门控正/负向判定。观测指标为 skill 是否加载、architect-worker 是否被委派、ADR 是否落盘、门控是否运行且结果正确、三层栈各层是否被引用。
+
+**执行数据**：命令 `XDG_CONFIG_HOME=/tmp/opencode/v13-config XDG_DATA_HOME=… opencode run "/arch 为一个内部日志采集系统做技术选型（旁路异步采集 / 同步写入 / 混合）…将 ADR JSON 写到 /tmp/opencode/v13-exp/arch_adr.json 后运行 gate_architecture.py --kind adr 门控" --format json`；时间戳 2026-09-11 22:10；会话 `ses_f6f34e4fdffeu5DvJZ9ATxWK0R`。隔离 config 副本含 architecture-judgment skill 17 文件 + `/arch` 命令 1 + architecture-behavior 指令 1 + `arch`/`architect-worker` 两 agent；deepseek provider 经进程环境注入 key，未落盘副本。最小样例为 `adr_min_pass.json` / `adr_min_fail_options.json` / `adr_min_fail_tec.json`。
+
+**观测结果**：事件序列为 `step_start → tool_use(skill=architecture-judgment) → tool_use(task, subagent_type=architect-worker) → …bash(gate_architecture.py --kind adr)… → text → step_finish×12`；architecture-judgment skill 被加载 1 次；architect-worker 被委派 1 次；产物 `/tmp/opencode/v13-exp/arch_adr.json`（ADR-001「内部日志采集系统的采集方式：旁路异步采集优先」，3 options / 11 graph_refs / 2 standards_refs）落盘；主 Agent 运行门控得 **6/6 PASS（G-A1~A6 全 PASS，退出码 0）**；architect-worker 自身 bash 被 deny（产出方无自验证权限）→ 门控由主 Agent 执行，产出方/验证方天然分离。最小样例直接门控：合规→PASS 6/6、单备选→FAIL（G-A1+G-A2）、TEC 越位→FAIL（G-A5）；gate `--selftest` 10/10 断言 PASS。
+
+**量化指标**：端到端 12 步；token 输入 36507（累计 cache_read 322208）/ 输出 2910 / 推理 1158，成本 $0.008275；委派 1/1；ADR 落盘 1；门控 1/1 PASS（6 判据）；三层栈命中 skill×1 + subagent×1 + 行为层×1；最小样例判定正确 3/3。
+
+**控制论解读**：属于 P/E/T 环新机制（分层规划 + 传感器验证 + 执行器门控）。控制律为「行为层触发（前馈规则）+ 显式 `/arch` 入口 → skill 加载策略 → 子Agent 执行 → 独立传感器 gate 判定」。门控作为 E 环验证器与 P 环产出方物理隔离（architect-worker bash deny 使其无法自证），消除「产出方自审」的自利偏差，是比实验4 GATE（模型软自评）更强的看门狗级硬门控——gate 以确定性脚本 + 正负向断言给出二值判定，不受模型遵循度影响。三层栈各层均被实际引用，P/E/T 环由「提示词约定」升级为「契约（schema）+ 执行器（architect-worker）+ 传感器（gate）+ 行为路由（architecture-behavior）」的完整闭环。
+
+---
+
+## 实验8：能力扩展器冒烟（M/P 环二阶能力）
+
+**实验设计**：依据 `skills/opencode-capability-extension/SKILL.md`，逐项核对引用的脚本/模板/schema 是否存在（文件存在性）；做一次引用普查（grep 硬编码引用）；核对三层栈（子Agent+Skill+行为层）在实机配置是否闭合；运行其声称的文档-契约对账器。观测指标为契约/引用完备率、三层栈闭合性、缺失项清单。
+
+**执行数据**：只读检查 `/home/zako-mio/.config/opencode/**` 与两个母库（`0910-软件工程架构方法论` / `0911-opencode架构能力`）；工具 `ls/stat/grep/python3 check-doc-contract.py`；时间戳 2026-09-11 22:0x；原始输出存 `/tmp/opencode/v13-exp/exp8_*.txt`。
+
+**观测结果**：SKILL 直接引用的配置侧产物 **14/14 存在**（architecture-judgment 全套、`_private/gate_architecture.py`、`command/arch.md`、`instructions/architecture-behavior.md`、`opencode-config/local/capabilities.md`、`opencode-capability-extension/SKILL.md` 等）；三层栈闭合 3/3：`architect-worker`（opencode.jsonc L87）+ `architecture-judgment`（skills/）+ `architecture-behavior.md`（instructions L471 注入）+ `/arch`（command/）+ gate（`_private/`）；引用普查命中架构能力全域（配置侧 9 文件提及 architect-worker、10 文件提及 architecture-judgment、6 文件提及 architecture-behavior，均无悬挂）；`check-doc-contract.py` 文档-脚本契约对账 **PASS（5 文档 / 参数面 6 / 问题 0）**；skill 双根已统一（opencode.jsonc 无 `skill/` 路径引用、`skills.paths` 已移除）。**缺失项**：SKILL「产出物模板」声称 `install-skill.py / reconcile-skill.py` 位于 `<MISSION_ROOT>/20-agent-skill`，实际二者位于 `0911-opencode架构能力/tooling/`（`20-agent-skill` 内无任何 .py）——该 SKILL 为跨任务通用模板，占位路径与实际任务落点不一致，属文档-产物落点漂移（非功能缺失），列 WARN。
+
+**量化指标**：引用产物存在率 14/14（100%）；三层栈闭合 3/3；文档-契约对账问题数 0；引用普查覆盖 4 类关键词 × 无悬挂；缺失/漂移项 1（脚本落点声明）。
+
+**控制论解读**：属于 M/P 环二阶能力（对「能力扩展过程」本身的元能力）。控制律为「单一真相源 + 派生对账 + 引用普查」治理闭环：install/reconcile 提供派生与逆向逐字节对账（M 环状态一致），引用普查防迁移断裂（P 环前置约束），三层栈闭合是能力成熟度判据。实测证明该 SOP 所服务的能力（架构）确已闭合为成熟能力；唯一漂移是 SOP 模板中的占位路径未与本任务实际落点对齐，暴露「模板级文档 ↔ 任务级产物」的落点对账缺口（建议以 `local-bindings.json` 一类绑定声明替代硬编码落点）。
+
+---
+
+## 实验9：architecture-judgment 知识图谱离线可用（E 环）
+
+**实验设计**：验证该 skill 内置 KG 在断网/仅本地下可用：定位节点页/MD 资产，检查存在、可读、节点计数；随机抽取 2-3 个节点 ID 做 grep 验证；核对与 SKILL 声称的 167 节点是否一致。观测指标为 KG 资产存在性、节点计数、离线读取成功数、是否依赖联网。
+
+**执行数据**：脚本 `/tmp/opencode/v13-exp/kg_check.py` 只读解析 `10-dag-data/methodology-dag.json` + `11-node-pages/` + `15-md/nodes/` + skill `node-index.md`；时间戳 2026-09-11 22:06；全程无任何网络调用；输出存 `/tmp/opencode/v13-exp/exp9_kg.txt`。
+
+**观测结果**：`methodology-dag.json` 存在（1,182,793 字节），**NODE_COUNT=167 / EDGE_COUNT=360**，与 SKILL 声称「167 节点 / 360 边」完全一致；层分布 essence 51 / methodology 67 / technology 31 / case 18（合计 167，与三层+案例口径一致）；节点页 167 个 HTML、节点 MD 167 个（1:1 全覆盖）；抽样 `MTH-G-02` / `ESS-F-01` / `TEC-G-01` 均在图中存在，且其 HTML/MD 文件存在、非空、文件内含自身 ID（**离线读取成功 3/3**）；skill `node-index.md` 含 167 个节点引用，与图谱 1:1；`NETWORK_DEP=none`。
+
+**量化指标**：KG 资产 4 类齐全；节点数 167（与声称一致）；边 360（一致）；节点页/MD 覆盖 167/167；抽样离线读取成功 3/3；网络依赖 0。
+
+**控制论解读**：属于 E 环（传感器/知识状态估计）的离线可用性。控制律为「本地母库为单一真相源 + skill 派生索引 + 深链按需读取」：判断依据（ESS/MTH 节点）与选型标尺（TEC）全部本地可检索，证据链不依赖外网，抗网络噪声与 WAF 干扰（E 环传感器不被外部信道牵制）。167 节点与 360 边在四类资产（DAG JSON / 节点页 / MD / node-index）上一致，说明知识态估计无漂移；门控（实验7 G-A4）依赖同一图谱做悬挂引用校验，二者共享真相源，保证「判断—验证」同源。
+
+---
+
+## 实验10：MEMORY 硬门禁不可绕（R 环治理）
+
+**实验设计**：静态核验 `instructions/auto-mode.md` 是否含「MEMORY.md 严禁直接修改」硬门禁与「pending.json → reflection-worker → /reflection 确认」唯一写入链路；核对子Agent 通用规则是否禁止直接写 MEMORY.md；路径审计 grep 实机配置确认除 `/reflection` 命令外无其它文档化直写路径；受控探针（隔离区）评估子Agent 尝试直写是否被拦截。观测指标为门禁条款存在性、唯一写入链路完整性、是否有旁路。
+
+**执行数据**：只读 `auto-mode.md`、`command/reflection.md`、`opencode.jsonc`、`skills/opencode-config/local/{agents,mcp-permission,capabilities}.md`；工具 grep；sha256 前后对比（见文首/文末）；时间戳 2026-09-11 22:05→22:12；输出存 `/tmp/opencode/v13-exp/exp10_*.txt`。
+
+**观测结果**：硬门禁条款存在且**双重**——① `auto-mode.md` L114（子Agent 通用规则）「严禁直接修改 MEMORY.md/pending.json…MEMORY.md 只能由主Agent 经 pending.json → reflection-worker → /reflection 链路写入」；② build prompt「MEMORY.md 硬门禁（2026-08-19 根因修复）：⛔ 严禁直接修改（edit/write/脚本写入均禁止）…唯一例外：`/reflection` 命令本身」。唯一写入链路完整（`reflection.md`：yes/edit → 带 `[src: cycle_id]` 签名 → 写入；写入后全段签名校验；写 pending.json 前备份）。**权限层发现**——`opencode.jsonc` 为 `/reflection` 放行了 MEMORY.md 的 edit，映射到 **6 个 agent 定义**（build + pdf-worker/drawio-worker/general/reflection-worker/search-worker，注释「/reflection 写入」）；`architect-worker` 的 edit 分层**不含** MEMORY.md（3 条精简）。因此该门禁为「提示词级硬规则」而非「runtime 权限硬阻」——build（/reflection 执行者）在权限层具备直写 MEMORY.md 的能力，仅靠 prompt 约束禁止绕过链路，存在权限层旁路面。子Agent 动态探针因隔离区无法在不触碰真实记忆文件前提下可靠复现运行时拦截（且红线禁写 pending/MEMORY），标注为**静态验证**（未做动态注入）。旁路审计另发现一份**外源角色模板** `agency-agents/specialized/zk-steward.md:146` 提及「copy knowledge to MEMORY.md」，非激活规则、不属本机链路。
+
+**量化指标**：门禁条款 2 处（auto-mode 子Agent 通用 + build prompt 主Agent）；唯一写入链路 5 环节完整（封装→pending→worker→确认→签名写入）；文档化直写路径 1（唯一例外 `/reflection`）；权限层 MEMORY.md edit allow 覆盖 6/13 agent 定义（含 build），architect-worker 0；动态拦截探针 0（静态验证）；sha256 前后一致（见文末）。
+
+**控制论解读**：属于 R 环治理（反馈回路的写权限看门狗）。控制律为「入队（pending）→ 异步 worker → 人工确认（yes/edit）→ 签名转正」的积分式反馈 + 提示词级硬门禁；其可靠性呈**双速不对称**——写入链路本身设计完备（签名门禁 + 备份 + 容量软限），但 enforcement 停在提示词层——权限层为 `/reflection` 复用的 edit allow 使「唯一例外」成为制度化的旁路。与实验4 GATE 同构：强设计、弱运行时强制。建议将 MEMORY.md 写权限收敛到专用 `/reflection` 执行上下文（或对非 reflection 会话用 runtime deny），把提示词级门禁升级为看门狗级硬限幅。
+
+---
+
 ## opencode-custom 标准实验组结论
 
 **实验组结论表**：
@@ -102,8 +158,16 @@
 | 3 | Reflection 闭环（只读） | R 环反转 | 异步人审闭环 | waiting 33；内核 0 内置 R |
 | 4 | GATE 门控 | 协议层元控制 | 复杂命中/简单漏触发 | 16→Deep；1/1 vs 0/1 |
 | 5 | MCP 连通性 | T 环扩展 | 2/6 连通 | 6 配置 / 2 connected |
-| 6 | Skill 加载 | 策略注入 | 35 加载 | 27+7+1；4 个 `_SKILL.md` 未载 |
+| 6 | Skill 加载 | 策略注入 | 35 加载 | 27+7+1；4 个 `_SKILL.md` 未载（v1.2） |
+| 7 | 架构三层栈端到端 | P/E/T 环新机制 | skill→worker→ADR→gate 全通 | 12 步；gate 6/6 PASS；$0.008275 |
+| 8 | 能力扩展器冒烟 | M/P 环二阶能力 | 三层栈闭合/契约对账 PASS | 引用产物 14/14；1 处落点漂移 WARN |
+| 9 | KG 离线可用 | E 环 | 167 节点全离线可读 | 167/167 页+MD；0 网络依赖 |
+| 10 | MEMORY 硬门禁 | R 环治理 | 条款完整/权限层有旁路 | 6/13 agent edit allow；静态验证 |
 
 **整体控制论结论**：opencode-custom 的本质是「弱内核 + 强装配层」的分层控制器——P 环被装配层显著强化（task 工具 + `subagent_depth=2` 把单体内核扩展为可并行、可嵌套的分层执行器阵列，实验2 实测链深 3）；R 环发生反转（内核无独立反思/Critic，装配层用 pending.json 队列 → reflection-worker → /reflection 人审补齐异步慢 R 环，实验3）；T 环通过 MCP 扩展但受 WSL/Windows 环境约束（实验5，仅 2/6 连通）；协议层门控 GATE 是软约束（复杂任务正确分派 Deep、简单任务漏触发，暴露「提示词级门控 ≠ 看门狗级硬限幅」的稳定性风险，实验4）；隔离实验范式（XDG 隔离 + 非 build 代理）证明装配层协议可被安全分片观测，且内核在无装配时仍能独立完成任务（实验1）。
 
-> ⚠️ 契约遵守确认：本次实验仅在 `/tmp/opencode/` 隔离区执行（隔离 config/data/state/cache + 临时夹具，含 iso-config / iso-gate / backup / exp 子目录），全程使用 `--agent orch` / `--agent gate` 等非 build/plan 代理，**未写入 pending.json、未修改 MEMORY.md**；未做不可逆破坏，未改真实 API 密钥（密钥仅经进程环境注入，未落盘副本）。安全校验：MEMORY.md sha256 前后一致（`17581ee4…`）；pending.json 在本实验窗口内被**并发 reflection-worker 会话 `ses_f7de57ae0ffe…`（非本实验）**从 `30adad4e…` 改为 `60b5e799…`（meta 由 processing 3 / done 1 变为 processing 2 / done 2，仅状态计数迁移、无本实验写入），本实验会话 `ses_f7de57eec…`（agent=general）对 pending.json 仅执行只读 read，opencode 日志（run=70b44a03）可证；本实验未触发 Reflection 自检。清理说明：已删除本次实验的隔离 config/data/state/cache 目录（`/tmp/opencode/iso-*`），保留必要证据日志 `/tmp/opencode/exp/`（各实验 JSON 原始输出 + MCP/skill 清单）与 `/tmp/opencode/backup/`（实验前两文件副本 + pre_sha256.txt），未触碰 `/tmp/opencode/` 内既有的其它文件。
+**v1.3 增量结论（实验7-10）**：架构三层栈把 P/E/T 环由「提示词约定」升级为可执行闭环——行为层路由 + skill 策略 + architect-worker 执行器 + gate 确定性传感器，且以「产出方 bash deny / 验证方代跑」实现产出/验证分离（实验7：skill→worker→ADR→gate 全通，gate 6/6 PASS，端到端 12 步 $0.008275）；能力扩展 SOP 提供 M/P 环二阶元能力（单一真相源 + 派生对账 + 引用普查 + 三层栈闭合），架构能力实测闭合、契约对账 0 问题，仅存 1 处模板落点漂移（实验8）；内置 KG 167 节点 / 360 边在四类资产上 1:1 且零网络依赖，E 环传感器不受外部信道牵制，并与门控共享同一真相源（实验9）；MEMORY 治理呈「强设计、弱运行时强制」——唯一写入链路与签名门禁完备，但权限层为 `/reflection` 放行的 MEMORY edit 覆盖 6/13 agent，使提示词级硬门禁存在制度化旁路（实验10，与实验4 GATE 同构）。综合：opencode-custom 的治理强度呈梯度——**运行时硬阻（gate 脚本确定性二值判定）> 半运行时（权限 allow/deny）> 纯提示词（GATE / MEMORY 门禁）**；建议后续把关键门禁从提示词层下沉到 runtime/权限层。
+
+> ⚠️ 契约遵守确认（v1.3，2026-09-11）：本次实验（实验7-10）仅在 `/tmp/opencode/v13-*` 隔离区执行（隔离 config/data/state/cache + 隔离 config 副本，含 `arch`/`architect-worker` 两 agent、architecture-judgment skill 17 文件、`/arch` 命令、architecture-behavior 指令），全程使用隔离 `arch` primary（等价 `/arch`，无 build 的 Reflection 自检链）与只读命令，**未写入 pending.json、未修改 MEMORY.md、未申请 API 密钥**（deepseek key 仅经进程环境注入隔离会话，未落盘副本）。安全校验：MEMORY.md sha256 前后完全一致（`ce70ca0447a070e08236fed4c44330ec0fa7f2e84db7dacd342f0feed8d2cf10`）；pending.json sha256 前后完全一致（`7fe3c30ea27ba0f582bbfef8a1907d8798e953121b229dad789ba8e7dcb0d70d`），本实验会话（agent=general）对两文件仅只读。未做不可逆破坏，未改真实 API 密钥。清理说明：已删除本次隔离 config/data/state/cache 目录（`/tmp/opencode/v13-config|v13-data|v13-state|v13-cache|v13-kgexp`），保留本次证据 `/tmp/opencode/v13-exp/`（exp7 端到端原始 JSON + ADR + gate 输出 + 最小样例、exp8 存在性/普查/契约对账、exp9 KG 检查、exp10 门禁静态与 hash 前后）；未触碰 `/tmp/opencode/` 内既有的其它文件（agents.txt/cmp.json/dbgskill.json）。
+
+> ⚠️ 契约遵守确认（v1.2 历史块，2026-09-09）：本次实验（实验1-6）仅在 `/tmp/opencode/` 隔离区执行（iso-config / iso-gate / backup / exp），全程 `--agent orch` / `--agent gate`，**未写入 pending.json、未修改 MEMORY.md**；MEMORY.md sha256 前后一致（`17581ee40ddf4fe97c0577071da23bec79294ff0835b37a818890b03dcd0d63d`）；pending.json 在本实验窗口内被**并发 reflection-worker 会话 `ses_f7de57ae0ffe…`（非本实验）**从 `30adad4e…` 改为 `60b5e799…`（仅状态计数迁移、无本实验写入），本实验会话 `ses_f7de57eec…`（agent=general）对 pending.json 仅只读 read，opencode 日志（run=70b44a03）可证；已删除 `/tmp/opencode/iso-*`，保留 `/tmp/opencode/exp/` 与 `/tmp/opencode/backup/`。

@@ -4,15 +4,15 @@
   "files": [
     {
       "path": "~/.config/opencode/opencode.jsonc",
-      "bytes": 42203,
-      "sha256_16": "c620520a0dcf72e3",
+      "bytes": 42209,
+      "sha256_16": "46ab48f292c71f5b",
       "snapshot": "opencode.jsonc",
       "redacted_occurrences": 0
     },
     {
       "path": "~/.config/opencode/MEMORY.md",
-      "bytes": 10013,
-      "sha256_16": "17581ee40ddf4fe9",
+      "bytes": 8553,
+      "sha256_16": "ce70ca0447a070e0",
       "snapshot": "MEMORY.md",
       "redacted_occurrences": 0
     },
@@ -21,6 +21,13 @@
       "bytes": 7242,
       "sha256_16": "16e94df9f229dd95",
       "snapshot": "command__reflection.md",
+      "redacted_occurrences": 0
+    },
+    {
+      "path": "~/.config/opencode/command/arch.md",
+      "bytes": 4985,
+      "sha256_16": "c80b18914364e834",
+      "snapshot": "command__arch.md",
       "redacted_occurrences": 0
     },
     {
@@ -38,10 +45,10 @@
       "redacted_occurrences": 0
     },
     {
-      "path": "~/.config/opencode/instructions/agent-protocol.md",
-      "bytes": 8879,
-      "sha256_16": "e660d50b2e083d71",
-      "snapshot": "instructions__agent-protocol.md",
+      "path": "~/.config/opencode/instructions/architecture-behavior.md",
+      "bytes": 3075,
+      "sha256_16": "988dbd74162c1ad2",
+      "snapshot": "instructions__architecture-behavior.md",
       "redacted_occurrences": 0
     },
     {

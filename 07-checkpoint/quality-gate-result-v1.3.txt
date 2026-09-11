@@ -1,0 +1,181 @@
+================================================================================
+控制理论 ⊗ Agent 设计知识库 — v1.3 分层门控结果
+================================================================================
+版本     : v1.3.0（2026-09-11 自改造 opencode 变体复评）
+执行日期 : 2026-09-11
+执行者   : general 子Agent（分层门控执行 + 渲染验证）
+门控脚本 : 07-checkpoint/quality-gate.py            (L2 全量审计)
+           07-checkpoint/kb_gate.py                 (L3-L7 结构/断链/导航/级联/覆盖/信源/渲染)
+           07-checkpoint/check_premium_consistency.py (14 产品一致性)
+           09-src-data/opencode_custom_scores.py     (变体评分复算)
+           09-src-data/gen_html.py                   (HTML 生成复算)
+根目录   : /home/zako-mio/opencode/archive/Mission-file/2026-09/0907-控制理论Agent设计知识库
+
+================================================================================
+一、门控层结果总览（L1-L7 全开）
+================================================================================
+L1 生成自验证   PASS      py_compile 09-src-data/*.py + 07-checkpoint/*.py → exit 0
+                           gen_html.py 复算 → exit 0，生成 37 页，sha256 前后幂等（0 漂移）
+L2 全量审计     PASS      quality-gate.py → issues=0, warnings=1
+L3 结构层       PASS      kb_gate structure → checked=164, issues=0, warn=1
+L4 视觉层       SKIPPED   本子Agent 无视觉(VLM)通道，未做语义质检；以 headless 截图 + DOM 真值替代
+                          （截图与 DOM 证据见 §五）
+L5 渲染层       PASS      kb_gate render → checked=40, issues=0；3 目标页 chromium 截图 1440x3400
+L6 覆盖度层     PASS      kb_gate coverage → checked=79, issues=0（显式 manifest，不再跳过）
+L7 信源层       PASS      kb_gate sources → checked=22, issues=0（--content-glob 03-cases/*.md）
+（L3 配套）links PASS      kb_gate links → checked=1814, issues=0
+（L3 配套）nav   PASS      kb_gate nav → 页面=40 / 期望条目=39, issues=0, warn=1
+（L3 配套）cascade PASS    kb_gate cascade → checked=6, issues=0, warn=1
+一致性核对       PASS      check_premium_consistency.py → 14 产品 × 6 处口径全部一致
+                          （变体 opencode-custom 未进入 14 产品市售排名，未污染谱系）
+评分复算         PASS      opencode_custom_scores.py → exit 0
+                          官方 opencode 2.88→2.9；opencode-custom 3.85→3.9（Δ+1.0，档位维持）
+
+汇总：7 层全开 → PASS=6, SKIP=1(L4 VLM), FAIL=0。
+      issue 总数 = 0；warning 3 类（均非交付缺失，逐条见 §七）。
+      两次完整运行结果一致（诚实双重跑，排除瞬态污染）。
+
+================================================================================
+二、证据命令（可复现）
+================================================================================
+[L2] python3 07-checkpoint/quality-gate.py
+[L3-L7 合并] python3 07-checkpoint/kb_gate.py --root . \
+        --layers structure,links,nav,cascade,coverage,sources,render \
+        --exclude 05-source --exclude 03-cases/source \
+        --exclude 07-checkpoint/tmp-evidence --exclude archive \
+        --exclude 07-checkpoint/opencode-custom-snapshot \
+        --nav-source 09-src-data/nav_data.py \
+        --manifest /tmp/opencode/kb-gate/coverage-manifest-v1.3.txt \
+        --content-glob "03-cases/*.md" \
+        --render-glob "04-interactive/*.html" --render-glob index.html \
+        --json-out 07-checkpoint/gate-result.json
+[一致性] python3 07-checkpoint/check_premium_consistency.py
+[评分]   (cd 09-src-data && python3 opencode_custom_scores.py)
+[复算]   (cd . && python3 09-src-data/gen_html.py)   # 幂等：复算前后 sha256 一致
+[自验证] python3 -m py_compile 09-src-data/*.py 07-checkpoint/*.py
+[截图]   /usr/bin/chromium-browser --headless --no-sandbox --disable-gpu --hide-scrollbars \
+        --virtual-time-budget=6000 --window-size=1440,3400 \
+        --screenshot=07-checkpoint/l4-v13-<case|compare|exp>.png \
+        file://<KB>/04-interactive/<case-opencode-custom|compare-opencode|exp-opencode-custom>.html
+[DOM]    /usr/bin/chromium-browser --headless --no-sandbox --disable-gpu --virtual-time-budget=6000 \
+        --dump-dom file://... > /tmp/opencode/kb-gate/dom/<case|compare|exp>.html
+
+覆盖率 manifest 为显式清单（79 项），置于 /tmp/opencode/kb-gate/coverage-manifest-v1.3.txt
+（临时输入，不入公开库）。coverage 层本次带 --manifest 显式运行，不再静默跳过。
+门控 JSON 明细输出 07-checkpoint/gate-result.json（.gitignore 已排除，非公开产物）。
+
+================================================================================
+三、v1.2 版本标识残留清单（当前版本标识残留 = 0）
+================================================================================
+命令：grep -rn "v1\.2" <KB> --include=*.html --include=*.md --include=*.py \
+        --include=*.json --include=*.txt | grep -v '^\./archive/' | grep -v '^\./05-source/' \
+        | grep -v '^\./03-cases/source/'
+结果：命中 24 行，**全部为「历史沿革 / 版本对照」叙述**，无一处是当前版本标识。
+      结论：当前版本标识残留 = 0 ✔
+
+逐条说明（文件:行 → 语境）：
+  1. 03-cases/opencode-custom-diff.md:5    版本行「相对 v1.2：改造清单由 8 类扩为 10 类」→ 沿革
+  2. 03-cases/opencode-custom-diff.md:9    基线「相对 v1.2 的 1.18.29 仅版本号标注变化」→ 沿革
+  3. 03-cases/opencode-custom-diff.md:23   表格「由 v1.2 的 28 skills+11 legacy 收敛」→ 沿革
+  4. 03-cases/opencode-custom-diff.md:66   发现二标题「精装度 v1.2 已跃升 2.9→3.9」→ 沿革
+  5. 03-cases/opencode-custom-diff.md:67   正文「v1.2 完成从 2.9 到 3.9 的档位跃升」→ 沿革
+  6. 05-md/00-index.md:4                    版本历史「v1.2 扩展：2026-09-09」→ 沿革
+  7. 05-md/00-index.md:107                  版本注「相对 v1.2：装配层 9→10 agent」→ 沿革
+  8. 04-interactive/exp-opencode-custom.html:24  meta「（v1.2 历史结论见文末历史块）」→ 沿革
+  9. 04-interactive/compare-opencode.html:125   表「MCP 与 v1.2 同构，维持 4」→ 对照
+ 10. 04-interactive/compare-opencode.html:136   发现二「v1.2 完成 2.9→3.9 跃升」→ 沿革
+ 11. 09-src-data/gen_html.py:616            生成文案「v1.2 完成 2.9→3.9 跃升」→ 沿革（生成脚本同步）
+ 12. 09-src-data/opencode_custom_scores.py:10  重算记录「v1.2 2026-09-09 快照」→ 沿革
+ 13. 09-src-data/opencode_custom_scores.py:53  evidence「与 v1.2 同构，维持 4」→ 对照
+ 14. 06-experiments/opencode-custom.md:6     安全校验「（v1.2 历史结论见文末历史块）」→ 沿革
+ 15. 06-experiments/opencode-custom.md:161   表「4 个 _SKILL.md 未载（v1.2）」→ 沿革
+ 16. 06-experiments/opencode-custom.md:173   「契约遵守确认（v1.2 历史块）」→ 沿革
+ 17. 00-contract/contract.md:5               版本行「v1.2 扩展：2026-09-09」→ 沿革
+ 18. 00-contract/contract.md:59              章节「2.6 自改造 opencode 变体专题约定（v1.2 新增）」→ 沿革
+ 19. 00-contract/contract.md:88              规则说明「如 v1.2 → v1.3」→ 示例
+ 20. 00-contract/contract.md:139             ID 规则「衍生变体产品 ID（v1.2 新增）」→ 沿革
+ 21. README.md:3                             版本历史「v1.2 自改造 opencode 变体专题：2026-09-09」→ 沿革
+ 22. README.md:11                            正文「版本 v1.2 → v1.3」→ 沿革
+ 23. README.md:13                            漂移表「相对 v1.2 快照 2026-09-09」→ 沿革
+ 24. README.md:15                            漂移表表头「v1.2 | v1.3 | Δ」→ 沿革
+
+生成脚本侧亦有 v1.2 文案（gen_html.py:616），已与生成物同步（双轨一致），非硬编码残留。
+
+================================================================================
+四、历史版本标识（非当前版本，均已显式标注为历史）
+================================================================================
+cascade 层 footer 版本扫描显示：交付页主导版本 v1.3；另有 2 页为历史报告：
+  · report.html（根）                footer = v1.0.0  → 正文含「⚠️ 历史版本（v1.0.0）」标注，
+                                                        并指向 07-checkpoint/report-v1.1.md；属有意保留的初始报告
+  · 07-checkpoint/report-v1.1.html   footer = v1.1    → 文件名即带 v1.1，属 checkpoint 历史报告
+其余交付 HTML（04-interactive/*.html + index.html，共 41 页）footer 版本均 = v1.3 ✔
+（这 2 页历史版本即为 §七 cascade warning 的来源，非当前版本污染）
+
+================================================================================
+五、渲染层产物与 DOM 真值（T2）
+================================================================================
+截图（07-checkpoint/，PNG 1440x3400，均非 .gitignore 排除）：
+  · 07-checkpoint/l4-v13-case.png      case-opencode-custom.html
+  · 07-checkpoint/l4-v13-compare.png   compare-opencode.html
+  · 07-checkpoint/l4-v13-exp.png       exp-opencode-custom.html
+
+DOM 真值（headless chromium --dump-dom 后解析；zcount=document 元素节点总数）：
+  页面                      zcount  footer版本  关键内容校验
+  case-opencode-custom       459      v1.3       含「10 agent」✔ 含「45 skill」✔
+  compare-opencode           462      v1.3       含「10 类改造清单」✔ 含 发现一/二/三/四（4 条）✔
+  exp-opencode-custom        557      v1.3       含 实验1…实验10（10 个）✔
+  画像页原始句：「10 agent（+6 专职 worker：pdf/drawio/architect/vision/reflection/search）」
+                「45 skill 目录（+_shared；41 个可加载 SKILL.md，4 个 _SKILL.md 不达标未加载）」
+  对照页原始句：「04 10 类改造清单」
+
+kb_gate render 层：40 页 --dump-dom 冒烟，0 问题（无 about:neterror / ERR_FILE_NOT_FOUND）。
+
+================================================================================
+六、HTML 双交付门控（UTF-8 / 标签平衡 / 图片引用）
+================================================================================
+范围：HTML 交付物 41 个（04-interactive/*.html + index.html + report.html）；
+      MD 交付物 34 个（03-cases/*.md + 06-experiments/*.md + 05-md/*.md + README/contract/report.md）。
+  · UTF-8 替换字符（U+FFFD）：命中 0 ✔
+  · 标签开闭平衡（div/table/section/nav）：不平衡 0 ✔
+  · 图片引用可达性：交付 HTML 中 <img> 标签数 = 0（图表均为内联 SVG / canvas），
+    图片断链 = 0 ✔（外部资源引用由 kb_gate links 层 1814 条全量覆盖，断链 0）
+另：kb_gate structure 层对全部 164 个文本文件做编码纯净 + 标签平衡 + 空正文检测，0 issue。
+
+================================================================================
+七、排除范围、警告与说明（诚实门控）
+================================================================================
+【排除范围及理由】
+  · 05-source/、03-cases/source/      第三方源码留档（390M，非交付物，.gitignore 已排除）
+  · 07-checkpoint/tmp-evidence/       外部抓取快照（非交付物，.gitignore 已排除）
+  · archive/                          历史留档（历次报告/沿革），非当前交付物；
+                                      与 T3 grep 的排除口径一致
+  · 07-checkpoint/opencode-custom-snapshot/  实机配置脱敏快照（证据源，非内容交付物）
+  说明：若将 archive/ 一并纳入 cascade 层，archive/0909-自改造opencode评估/report.md
+        会因无「历史/归档」字样被判 FAIL——该文件本身即历次任务留档，属目录级历史，
+        非交付缺失；此为范围性假阳性，故按交付物范围排除，并在此显式披露原始命中。
+
+【warnings（3 类，均非交付缺失）】
+  1. L2 quality-gate：01-theory/README.md 知识点 KT 数=0 但证据区块数=1 ——
+     该文件为理论分区说明性 README，非知识点页，口径不适用（沿用 v1.2 既有 warning）。
+  2. L3 structure：.nojekyll 为 0 字节占位文件（GitHub Pages 关闭 Jekyll 所需），属预期。
+  3. cascade：页脚版本号不统一（主导 v1.3）：v1.1(1页)、v1.0.0(1页) ——
+     即 §四 的 2 个历史报告页，非当前版本污染。
+  4. nav：07-checkpoint/report-v1.1.html 跳过导航完整性检查（自带「报告目录」），属预期。
+
+【诚实门控声明】
+  · FAIL 复核：首轮以「交付物范围未收敛」跑出 cascade=FAIL（archive 旧报告）与
+    sources=FAIL（默认 **/*.md 把计划/快照等非内容文件纳入）；经收敛范围（archive 排除、
+    sources 限 03-cases/*.md）后两次运行均 7 层 PASS=6/SKIP=1/FAIL=0，结论稳定，非瞬态。
+  · SKIPPED 层：L4 视觉(VLM) 因本执行者无视觉通道而未做语义质检，显式标 SKIPPED；
+    已用 headless 截图 + DOM 真值对关键内容与页脚版本做机检替代（见 §五）。
+  · 未改任何评分数值；未改 ~/.config/opencode/**；截图与结果文件置于 07-checkpoint/
+    且确认未被 .gitignore 排除（gate-result.json 中间明细已被排除）。
+
+================================================================================
+八、结论
+================================================================================
+v1.3 知识库通过全部可用门控：L1/L2/L3/L5/L6/L7 PASS，L4 VLM 无通道 SKIPPED（DOM+截图替代），
+FAIL=0，issue=0。14 产品市售排名一致性 PASS（变体未污染），变体评分可复算（2.9→3.9）。
+当前版本标识 v1.3 全站一致，v1.2 残留 24 处全为历史沿革叙述（残留=0）。
+生成脚本可复算且幂等，HTML 双交付门控（UTF-8/标签/图片）全过。
+================================================================================

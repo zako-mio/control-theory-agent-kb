@@ -1,8 +1,30 @@
 # 控制理论 ⊗ Agent 设计知识库
 
-> **版本**：v1.2.0（6 框架 + 14 精装房全景 + 自改造 opencode 变体）｜创建：2026-09-07｜v1.1 扩展：2026-09-08｜v1.2 自改造 opencode 变体专题：2026-09-09
+> **版本**：v1.3.0（6 框架 + 14 精装房全景 + 自改造 opencode 变体）｜创建：2026-09-07｜v1.1 扩展：2026-09-08｜v1.2 自改造 opencode 变体专题：2026-09-09｜v1.3 变体复评：2026-09-11
 > **定位**：以 Agent 设计构建为业务核心，控制理论作为解决 Agent 工程问题的**技术工具库**引入。
 > **核心命题**：把 Agent 当作一架装了传感器、执行器、逻辑决断器的无人机去建模与控制，拒绝把它当成会聊天的搜索引擎。
+
+---
+
+## v1.3 复评摘要（2026-09-11）
+
+本轮对「自改造 opencode」变体做复评，**版本 v1.2 → v1.3**，结论：能力纵深增长、评分维持。
+
+**漂移事实**（相对 v1.2 快照 2026-09-09）：
+
+| 维度 | v1.2 | v1.3 | Δ |
+|------|:---:|:---:|:---:|
+| agents | 9 | 10（+architect-worker） | +1 |
+| skills | 28 skills + 11 legacy（双根） | 45 单根统一 | +7 净增、双根合一 |
+| commands | 1 | 2（+arch） | +1 |
+| instructions | 5（含 agent-protocol.md） | 5（新增 architecture-behavior.md；agent-protocol.md 并入 auto-mode.md） | 成分变更 |
+| MCP | 6 | 6 | 0 |
+
+官方基线 1.18.29 → 1.18.30（30 commits，无新增包、包级依赖结构未变）。新增纵深机制：**架构判断三层栈**（architecture-judgment skill + architect-worker + architecture-behavior.md + `/arch` + gate_architecture.py）+ **能力自我扩展 SOP**（opencode-capability-extension）。
+
+**实验层**：只补新机制、不重跑既有 6 实验，新增 4 个实验（7-10）：① 架构三层栈端到端（gate 6/6 PASS）② 能力扩展器冒烟（三层栈闭合 3/3）③ architecture-judgment KG 离线可用（167 节点/360 边 1:1、零网络）④ MEMORY 硬门禁不可绕（暴露权限层旁路）。
+
+**评分维持 3.9 的原因**：本轮 9→10 agent、28+11 双根→45 单根 skill、1→2 command、三层栈等属**能力纵深增长**，未跨评分模型 5 档产品阈值；封顶因素（一键部署=个人 config 无分发、沙箱=非 VM 隔离）未变，故官方 2.9 → 自改造 3.9（Δ+1.0）**维持不变、不虚报跃升**，仅刷新 evidence 与机制叙述。
 
 ---
 

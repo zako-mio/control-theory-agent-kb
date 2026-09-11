@@ -1,4 +1,4 @@
-# opencode v1.18.29 — Agent 控制论画像
+# opencode v1.18.30 — Agent 控制论画像
 
 > 分析基于 `opencode-src-v1.18.29/` 官方源码（monorepo，`packages/opencode` 主应用 + `packages/core` 核心层 + `packages/cli` 命令框架）与已完成装配层分析（`06-md/`）。映射到 `02-framework/framework.md` 的五大核心环（M/P/R/T/E）× KT-ctrl 概念。
 
@@ -123,6 +123,21 @@
 - **R 环局限**：多轮自我纠偏主要靠错误回灌（局部）+ 外部装配层 reflection 系统（滞后、需人工确认），内核无 Reflexion 式元认知反思循环。
 
 **一句话画像**：opencode 是**「规划与执行解耦、执行器高度安全化、但评估与反思依赖外部/人工」的前馈主导控制器**——擅长"把活干得可控、按计划走"，而"判断干得对不对"与"主动重规划"恰是短板，需由装配层（grill-me 收敛、question 用户传感器、reflection 元认知）补全。
+
+---
+
+## 1.18.30 增量点检（2026-09-11）
+
+> 本节仅做官方版本增量核对；正文五环画像仍基于 `opencode-src-v1.18.29/` 的源码级分析。
+
+- **版本跨度**：v1.18.29 → v1.18.30 = 30 commits / 105 文件（+1676 / −403）。
+- **依赖结构**：**无新增包**，包级依赖结构未变。
+- **改动分布**：集中于 `packages/web`(37) + `console/*`(31) + `docs`；**核心运行时仅** `packages/opencode`(7 文件) + `packages/core`(3)。
+- **功能变更**：
+  - Astra system prompt 移植（#48057）
+  - provider SDK 升级：OpenAI 3.0.88 / Azure 3.0.93 / gitlab-ai-provider 6.15.0
+  - Bedrock DeepSeek model id 修复
+- **画像结论**：核心运行时改动集中且无包级结构变化，**官方五环基线分值（M/P/R/T/E）不因该增量调整**（结构未变）。
 
 ---
 

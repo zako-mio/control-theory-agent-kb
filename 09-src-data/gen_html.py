@@ -174,7 +174,7 @@ def page(title, crumb, body, active_file, prev=None, nxt=None):
 {body}
 <div class="pager">{p}{n}</div>
 <footer class="footer">
-<span>控制理论 ⊗ Agent 设计知识库 · v1.2 自改造 opencode 变体版（6 框架 + 14 精装房 + opencode-custom）</span>
+<span>控制理论 ⊗ Agent 设计知识库 · v1.3 自改造 opencode 变体版（6 框架 + 14 精装房 + opencode-custom）</span>
 <span class="fbrand">data: 09-src-data · contract: 00-contract</span>
 </footer>
 </div></div></div></body></html>"""
@@ -225,7 +225,7 @@ def gen_overview():
 <div class="signal">
   <div class="signal-head">
     <span class="label">System Loop · 控制回路</span>
-    <span class="tag">v1.2 · 6 framework + 14 premium + opencode-custom</span>
+    <span class="tag">v1.3 · 6 framework + 14 premium + opencode-custom</span>
   </div>
   <svg viewBox="0 0 900 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="五环控制回路：目标 r 指令 → P 规划 → T 执行 → 世界/环境 → E 评估 → M 记忆 → R 反思，修正量回馈 P/T">
     <defs>
@@ -333,13 +333,13 @@ def gen_overview():
 </div>
 
 <h2><span class="idx">05</span>opencode 自改造专题</h2>
-<p class="lead">官方 opencode 的衍生变体 · 装配层补强 E/R 弱环 · 精装度 2.9→3.9</p>
+<p class="lead">官方 opencode 的衍生变体 · 装配层补强 E/R 弱环 · 10 agent / 45 skill 单根 / 6 MCP / 2 command · 精装度 2.9→3.9</p>
 <div class="grid cols-2">
   <a class="portal-card" href="case-opencode-custom.html" style="background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);padding:var(--space-4);text-decoration:none">
-    <span class="num">VARIANT</span><h3 style="margin:0 0 6px">opencode-custom 控制论画像</h3><p style="margin:0">内核继承 + 装配层增强：GATE/契约/专职 worker/Reflection 把前馈主导内核改造为跨会话自演化闭环</p>
+    <span class="num">VARIANT</span><h3 style="margin:0 0 6px">opencode-custom 控制论画像</h3><p style="margin:0">内核继承 + 装配层增强：10 agent（含 architect-worker）/ 45 skill 单根 / 6 MCP / 2 command；GATE/契约/专职 worker/Reflection，叠加架构判断三层栈与能力扩展 SOP，把前馈主导内核改造为跨会话自演化闭环</p>
   </a>
   <a class="portal-card" href="compare-opencode.html" style="background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);padding:var(--space-4);text-decoration:none">
-    <span class="num">COMPARE</span><h3 style="margin:0 0 6px">官方 vs 自改造对照</h3><p style="margin:0">五环雷达叠加 + 逐环 delta + 精装度 8 维对比，量化 2.9→3.9 的跃升来源</p>
+    <span class="num">COMPARE</span><h3 style="margin:0 0 6px">官方 vs 自改造对照</h3><p style="margin:0">五环雷达叠加 + 逐环 delta + 精装度 8 维对比，量化 2.9→3.9 的跃升来源；v1.3 复评确认能力纵深未跨档位、维持 3.9</p>
   </a>
 </div>
 """
@@ -593,27 +593,31 @@ def gen_compare_opencode():
                         f'<td class="mono" style="color:{col};font-weight:700">{dstr}</td>'
                         f'<td style="font-size:12.5px;color:var(--muted)">{ev}</td></tr>')
 
-    # 8 类改造清单（来自 03-cases/opencode-custom-diff.md §2）
+    # 10 类改造清单（来自 03-cases/opencode-custom-diff.md §2 · v1.3）
     changes = [
-        ("Agent 扩展", "新增 5 个专职 worker：pdf / drawio / vision / reflection / search（hidden subagent，subagent_depth=2）", "P 主 + T", "P：双速→分层编排平台；T：工具能力按 worker 隔离授权"),
-        ("协议层", "auto-mode.md（GATE/COMPLEXITY/variant/委派/留档）+ search-behavior.md（外部信息实证）+ agent-protocol.md（委派/Reflection 自检/MCP 路由）", "P / E / R 跨环", "P：目标物化+推理档分层；E：信源分级+用户确认；R：反思启动即触发"),
-        ("Skill 库", "28 个 skills（cytoscape / kb-construction / openspec 系列等）+ 11 个 legacy skill", "T + E", "T：能力密度大幅提升；E：grill-me 收敛 + 方法论 skill 提供评估范式"),
+        ("Agent 扩展", "装配层 agent 9→10、专职 worker 5→6：pdf / drawio / architect / vision / reflection / search（hidden subagent，subagent_depth=2）", "P 主 + T", "P：双速→分层编排平台；T：工具能力按 worker 隔离授权"),
+        ("协议层", "auto-mode.md（GATE/COMPLEXITY/variant/委派/留档；原 agent-protocol.md 已并入）+ search-behavior.md（外部信息实证）+ architecture-behavior.md（架构触发/知识分层/design 门控）", "P / E / R 跨环", "P：目标物化+推理档分层+架构路由；E：信源分级+用户确认；R：反思启动即触发"),
+        ("Skill 库", "45 skill 目录单根统一（原 28 skills + 11 legacy 双根收敛；41 可加载）+ 新增 7 个（architecture-judgment / capability-extension 等）", "T + E", "T：能力密度大幅提升；E：grill-me 收敛 + 方法论 skill 提供评估范式"),
         ("MCP 集成", "6 个 MCP：vscode / amap / pdf-reader / drawio / drawio-local / headroom（多传输，部分启用）", "T", "T：外部工具生态可插拔，pdf/drawio 仅授权对应 worker"),
         ("Reflection 自演化系统", "MEMORY.md 跨会话记忆 + pending.json 结构化状态机 + reflection-worker + /reflection 命令", "R（核心）", "R：半开环→跨会话闭环自演化（核心反转）；M：补齐长期记忆"),
         ("Provider 扩展", "3 个 provider 预设：opencode-go / deepseek / zhipu，含多模型与 Daily/Deep variant", "T（基建）", "T：模型接入面扩大，支撑专职 worker 与视觉降级路径"),
         ("Compaction / variant 调优", "tail_turns=4、preserve_recent_tokens=16384、reserved=10000；Daily/Deep 推理档分档", "M（基建）", "M：状态估计更新预算精细可控；P：推理档随复杂度动态分配"),
         ("Permission 规则", "external_directory 白名单 + read auth.json deny + bash 危险命令 deny/ask + edit 分层授权", "T（安全）", "T：执行器最小授权与越权收口，仍非完整沙箱"),
+        ("架构判断三层栈", "skill（architecture-judgment，167 节点离线 KG）+ architect-worker + architecture-behavior.md + /arch 命令 + gate_architecture.py ADR 门控（FAIL 回传≤2 轮）", "P + E（+T）", "P：架构域编排固化为门控 SOP；E：首个领域级自动评估门；T：产出/验证分离"),
+        ("能力扩展 SOP（二阶能力）", "opencode-capability-extension：诊断孤儿能力 → 统一双根 → 引用普查 → 契约先行 → 门控+冒烟 → 单一真相源+派生对账；新能力按 Skill+Worker+行为层三层栈装配", "M + P 跨环", "M：单一真相源+派生对账保状态一致；P：引用普查约束能力迁移；获得二阶元能力"),
     ]
     ch_rows = "".join(f'<tr><td><b>{a}</b></td><td>{b}</td><td class="mono">{c}</td><td>{d}</td></tr>'
                       for a, b, c, d in changes)
 
     findings = [
-        ("发现一 · 弱环反转", "官方两大最弱环 E/R 被装配层补齐并反转。",
-         "E 环 2.0→4.0（信源分级 + search-worker 证据包 + 用户传感器）；R 环 2.0→4.5（pending.json 状态机 + reflection-worker + /reflection 签名门禁）。补强方式不是改引擎，而是协议 + 专职 worker + 记忆系统。"),
-        ("发现二 · 精装度跃升", f"{ps.fmt(ocs.final(OFF))} → {ps.fmt(ocs.final(CUS))}（Δ+%.1f），主要来自记忆与 skill 两维。" % (ocs.final(CUS) - ocs.final(OFF)),
-         "8 维中 6 维提升：记忆 +2（达满分 5）、skill +2，多Agent/工作流/模型/MCP 各 +1；仅一键部署与沙箱未提升——个人装配层无分发渠道、无完整沙箱，是精装度封顶的主因。"),
+        ("发现一 · 弱环反转", "官方两大最弱环 E/R 被装配层补齐并反转（仍成立）。",
+         "E 环 2.0→4.0（信源分级 + search-worker 证据包 + 用户传感器 + gate_architecture.py 领域门控）；R 环 2.0→4.5（pending.json 状态机 + reflection-worker + /reflection 签名门禁）。补强方式不是改引擎，而是协议 + 专职 worker + 记忆系统。"),
+        ("发现二 · 精装度复评", f"{ps.fmt(ocs.final(OFF))} → {ps.fmt(ocs.final(CUS))}（Δ+%.1f）；v1.3 复评确认能力纵深未跨档位。" % (ocs.final(CUS) - ocs.final(OFF)),
+         "v1.2 完成 2.9→3.9 跃升：8 维中 6 维提升（记忆 +2 达满分、skill +2，多Agent/工作流/模型/MCP 各 +1）；v1.3 的 agent 9→10、skill 单根 45、架构三层栈等属能力纵深，未跨 5 档阈值，故维持 3.9、不虚报跃升。仅一键部署与沙箱未提升，是封顶主因。"),
         ("发现三 · 编排升级", "从单体双速控制器到分层编排平台。",
-         "官方是 plan/build 双速 + task 委派的单体结构；自改造叠加 5 个专职 worker，形成「主 Agent 编排 + 专职 worker 执行 + Reflection 自演化」三层平台，P 环与 T 环均升至 5.0。代价：编排拓扑仍靠协议文本而非 DAG 画布，闭环反思仍需人工确认。"),
+         "官方是 plan/build 双速 + task 委派的单体结构；自改造叠加 6 个专职 worker，形成「主 Agent 编排 + 专职 worker 执行 + Reflection 自演化 + 架构三层栈门控」分层平台，P 环与 T 环均升至 5.0。代价：编排拓扑仍靠协议文本而非 DAG 画布，闭环反思仍需人工确认。"),
+        ("发现四 · 二阶扩展与领域门控", "装配层具备二阶自我扩展能力与领域化门控（新增）。",
+         "能力扩展 SOP（实验8：三层栈闭合 3/3、引用产物 14/14）使装配层能为自己系统性新增能力；架构三层栈（实验7：gate 6/6 PASS）是首个五元齐备的领域级闭环。实验10 同时暴露治理强度梯度：运行时硬阻 > 半运行时 > 纯提示词，MEMORY 门禁仍存权限层旁路。"),
     ]
     find_cards = "".join(f'<div class="card"><span class="num">{t.split(" · ")[0]}</span>'
                          f'<h3 style="margin:0 0 6px">{t.split(" · ", 1)[1]}</h3>'
@@ -662,13 +666,13 @@ def gen_compare_opencode():
 </table>
 <p style="font-size:12.5px;color:var(--muted)">数值唯一来源：<code>opencode_custom_scores.py</code> 的 <code>SCORES</code> / <code>WEIGHTS</code>；官方加权 {ocs.weighted(OFF):.2f}→{ps.fmt(ocs.final(OFF))}，自改造加权 {ocs.weighted(CUS):.2f}→{ps.fmt(ocs.final(CUS))}，均过端到端硬门槛、无一票否决。</p>
 
-<h2><span class="idx">04</span>8 类改造清单</h2>
+<h2><span class="idx">04</span>10 类改造清单</h2>
 <table>
   <thead><tr><th>类别</th><th>改造内容</th><th>五环权重</th><th>对环影响</th></tr></thead>
   <tbody>{ch_rows}</tbody>
 </table>
 
-<h2><span class="idx">05</span>三大核心发现</h2>
+<h2><span class="idx">05</span>四大核心发现</h2>
 <div class="grid cols-3">{find_cards}</div>
 """
     return page("官方 vs 自改造对照", "opencode 官方基线 ⊗ opencode-custom 装配层",

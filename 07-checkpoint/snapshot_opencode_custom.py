@@ -18,9 +18,10 @@ FILES = [
     "opencode.jsonc",
     "MEMORY.md",
     "command/reflection.md",
+    "command/arch.md",
     "instructions/auto-mode.md",
     "instructions/search-behavior.md",
-    "instructions/agent-protocol.md",
+    "instructions/architecture-behavior.md",
     "instructions/browser-management.md",
     "instructions/downloads.md",
 ]
