@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>任务完成报告 — KB v1.4 dsh 装配层立像 + opencode 月度追平</title>
+<style>
+:root{--bg:#0f1115;--card:#171a21;--fg:#e8eaed;--dim:#9aa0a6;--line:#2a2f3a;
+--acc:#7aa2f7;--ok:#4ec9a0;--warn:#e0af68;--bad:#f07178}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+font:15px/1.75 -apple-system,"Segoe UI","Noto Sans CJK SC","Microsoft YaHei",sans-serif}
+.wrap{max-width:1080px;margin:0 auto;padding:40px 22px 80px}
+h1{font-size:26px;line-height:1.4;border-left:5px solid var(--acc);padding-left:14px;margin:0 0 8px}
+h2{font-size:21px;margin:38px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+h3{font-size:17px;margin:26px 0 8px;color:var(--acc)}
+h4{font-size:15px;margin:20px 0 6px;color:var(--dim)}
+p{margin:8px 0}
+blockquote{margin:12px 0;padding:10px 16px;background:#1d2130;border-left:4px solid var(--acc);
+border-radius:6px;color:#cfd4dd}
+code{background:#222633;padding:1px 6px;border-radius:4px;font-family:"JetBrains Mono",Consolas,monospace;
+font-size:13px;color:#9ecbff}
+table{width:100%;border-collapse:collapse;margin:14px 0;background:var(--card);border-radius:8px;overflow:hidden}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top;font-size:14px}
+th{background:#1e2330;color:#cbd3e1;font-weight:600}
+tr:nth-child(even) td{background:#151821}
+ul{margin:8px 0 8px 22px;padding:0}
+li{margin:4px 0}
+hr{border:0;border-top:1px solid var(--line);margin:30px 0}
+a{color:var(--acc)}
+strong{color:#fff}
+.foot{margin-top:50px;color:var(--dim);font-size:13px;border-top:1px solid var(--line);padding-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>任务完成报告 — KB v1.4「dsh 装配层立像 + opencode 月度追平」三库分批级联更新</h1>
+<blockquote>AI 友好留档版（人类可读版见同目录 <code>report.html</code>） 版本：v1.4.0　完成日期：2026-10-11　负责人：主Agent 复杂度自评：<strong>19/20</strong>（影响范围 5 · 逻辑深度 5 · 操作数量 5 · 风险精度 4）→ 高复杂度 架构分档：<strong>咨询级</strong>（三问全不触发——不改任何系统模块/接口，仅更新分析产物，未走门控） 留档位置：<code>Mission-file/2026-10/1011-KB-v1.4-dsh装配与opencode追平/</code></blockquote>
+<hr>
+<h2>1. 当时情况</h2>
+<h3>1.1 用户原始需求</h3>
+<blockquote>「这是一个我的 github 项目的一个分析，现在我们的 dsh 有所装配，然后也经历了大量更新，opencode 也有变动，所以需要将这些部分重新分析，你先了解情况，然后制定计划」</blockquote>
+<p>经口径澄清后确定为：<strong>三个库全动、分批执行、顺序由主 Agent 决定</strong>；并追加两条执行纪律——<strong>不需要停顿</strong>、<strong>控制主 Agent 上下文长度</strong>（成熟任务可交子 Agent 并配辅助子 Agent，即深度 2）。</p>
+<h3>1.2 勘查后的三个关键发现（决定了本轮范围）</h3>
+<ul>
+<li><strong>两库存在「一个月 backlog」</strong>：<code>control-theory-agent-kb</code>（下称 KB）与 <code>opencode-dag-analysis</code> 都停在 <strong>2026-09-11 23:04</strong>（v1.3）。而 <code>Mission-file/2026-09/0914-自改造opencode再评估v1.4/report.md</code> 明确记载「<strong>不更新知识库</strong>（按用户口径）」——即 0914 那次全量复评（11 agent / 43 可加载 skill / 3 cmd / 6 instr / 6 MCP / 4 provider / 16 model / 32 variant / 9 script）<strong>从未入库</strong>；此后还叠加了 0913 前端三层栈（→0916 退役）、0915 vision-worker 退役、0921 需求发现三层栈、0926 通知插件、0927 provider 拆分、1010 MEMORY 生命周期治理。⇒ 本轮不是「点检」，是<strong>补一个月的账</strong>。</li>
+<li><strong>dsh 侧跨代</strong>：KB 的 dsh 画像锁 <code>v0.1.1-rc.2</code>（2026-08-21，精装度单点分 2.5，最弱 E 环）；当前源码树 <code>dsh-v0.2.1-alpha.2</code>（2026-10-09，commit <code>d743267</code>），中间跨 <strong>21 个预发布 tag</strong>。</li>
+<li><strong>dsh 出现全新维度「装配层」</strong>：<code>~/.dsh/presets/opencode/</code>（bundle <code>dsh-opencode-port</code>，2026-10-11 安装）把 opencode 的行为纪律 + 45 skill + 7 角色迁为 dsh 的 3 个自定义 preset；<code>~/.dsh/plugins/</code> 已空（8 个自装插件 2026-10-10 移出）。KB 对此<strong>零记录</strong>，而 opencode 侧早有对等的 <code>opencode-custom</code> 变体专题 ⇒ dsh 侧缺一个同构条目。</li>
+</ul>
+<h3>1.3 环境事实（实测，非推断）</h3>
+<table><thead><tr><th>事实</th><th>值</th><th>影响</th></tr></thead><tbody><tr><td>三库状态</td><td>KB <code>main</code>=83d02b3 / opencode-dag <code>main</code>=6e02692 / dsh-plugin-dag <code>v0.2.1-alpha.2</code>=af5b963</td><td>工作区均干净</td></tr><tr><td>dsh-plugin-dag 分支</td><td><strong>已在远端</strong>（<code>rev-list --left-right</code> = <code>0 0</code>）</td><td>该项收尾已是 no-op，仅需复核</td></tr><tr><td>深度 2 委派</td><td><strong>不可用</strong>：<code>subagent depth 2 exceeds maxDepth 1</code></td><td>分片改用 <code>workflow</code> 预案</td></tr><tr><td>子 Agent 工具面</td><td>有 read/write/edit/glob/grep，<strong>无 bash</strong></td><td>脚本执行/门控/git 全部由主 Agent 承担</td></tr><tr><td>视觉能力</td><td><strong>可用</strong>（<code>read_image</code> 成功并正确描述页面）</td><td>L4 视觉层由主 Agent 自看，不委派、不交人看</td></tr><tr><td>沙箱后端</td><td>无 bubblewrap / Landlock</td><td><code>workspace-write</code> 档 bash 被 fail-closed；须 <code>danger-full-access</code></td></tr><tr><td>snap chromium</td><td>容器内缺 <code>cap_dac_override</code>，无法启动</td><td>渲染统一走 playwright 自带 chrome-for-testing</td></tr></tbody></table>
+<hr>
+<h2>2. 制定计划</h2>
+<h3>2.1 关键决议（主 Agent 拍板，已在 PLAN 中列明）</h3>
+<table><thead><tr><th>#</th><th>决议</th><th>理由</th></tr></thead><tbody><tr><td>D1</td><td>KB 版本 = <strong>v1.4.0</strong>；装配层复评轮次独立编号（0911=v1.3 已入库 / 0914=v1.4 <strong>未入库</strong> / 本轮=轮 v1.5 快照）</td><td>避免「库版本号」与「复评轮次号」两条谱系混淆</td></tr><tr><td>D2</td><td>dsh 装配层<strong>单独立像 <code>dsh-custom</code></strong>，与 <code>opencode-custom</code> 并列，同为不参与市售排名的变体</td><td>与既有契约 §2.6/§2.7 同构；折叠进官方画像会掩盖「内核 vs 装配层」对照价值</td></tr><tr><td>D3</td><td>opencode 官方基线取 <strong>1.18.35（本机运行时）</strong>，上游 <code>v1.19.0</code> 只登记不追</td><td>一贯口径是「本地可实证的运行时」；1.19.0 未安装、无本地证据</td></tr><tr><td>D4</td><td>分批顺序 <strong>B1 dsh(KB) → B2 opencode(KB) → B3 opencode-dag 重建 + 三库推送</strong></td><td>B1 证据最新鲜；B3 依赖 B2 刷新后的 inventory</td></tr><tr><td>D5</td><td>dsh-plugin-dag <strong>只推版本分支</strong>，<code>master</code> 不动</td><td>该库历史惯例即「每版一支」，且无 Pages workflow</td></tr><tr><td>D6</td><td>不重启 <code>dsh-web.service</code></td><td>需 root 且会中断当前会话；仅登记</td></tr><tr><td>D7</td><td>不写任何记忆文件</td><td>DSH 侧无反思写入链；<code>MEMORY.md</code> 与 <code>pending.json</code> 只读</td></tr></tbody></table>
+<h3>2.2 分批与委派设计</h3>
+<table><thead><tr><th>批次</th><th>内容</th><th>委派</th></tr></thead><tbody><tr><td>B0</td><td>能力探针（深度 2 / 视觉）+ 三库状态核对 + 留档目录</td><td>主 Agent + 1 探针子 Agent</td></tr><tr><td>B1</td><td>dsh 侧：证据采集 → 数据层 → 画像 → 页面 → 门控</td><td>3× <code>oc_explore</code>（只读取证）+ 4× <code>subagent</code>（内容创作）+ 主 Agent（脚本/门控）</td></tr><tr><td>B2</td><td>opencode 侧：快照刷新 + 分值口径 + 画像/diff/实验 + 页面 + 门控</td><td>4× <code>subagent</code> + 主 Agent</td></tr><tr><td>B3</td><td>opencode-dag：官方点检 + 装配层重建 + 三图重生成 + 门控 + 推送</td><td>1× <code>oc_explore</code> + 2× <code>subagent</code> + 主 Agent（管线/推送）</td></tr><tr><td>B4</td><td>双版本 5 段报告 + 留档</td><td>主 Agent</td></tr></tbody></table>
+<p><strong>上下文控制手段</strong>：子 Agent 承担长文本创作与代码编辑（其上下文独立）；主 Agent 只持有结论与指针，并串行执行唯一需要 bash 的部分（生成/门控/git）。</p>
+<hr>
+<h2>3. 执行情况</h2>
+<h3>3.1 B0 前置（完成）</h3>
+<ul>
+<li>深度 2 探针 → <strong>失败</strong>（<code>maxDepth 1</code>）→ 记录并启用 <code>workflow</code> 预案（本轮实际未触发，因任务可拆为「子 Agent 写、主 Agent 跑」两层）。</li>
+<li>视觉探针 → <strong>成功</strong>；三库状态核对 → 全部干净；<strong>修正 D5</strong>：dsh-plugin-dag 分支已在远端。</li>
+<li>留档目录 + git 基线前像（三库 commit sha 记于 <code>evidence/baseline-commits.txt</code>；git 树本身即回滚手段）。</li>
+</ul>
+<h3>3.2 B1 dsh 侧（完成）</h3>
+<p><strong>证据采集</strong>（3 个只读子 Agent 并行，全部返回源码级/文档级 <code>file:line</code>）：</p>
+<ul>
+<li><strong>E 环 → 部分修正</strong>：发现 <code>packages/experimental/auto-review/</code>——一个<strong>真实存在的独立 LLM 审查器</strong>（<code>REVIEW_POLICY</code> 自述「final authorization reviewer for exactly one pending tool call」，挂 <code>tools/pre-execute</code>），但它评的是<strong>动作可授权性</strong>而非<strong>目标达成度</strong>，且 base bundle 默认未装配；telemetry 族＝资源/性能镜像，<code>verify-*</code> 族＝开发期门控。⇒ 基线「无对目标达成度的独立测量」<strong>实质成立</strong>，但必须显式写出 auto-review 以免读者以为漏检。</li>
+<li><strong>R 环 → 维持</strong>：新增 <code>repeat-output-guard</code>（第三个触发器，首次具备主动 cancel 权限），但 README 明写「<strong>it never rewrites a message, and a trip is stopped, not repaired</strong>」⇒ 仍属「检测—停机」而非「算误差—修正」。</li>
+<li><strong>SP/T/M/P → 全部维持</strong>，P/M 增量最大：托管式 activations、6 个 subagent provider 后端、全局控制面（<code>send_message</code>/<code>interrupt_agent</code>/<code>list_agents</code>）、Agent Teams（实验）、session-query FTS5、session-format v4、schedule 四工具、permission preset 派生 custom/Auto。</li>
+<li><strong>装配层快照</strong>：3 preset（order 11/12/13）、persona 15 节/8018 字符（<strong>遮蔽</strong>宿主 2790 字符/8 小节 → 后者成死配置）、skill 主根 45（模型可见 42）、7 worker 别名、permission 5 档、插件 188→191、门控 13 项 + 第 11 项假阳性 FAIL 根因（宿主活文件整文件 sha256 漂移）。<strong>并提炼 8 条「声称 vs 实际」</strong>。</li>
+</ul>
+<p><strong>数据层与产物</strong>：</p>
+<ul>
+<li>新增评分单一数据源 <code>09-src-data/dsh_custom_scores.py</code>：<strong>官方 3.6（raw 3.63）→ dsh-custom 3.8（raw 3.75）</strong>，Δ+0.2；8 维仅 skill 一维 3→4；五环双层 SP 4.5→5.0 / M 4.0→4.0 / P 4.5→5.0 / R 3.0→3.0 / T 5.0→5.0 / E 2.0→3.5。</li>
+<li><strong>口径披露（防虚报跃升）</strong>：v1.3 前 dsh 只有「技术框架对照」的<strong>单点分 2.5</strong>（硬编码于 <code>gen_html.py</code> 的 <code>FRAMEWORK_DATA</code>），本轮<strong>首次</strong>按精装度 v2.0 模型回填 ⇒ <strong>3.6 与 2.5 不同源、不可相减</strong>；同时把 <code>FRAMEWORK_DATA</code> 里 opencode 的 3.0 校正为模型口径 2.9（原为口径漂移）。</li>
+<li>新增 2 画像（<code>dsh-custom.md</code> 266 行 / <code>dsh-custom-diff.md</code> 114 行）+ 1 实验（114 行）+ 重写 <code>deepseek-harness.md</code>（206 行，含<strong>历史块</strong>保留旧结论）+ 更新其实验页（112 行）。</li>
+<li>生成器改造：<code>gen_html.py</code> 新增 3 个生成函数（六环雷达 + 逐环 delta + 8 维表 + 10 类清单，分值全部从单一数据源动态取）、<code>FRAMEWORK_DATA</code> 更新、页脚/tag → v1.4、PAGES 23→26；<code>nav_data.py</code> NAV 39→42；<code>fix_cyto.py</code> / <code>gen_premium_cyto.py</code> 页脚对齐。</li>
+<li><strong>覆盖率清单入库化</strong>：v1.3 的 coverage manifest 是 <code>/tmp</code> 临时件（既不入库也不可复现）→ 新增 <code>07-checkpoint/gen_coverage_manifest.py</code>，从 <code>nav_data.NAV</code> 期望页面 + 显式非页面清单 + <code>premium_scores</code> 的 14 产品动态派生 <strong>112 项</strong>，写入 <code>07-checkpoint/coverage-manifest.txt</code> 并入库 ⇒ 缺件会<strong>真实判失败</strong>。</li>
+<li><strong>dsh 侧脱敏快照</strong>：新增 <code>snapshot_dsh_custom.py</code> + <code>07-checkpoint/dsh-custom-snapshot/</code>（9 件 + inventory + manifest，含 <code>collected_at</code>；<code>.env</code>/credentials/sessions 一律不采集）。</li>
+</ul>
+<h3>3.3 B2 opencode 侧（完成）</h3>
+<ul>
+<li>快照脚本升级（新增 <code>collected_at</code>、plugins/、<code>rd.md</code>、<code>requirement-discovery-behavior.md</code>、<code>agent-protocol.md</code>；去 <code>downloads.md</code>；inventory 增 <code>skills_disabled</code> / <code>instructions_registered</code> / <code>providers</code> / <code>config</code>），重采 <strong>13/13 件</strong>，旧 inventory 归档为 <code>inventory-v1.3.json</code>。</li>
+<li>分值口径：<strong>官方 2.9 / opencode-custom 3.9 维持</strong>（净变化＝能力纵深 + 结构调整 + <strong>2 项损失</strong>，无维度跨档）；文件头新增 2026-10-11 重算记录与两项损失登记。</li>
+<li>漂移实测：agents 10→9、可加载 skill 41→45、commands 2→3、instructions 注册 5→6、MCP 6→4、plugins 0→2、providers 3→6、MEMORY.md 深迁移 −46%。</li>
+<li>画像更新：<code>opencode.md</code> 196 行（新增 <code>1.18.31→1.18.35</code> 增量点检 + <strong>源码级点检</strong>：36 包集合逐一致、<code>29→35</code> = 328 files +17411/−8779、core 仅 10 文件）、<code>opencode-custom.md</code> 313 行（新增 §8 补账章节）、<code>opencode-custom-diff.md</code> 140 行（清单 10→12 类 + §5b 损失登记 + 六大发现）。</li>
+<li><strong>交叉发现（本轮最有价值的一条）</strong>：官方 <code>v1.18.34</code> release note「发送带命名空间的 session / parent-session 身份 header」<strong>闭合归因</strong>了 DSH 侧 2026-10-10 遇到的网关 <code>400 MissingSessionID</code>（当时只能用裸 curl A/B 判定为「网关侧新增契约」，现可定位到同源客户端契约的引入时点）。</li>
+</ul>
+<h3>3.4 B3 opencode-dag 库（完成）</h3>
+<ul>
+<li>官方点检：<code>git fetch --depth=1</code> 拉入 v1.18.35 → <strong>包级结构零变化</strong>（36 包 / 32 顶层目录，包集合 diff 完全一致）⇒ 只需版本标注。</li>
+<li>装配层重建：活体采集 68 组件 → 合并机制后 <strong>87 组件</strong>（83 → 87）。</li>
+<li>管线改造：版本串与黄金值更新（6 个脚本 + README），并把 <code>quality-gate.py</code> 的 9 类期望值<strong>改为从 <code>modified-dag.json</code> 的 <code>stats</code> 动态读取</strong>（黄金值仅兜底 + <code># GOLDEN:</code> 注释）+ 新增「不得为 0」非空断言。</li>
+<li>数据与产物：modified <strong>133 节点 / 177 边 / 42 组</strong>（129/190/43），diff-list 94（90），节点页 133、组页 42；删除 7 陈旧节点页 + 1 陈旧组页。</li>
+<li>门控：<code>quality-gate.py</code> <strong>33/33 ALL PASS</strong>；<code>headless-final</code> <strong>ALL OK</strong>（zcount 36/46/133、三图截图 255–276 KB、节点页 h2=6）。</li>
+<li><strong>环境限制代码化</strong>：<code>headless-final-v11829.py</code> 原先写死 <code>CHROME="chromium-browser"</code>（本机该名是 snap 包装、容器内缺 <code>cap_dac_override</code> 无法启动）→ 改为 <code>detect_browser()</code> <strong>自动探测</strong>（优先 playwright 自带 chrome-for-testing，其次系统 chromium，最后回退旧名）。</li>
+</ul>
+<h3>3.5 过程中遇到的问题及应对（如实记录）</h3>
+<table><thead><tr><th>#</th><th>问题</th><th>根因</th><th>应对</th></tr></thead><tbody><tr><td>1</td><td>一次委派因 prompt 为空而启动</td><td>主 Agent 批量发委派时漏填参数</td><td>立即 <code>interrupt_agent</code> 并重新委派（该空 prompt 会话未产出任何文件）</td></tr><tr><td>2</td><td>dsh 快照 skill 计数两次出错（39 → 45）</td><td>第一版把 <code>_overlay</code> 当深度 1 条目重复相减</td><td>用 <code>find -mindepth 2 -maxdepth 2</code> 实测澄清口径（<strong>主根 45 / overlay 6 / 合计 51 / 模型可见 42</strong>），修正脚本后重跑；42 与运行时技能目录实测一致</td></tr><tr><td>3</td><td>生成器「幂等性检查」报 DRIFT</td><td>主 Agent 在两次重跑之间改过 <code>dsh-custom.md</code>（补最弱环 + SRC-016）</td><td>复跑第二次 → <strong>零漂移</strong>，确认为内容变更而非生成器非确定性</td></tr><tr><td>4</td><td>覆盖率清单生成器路径全错（44 项 MISSING）</td><td>误把 NAV 元组的<strong>标签</strong>当文件名（元组形状是「标签/文件名/分组」）</td><td>修正为 <code>item[1]</code> → 112 项、0 缺失</td></tr><tr><td>5</td><td>DAG headless 全 FAIL（zcount=None、截图 0 字节）</td><td>脚本写死 snap chromium</td><td>改为浏览器自动探测（见 3.4），重跑 ALL OK</td></tr><tr><td>6</td><td>子 Agent 报告「<code>scoped_digest</code> 未在源码中定位到」</td><td>该子 Agent 只 grep 了整文件 sha 那一行</td><td>主 Agent 亲自复核 <code>build_provenance.py:89-96 / :151-153 / :263-293</code> → <strong>确实存在</strong>，事实包正确，未据此改写结论</td></tr><tr><td>7</td><td>实机在会话期内漂移</td><td>opencode 侧 skill 数 17:04 快照为 45，17:2x 复测为 46（新增 <code>frontend-design-methodology</code>）</td><td><strong>以快照 <code>collected_at</code> 为准（45）</strong>并在门控结果 §六 E4 登记该漂移——这正是本轮为快照补时间戳的用途</td></tr><tr><td>8</td><td>子 Agent 的「当前标注残留」自检不可信</td><td>无 bash，只能静态 grep</td><td>全部残留检查由主 Agent 用精确模式复跑（结果：<strong>0 命中</strong>）</td></tr><tr><td>9</td><td>DAG 报告子 Agent 在我提交后仍扩写报告</td><td>时序：我先提交、它后完成</td><td>复核后确认工作区已无未提交变更（其自述的字节数为估算），并把其发现的 3 处口径不一致<strong>另行提交校准</strong>（<code>53a07be</code>）</td></tr></tbody></table>
+<hr>
+<h2>4. 完成情况</h2>
+<h3>4.1 交付物清单</h3>
+<table><thead><tr><th>库</th><th>交付</th><th>验证</th></tr></thead><tbody><tr><td><strong>control-theory-agent-kb</strong></td><td>版本 v1.3.0 → <strong>v1.4.0</strong>；新增 3 页（<code>case-dsh-custom</code> / <code>compare-dsh</code> / <code>exp-dsh-custom</code>）；新增 2 画像 + 2 diff + 2 实验；重写 dsh 官方画像；更新 opencode 两画像 + diff；<code>dsh_custom_scores.py</code>；<code>snapshot_dsh_custom.py</code> + 脱敏快照；<code>gen_coverage_manifest.py</code> + 入库清单；契约 §2.6/§2.7 泛化 + 新增 ⑤ 补账义务；README / 00-index / 根 index.html 全站 v1.4</td><td><strong>L1-L7 全开 ALL PASS（issue 0）</strong> + 一致性 PASS + 评分复算 PASS + 残留 0</td></tr><tr><td><strong>opencode-dag-analysis</strong></td><td>官方标注 v1.18.30 → <strong>v1.18.35</strong>；装配层 83 → <strong>87 组件</strong>；DAG 129 → <strong>133 节点</strong> / 190 → <strong>177 边</strong> / 43 → <strong>42 组</strong>；diff-list 90 → 94；<code>执行报告-1011.md/html</code>；3 处口径校准</td><td><strong>quality-gate 33/33 ALL PASS</strong> + <strong>headless ALL OK</strong></td></tr><tr><td><strong>deepseek-harness-plugin-dag</strong></td><td>复核：分支 <code>v0.2.1-alpha.2</code> 已在远端（<code>af5b963</code>），<code>master</code> 按决议不动</td><td><code>rev-list</code> 0/0；<code>ls-remote</code> 一致</td></tr></tbody></table>
+<h3>4.2 关键数字</h3>
+<table><thead><tr><th>指标</th><th>值</th></tr></thead><tbody><tr><td>KB 页面数</td><td>04-interactive 39 → <strong>42</strong>（+根门户 + report = 45 交付 HTML）</td></tr><tr><td>KB nav 条目</td><td>39 → <strong>42</strong>（+portal = 43 页）</td></tr><tr><td>KB 覆盖率期望清单</td><td>112 项（入库；v1.3 为 /tmp 临时 79 项）</td></tr><tr><td>KB 门控</td><td>L1-L7 <strong>7/7 PASS</strong>，issue 0，warning 3 类（均非交付缺失）</td></tr><tr><td>dsh 精装度</td><td>官方 <strong>3.6</strong> → dsh-custom <strong>3.8</strong>（Δ+0.2）</td></tr><tr><td>opencode 精装度</td><td>官方 <strong>2.9</strong> → opencode-custom <strong>3.9</strong>（维持，Δ+1.0）</td></tr><tr><td>DAG 组件</td><td>83 → <strong>87</strong></td></tr><tr><td>DAG 节点/边/组</td><td>129/190/43 → <strong>133/177/42</strong></td></tr></tbody></table>
+<h3>4.3 推送结果</h3>
+<table><thead><tr><th>库</th><th>commit</th><th>远端</th></tr></thead><tbody><tr><td>control-theory-agent-kb</td><td><code>ba3ecec</code></td><td><code>83d02b3..ba3ecec  main -&gt; main</code>（已复核 local == remote）</td></tr><tr><td>opencode-dag-analysis</td><td><code>7332dbc</code> + <code>53a07be</code></td><td><code>6e02692..7332dbc</code> → <code>7332dbc..53a07be  main -&gt; main</code>（触发 Pages workflow）</td></tr><tr><td>deepseek-harness-plugin-dag</td><td><code>af5b963</code></td><td>分支 <code>v0.2.1-alpha.2</code> 已在远端（本分支无 Pages workflow）</td></tr></tbody></table>
+<h3>4.4 未做项（如实登记）</h3>
+<ul>
+<li><strong>dsh-plugin-dag 的 <code>master</code> 未跟进</strong>（按决议 D5）；如需 Pages/默认分支可见性，需另立一轮。</li>
+<li><strong><code>dsh-web.service</code> 未重启</strong>（需 root、会断会话）⇒ dsh 侧视觉能力生效仍待人工。</li>
+<li><strong>opencode-dag 的 2 个新插件未入图</strong>（pipeline 无 <code>plugin</code> kind）；<code>05-drawio/</code> 图未重生成（无生成脚本）；内部 import 数据仍用 v1.18.29 基线。</li>
+<li><strong>上游追新未做</strong>：opencode <code>v1.19.0</code>（OpenCode 2 入口）与 dsh 后续 tag 只登记不追。</li>
+<li><strong>未写任何记忆文件</strong>（D7）；本轮教训以本报告与门控结果文件形式留档。</li>
+</ul>
+<hr>
+<h2>5. 反思 / 分析 / 建议</h2>
+<h3>5.1 方法论层面的三条收获</h3>
+<ul>
+<li><strong>「数量下降 ≠ 能力下降」需要显式登记</strong>。本轮 opencode-custom 的 agent 10→9、MCP 6→4 都是<strong>结构调整</strong>（drawio/vision 退役、制图改走 skill 档位），若只报增长就是选择性叙述；本轮把 <strong>L1 视觉代看退役 / L2 MCP 工具面收窄</strong> 两项损失写进画像、diff、门控结果与报告四处。⇒ <strong>复评必须同时登记「增」与「损」</strong>，否则「维持分值」会显得像没查。</li>
+<li><strong>同一装配层跨宿主迁移会出现「能力掉队」，且掉队点是可定位的</strong>。opencode 侧 <code>architecture-judgment</code> 门控栈判「E 环反转」（子 Agent 有 bash 可自跑门控）；迁到 dsh 后子 Agent <strong>无 bash</strong> ⇒ 门控无法在产出方自跑，E 环只判「增强」；R 环更因 <code>dsh-reflection</code> 插件移出而<strong>完全断裂</strong>。⇒ 迁移工程的验收判据不能只看「组件是否齐」，必须看<strong>每个组件的运行时前提是否满足</strong>。</li>
+<li><strong>判据要绑「被消费字段」而非「整文件指纹」</strong>。bundle 自家门控第 11 项曾因宿主 patch 是<strong>活文件</strong>（GUI 写回字号即漂移）而假阳性 FAIL——假阳性会训练人忽略红灯，比漏报更隐蔽。⇒ 判据的作用域必须与「实际会被消费的面」对齐（与既有的「公式层比数值层更深一层」同源）。</li>
+</ul>
+<h3>5.2 环境与流程层面的建议</h3>
+<ul>
+<li><strong>「环境限制应转成可复现的代码，而非一次性绕过」</strong>：DAG 的 headless 脚本原先写死 snap chromium；本轮改为 <code>detect_browser()</code> 自动探测后，两种环境都能跑。建议把该模式推广到所有依赖外部可执行文件的脚本。</li>
+<li><strong>子 Agent 无 bash 是当前架构的硬约束</strong>，由此形成稳定的分工范式：<strong>子 Agent 写（内容/代码）、主 Agent 跑（脚本/门控/git）</strong>。建议把该范式写进 <code>opencode-capability-extension</code> 的委派章节，避免后续轮次重复试错。</li>
+<li><strong>覆盖率清单必须入库</strong>：v1.3 的 79 项清单落在 <code>/tmp</code>，本轮已改为入库的 112 项显式期望清单 + 派生脚本。建议后续轮次<strong>只改清单、不改门控逻辑</strong>。</li>
+<li><strong>快照必须自带时间戳</strong>：本轮实测到「同一会话内 skill 数 45→46」的实机漂移；<code>collected_at</code> 让「口径以哪一刻为准」可判定，而不是靠事后推断。</li>
+<li><strong>跨库交叉验证有额外收益</strong>：本轮把 dsh 侧 1010 遗留的「网关 <code>MissingSessionID</code> 未归因」与 opencode <code>v1.18.34</code> 的 release note 对上，闭合了一条悬了一个月的证据链。建议在复评流程里固定一步「<strong>跨库悬案回填</strong>」。</li>
+</ul>
+<h3>5.3 下一轮建议（按优先级）</h3>
+<ul>
+<li><strong>dsh 侧 E/R 环的补强是明确的高价值缺口</strong>：给 dsh 子 Agent 一条可用的门控执行通道（或把门控改成主 Agent 可代跑的两段式），并决定 reflection 链路是重建插件还是改用 dsh 原生机制。</li>
+<li><strong>opencode <code>v1.19.0</code> / OpenCode 2 立项</strong>：待其正式落地并取得本地源码/行为证据后单独立像（本轮已登记）。</li>
+<li><strong>opencode-dag 补齐 <code>plugin</code> kind</strong>：把 2 个治理插件（prefix-cache 日期治理 / 暂停通知）纳入装配层图，并顺手清理 <code>build-dag.py</code> 中已退役组件的旧规则。</li>
+<li><strong>dsh-plugin-dag 的 <code>master</code> 跟进决策</strong>：若希望默认分支即最新版，需一次 fast-forward 或 PR。</li>
+</ul>
+<hr>
+<h3>📚 证据来源</h3>
+<table><thead><tr><th>SRC</th><th>级别</th><th>信源</th><th>路径/URL</th><th>置信度</th></tr></thead><tbody><tr><td>SRC-001</td><td>S4</td><td>一手实测</td><td><code>evidence/batch0-probes.md</code>（深度 2 不可用 / 视觉可用 / 三库状态）</td><td>高</td></tr><tr><td>SRC-002</td><td>S4</td><td>一手实测</td><td><code>evidence/opencode-official-baseline-check.md</code>（36 包集合逐一致；105/328/318 files）</td><td>高</td></tr><tr><td>SRC-003</td><td>S4</td><td>一手取证</td><td><code>evidence/dsh-five-rings-verdicts.md</code>（五环判定 + <code>file:line</code>）</td><td>高</td></tr><tr><td>SRC-004</td><td>S4</td><td>一手门控</td><td><code>evidence/kb-gate-result-v1.4.txt</code>（L1-L7 全 PASS）</td><td>高</td></tr><tr><td>SRC-005</td><td>S4</td><td>一手重建</td><td><code>evidence/dag-rebuild-summary.md</code>（87 组件 / 133-177-42 / 33-33 PASS）</td><td>高</td></tr><tr><td>SRC-006</td><td>S4</td><td>一手提交</td><td>KB <code>ba3ecec</code>；opencode-dag <code>7332dbc</code> + <code>53a07be</code>；dsh-plugin-dag <code>af5b963</code></td><td>高</td></tr><tr><td>SRC-007</td><td>S1</td><td>官方 release</td><td>GitHub API <code>anomalyco/opencode</code> releases（v1.18.30–v1.19.0，2026-10-11 实测）</td><td>高</td></tr><tr><td>SRC-008</td><td>S1</td><td>官方源码</td><td><code>/home/zako-mio/dsh</code>（tag <code>dsh-v0.2.1-alpha.2</code>，commit <code>d743267</code>）</td><td>高</td></tr></tbody></table>
+<div class="foot">留档：Mission-file/2026-10/1011-KB-v1.4-dsh装配与opencode追平/　·　
+AI 友好镜像：<code>report.md</code>　·　证据：<code>evidence/</code>　·　生成：scripts/gen_report_html.py</div>
+</div>
+</body>
+</html>

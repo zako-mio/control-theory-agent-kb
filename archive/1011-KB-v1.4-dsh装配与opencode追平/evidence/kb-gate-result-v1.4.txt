@@ -1,0 +1,119 @@
+================================================================================
+控制理论 ⊗ Agent 设计知识库 — v1.4 分层门控结果
+================================================================================
+版本     : v1.4.0（2026-10-11 dsh 装配层变体专题 + opencode 月度追平）
+执行日期 : 2026-10-11
+执行者   : 主Agent（唯一具备 bash 的执行侧；内容作者为子 Agent）
+门控脚本 : 07-checkpoint/quality-gate.py            (L2 全量审计)
+           07-checkpoint/kb_gate.py                 (L3-L7 结构/断链/导航/级联/覆盖/信源/渲染)
+           07-checkpoint/gen_coverage_manifest.py   (L6 期望清单派生，本轮新增)
+           07-checkpoint/check_premium_consistency.py (14 产品一致性)
+           09-src-data/dsh_custom_scores.py         (dsh 变体评分复算，本轮新增)
+           09-src-data/opencode_custom_scores.py    (opencode 变体评分复算)
+根目录   : /home/zako-mio/opencode/archive/Mission-file/2026-09/0907-控制理论Agent设计知识库
+
+================================================================================
+一、门控层结果总览（L1-L7 全开）
+================================================================================
+L1 生成自验证   PASS      py_compile 09-src-data/*.py + 07-checkpoint/*.py → exit 0
+                           gen_html.py 幂等复算：两次重跑 sha256 逐字节一致（93cfad78679158ff）
+L2 全量审计     PASS      quality-gate.py → issues=0, warnings=1（01-theory/README.md KT 数口径，历史遗留）
+L3 结构层       PASS      kb_gate structure → checked=181, issues=0, warn=1（.nojekyll 0 字节，预期）
+L4 视觉层       PASS      主 Agent 直接读图（本轮模型具备视觉，未委派、未交人看）：
+                           case-dsh-custom.png / compare-dsh.png / exp-dsh-custom.png /
+                           case-opencode-custom.png 四页均渲染正确（评分卡、六环雷达、
+                           逐环 delta 卡、8 维表、侧栏 43 条、页脚 v1.4）
+L5 渲染层       PASS      kb_gate render → checked=43, issues=0, warn=0
+L6 覆盖度层     PASS      kb_gate coverage → checked=112, issues=0（显式期望清单入库）
+L7 信源层       PASS      kb_gate sources → checked=24, issues=0, warn=0
+（L3 配套）links PASS      kb_gate links → checked=2081, issues=0
+（L3 配套）nav   PASS      kb_gate nav → 页面=43 / 期望条目=42, issues=0, warn=1（报告页自带目录，豁免）
+（L3 配套）cascade PASS    kb_gate cascade → checked=6, issues=0, warn=1
+                          （页脚版本非统一 2 页 = report-v1.1.html(v1.1) + report.html(v1.0.0)，均历史报告，豁免）
+一致性核对       PASS      check_premium_consistency.py → 14 产品 × 6 处口径全部一致
+                          （两变体 opencode-custom / dsh-custom 均未进入 14 产品市售排名，未污染谱系）
+评分复算         PASS      dsh_custom_scores.py → 官方 3.63→3.6；dsh-custom 3.75→3.8（Δ+0.2）
+                          opencode_custom_scores.py → 官方 2.88→2.9；opencode-custom 3.85→3.9（Δ+1.0）
+
+汇总：7 层全开 → PASS=7, FAIL=0, SKIP=0。issue 总数 = 0；warning 3 类（均非交付缺失，见 §四）。
+
+================================================================================
+二、证据命令（可复现）
+================================================================================
+[L2] python3 07-checkpoint/quality-gate.py
+[L6] python3 07-checkpoint/gen_coverage_manifest.py
+[L3-L7 合并] python3 07-checkpoint/kb_gate.py --root . \
+        --layers structure,links,nav,cascade,coverage,sources \
+        --exclude 05-source --exclude 03-cases/source \
+        --exclude 07-checkpoint/tmp-evidence --exclude archive \
+        --exclude 07-checkpoint/opencode-custom-snapshot \
+        --exclude 07-checkpoint/dsh-custom-snapshot \
+        --nav-source 09-src-data/nav_data.py \
+        --manifest 07-checkpoint/coverage-manifest.txt \
+        --content-glob "03-cases/*.md" \
+        --json-out 07-checkpoint/gate-result.json
+[L5 渲染]  同上但 --layers render --render-glob "04-interactive/*.html" --render-glob index.html
+           （渲染引擎：playwright 自带 chrome-for-testing，kb_gate 自动探测）
+[一致性] python3 07-checkpoint/check_premium_consistency.py
+[评分]   (cd 09-src-data && python3 dsh_custom_scores.py && python3 opencode_custom_scores.py)
+[复算]   python3 09-src-data/gen_html.py   # 幂等：两次重跑 sha256 一致
+[自验证] python3 -m py_compile 09-src-data/*.py 07-checkpoint/*.py
+[L4 截图] ~/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome --headless --no-sandbox \
+        --disable-gpu --hide-scrollbars --virtual-time-budget=8000 --window-size=1440,3600 \
+        --screenshot=07-checkpoint/l4-v14/<page>.png file://<KB>/04-interactive/<page>.html
+
+覆盖率期望清单**已入库**：07-checkpoint/coverage-manifest.txt（112 项；由
+gen_coverage_manifest.py 从 nav_data.NAV 的期望页面 + 显式非页面交付物清单 + premium_scores
+的 14 产品动态派生）。相对 v1.3 的改进：v1.3 的清单是 /tmp 临时件、既不入库也不可复现；
+本轮改为入库的显式期望清单 ⇒ 缺件会被真实判失败，而非静默跳过。
+
+================================================================================
+三、当前版本标识残留 = 0（精确模式）
+================================================================================
+命令：grep -rInE "v1\.3 自改造 opencode 变体版|v1\.3 · 6 framework|版本\*\*：v1\.3|版本：v1\.3\.0" \
+        --include=*.html --include=*.md --include=*.py . \
+        | grep -vE "^\./(archive|05-source|03-cases/source)/"
+结果：**0 命中**。
+说明：其余含 "v1.3" 的行均为**历史沿革 / 口径披露**语境（如「v1.3 及以前 dsh 只有单点分 2.5」、
+「相对 v1.3：改造清单由 10 类扩为 12 类」），按契约 §2.7② 保留，不计为残留。
+
+================================================================================
+四、warning 逐条（均非交付缺失）
+================================================================================
+W1 structure：.nojekyll 为 0 字节 —— 该文件按设计为空（GitHub Pages 关闭 Jekyll 的标记），非缺陷。
+W2 nav：跳过 07-checkpoint/report-v1.1.html 的导航完整性检查 —— 该页自带报告目录，为门控既有豁免项。
+W3 cascade：页脚版本号非统一 2 页（report-v1.1.html = v1.1、report.html = v1.0.0）—— 均为历史报告留档，
+   其版本号是其历史身份的一部分，不得改写。
+（另：L2 的 1 条 warning 为 01-theory/README.md 的 KT 数口径不一致，v1.3 起既有，本轮未涉及该文件。）
+
+================================================================================
+五、本轮口径变更与诚实性声明
+================================================================================
+1. **dsh 评分口径变更（必须披露）**：v1.3 及以前 dsh 只有「技术框架对照」的**单点分 2.5**
+   （硬编码于 09-src-data/gen_html.py 的 FRAMEWORK_DATA，非 8 维模型输出）。本轮**首次**按
+   精装度 v2.0 模型（硬门槛 + 8 维加权 + 一票否决）回填 → 官方 3.6 / dsh-custom 3.8。
+   **3.6 与 2.5 不同源、不可相减**，禁止读作「跃升」。
+2. **opencode 官方基线**：1.18.30 → **1.18.35**（本机可实证运行时）；上游 **v1.19.0（2026-10-11）**
+   为通往 OpenCode 2 的升级入口，**只登记不追**（未安装、无本地源码/行为证据）。
+3. **变体分值维持**：opencode-custom 3.9 与官方 2.9 维持（净变化＝能力纵深 + 结构调整 + 2 项损失，
+   无维度跨档）；dsh-custom 3.8（仅 skill 一维 3→4，Δ+0.2）。**两轮均未虚报跃升**。
+4. **两项能力损失已登记**：L1 vision-worker 代看机制退役（E 环少一条降级传感器）；
+   L2 MCP 工具面收窄（6→4，启用 2→1）。
+5. **补账留痕**：0914 轮次的 v1.4 复评因用户口径「不更新知识库」，KB 缺 2026-09-11 → 2026-10-11
+   的整段记录；本轮一次性补入并在 opencode-custom.md §8 与契约 §2.7⑤ 留痕。
+
+================================================================================
+六、环境事实登记（非任务缺陷）
+================================================================================
+E1 深度 2 委派不可用：`subagent depth 2 exceeds maxDepth 1`（探针实测）⇒ 分片改用 workflow 预案；
+   本轮实际由主 Agent 串行执行脚本、子 Agent 承担内容创作（子 Agent 无 bash）。
+E2 子 Agent 无 bash：仅 read/write/edit/glob/grep ⇒ 所有脚本执行、门控、git 操作由主 Agent 承担。
+E3 snap chromium 不可用（容器缺 cap_dac_override）⇒ 渲染与截图统一走 playwright 自带
+   chrome-for-testing；本库 kb_gate 已自动探测，无手工绕过。
+E4 实机在会话期内漂移：opencode 侧 skill 数在 17:04 快照时点为 45，17:2x 复测为 46
+   （新增 frontend-design-methodology）。**本库口径以快照 `collected_at` 为准（45）**，
+   该漂移已登记；这正是本轮为快照补 `collected_at` 的用途。
+
+================================================================================
+结论：L1-L7 全开 → ALL PASS（issue 总数 0）；当前版本标识残留 0；一致性核对 PASS。
+================================================================================
