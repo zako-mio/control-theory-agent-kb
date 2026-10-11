@@ -5,6 +5,7 @@
 import json, os, re, sys, html
 sys.stdout.reconfigure(encoding='utf-8')
 import premium_scores as ps  # 精装房评分模型单一数据源
+import dsh_custom_scores as dcs  # dsh 官方 vs 装配层 评分单一数据源（与 opencode_custom_scores 同构）
 
 BASE = "/home/zako-mio/opencode/archive/Mission-file/2026-09/0907-控制理论Agent设计知识库"
 OUT = os.path.join(BASE, "04-interactive")
@@ -73,7 +74,9 @@ PAGES = [
     ("理论:分层控制", "theory-hierarchical", "theory"),
     ("案例:opencode", "case-opencode", "cases"),
     ("案例:opencode-custom", "case-opencode-custom", "cases"),
+    ("案例:dsh-custom", "case-dsh-custom", "cases"),
     ("对照:官方vs自改造", "compare-opencode", "cases"),
+    ("对照:官方dsh vs装配层", "compare-dsh", "cases"),
     ("案例:dsh", "case-dsh", "cases"),
     ("案例:PRIME", "case-prime", "cases"),
     ("案例:hermes", "case-hermes", "cases"),
@@ -81,6 +84,7 @@ PAGES = [
     ("案例:codex", "case-codex", "cases"),
     ("实验:opencode", "exp-opencode", "exp"),
     ("实验:opencode-custom", "exp-opencode-custom", "exp"),
+    ("实验:dsh-custom", "exp-dsh-custom", "exp"),
     ("实验:dsh", "exp-dsh", "exp"),
     ("实验:PRIME", "exp-prime", "exp"),
     ("实验:hermes", "exp-hermes", "exp"),
@@ -174,7 +178,7 @@ def page(title, crumb, body, active_file, prev=None, nxt=None):
 {body}
 <div class="pager">{p}{n}</div>
 <footer class="footer">
-<span>控制理论 ⊗ Agent 设计知识库 · v1.3 自改造 opencode 变体版（6 框架 + 14 精装房 + opencode-custom）</span>
+<span>控制理论 ⊗ Agent 设计知识库 · v1.4 dsh 装配层 + opencode 月度追平版（6 框架 + 14 精装房 + opencode-custom + dsh-custom）</span>
 <span class="fbrand">data: 09-src-data · contract: 00-contract</span>
 </footer>
 </div></div></div></body></html>"""
@@ -225,7 +229,7 @@ def gen_overview():
 <div class="signal">
   <div class="signal-head">
     <span class="label">System Loop · 控制回路</span>
-    <span class="tag">v1.3 · 6 framework + 14 premium + opencode-custom</span>
+    <span class="tag">v1.4 · 6 framework + 14 premium + 2 variants</span>
   </div>
   <svg viewBox="0 0 900 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="五环控制回路：目标 r 指令 → P 规划 → T 执行 → 世界/环境 → E 评估 → M 记忆 → R 反思，修正量回馈 P/T">
     <defs>
@@ -288,8 +292,8 @@ def gen_overview():
 <table>
   <thead><tr><th>产品</th><th>最弱环</th><th>独立 Critic</th><th>整体范式</th></tr></thead>
   <tbody>
-    <tr><td class="mono">opencode</td><td><span class="badge weak"><strong>E</strong>评估</span></td><td>—</td><td>前馈-执行 + 局部反馈</td></tr>
-    <tr><td class="mono">deepseek-harness</td><td><span class="badge weak"><strong>E</strong>评估</span></td><td>—</td><td>MPC 滚动 + 强约束执行</td></tr>
+    <tr><td class="mono">opencode</td><td><span class="badge weak"><strong>E</strong>评估</span></td><td>—</td><td>前馈-执行 + 局部反馈（v1.18.35）</td></tr>
+    <tr><td class="mono">deepseek-harness</td><td><span class="badge neutral"><strong>R</strong>反思</span></td><td>—</td><td>MPC 滚动 + 强约束执行（v0.2.1-alpha.2）</td></tr>
     <tr><td class="mono">PRIME</td><td><span class="badge weak"><strong>E</strong>评估</span></td><td>gates 空</td><td>自适应/自整定</td></tr>
     <tr><td class="mono">hermes</td><td><span class="badge neutral"><strong>P</strong>规划</span></td><td><span class="badge strong"><strong>✅</strong>有</span></td><td>鲁棒控制 + 多传感器</td></tr>
     <tr><td class="mono">claude-code</td><td><span class="badge weak"><strong>E</strong>评估</span></td><td><span class="badge neutral"><strong>外挂</strong>贴片</span></td><td>外挂 Critic + 执行限幅</td></tr>
@@ -332,16 +336,23 @@ def gen_overview():
   <div class="card"><span class="num">SOURCE</span><h3>数据源</h3><p>09-src-data/five-ring-dag.json · 31 知识点 · 契约 00-contract</p></div>
 </div>
 
-<h2><span class="idx">05</span>opencode 自改造专题</h2>
-<p class="lead">官方 opencode 的衍生变体 · 装配层补强 E/R 弱环 · 10 agent / 45 skill 单根 / 6 MCP / 2 command · 精装度 2.9→3.9</p>
+<h2><span class="idx">05</span>自改造变体专题（2 个）</h2>
+<p class="lead">两个宿主各有一个「官方内核 + 个人装配层」变体：opencode-custom 补强 E/R 弱环（10 agent / 45 skill 单根 / 6 MCP / 2 command，精装度 2.9→3.9）；dsh-custom 从 preset 层到宿主 profile 整体装配（3 preset / 45 skill（可见 42）/ 7 worker / permission 5 档，精装度 3.6→3.8）。两者均为个人变体、不参与 14 产品市售排名。</p>
 <div class="grid cols-2">
   <a class="portal-card" href="case-opencode-custom.html" style="background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);padding:var(--space-4);text-decoration:none">
     <span class="num">VARIANT</span><h3 style="margin:0 0 6px">opencode-custom 控制论画像</h3><p style="margin:0">内核继承 + 装配层增强：10 agent（含 architect-worker）/ 45 skill 单根 / 6 MCP / 2 command；GATE/契约/专职 worker/Reflection，叠加架构判断三层栈与能力扩展 SOP，把前馈主导内核改造为跨会话自演化闭环</p>
   </a>
   <a class="portal-card" href="compare-opencode.html" style="background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);padding:var(--space-4);text-decoration:none">
-    <span class="num">COMPARE</span><h3 style="margin:0 0 6px">官方 vs 自改造对照</h3><p style="margin:0">五环雷达叠加 + 逐环 delta + 精装度 8 维对比，量化 2.9→3.9 的跃升来源；v1.3 复评确认能力纵深未跨档位、维持 3.9</p>
+    <span class="num">COMPARE</span><h3 style="margin:0 0 6px">官方 opencode vs 自改造对照</h3><p style="margin:0">五环雷达叠加 + 逐环 delta + 精装度 8 维对比，量化 2.9→3.9 的跃升来源；复评确认能力纵深未跨档位、维持 3.9</p>
+  </a>
+  <a class="portal-card" href="case-dsh-custom.html" style="background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);padding:var(--space-4);text-decoration:none">
+    <span class="num">VARIANT</span><h3 style="margin:0 0 6px">dsh-custom 控制论画像</h3><p style="margin:0">dsh-opencode-port 装配层：3 preset（standard/creator/ptc）/ 45 派生 skill（模型可见 42）/ 7 worker（含 oc_architect、oc_reflection）/ permission 5 档 / persona 15 节；把设定值固化进 preset 层，E 环由领域门控栈补强至 3.5，R 环因 dsh-reflection 插件移出而维持持平</p>
+  </a>
+  <a class="portal-card" href="compare-dsh.html" style="background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);padding:var(--space-4);text-decoration:none">
+    <span class="num">COMPARE</span><h3 style="margin:0 0 6px">官方 dsh vs 装配层对照</h3><p style="margin:0">五环雷达叠加 + 逐环 delta + 精装度 8 维对比，量化 3.6→3.8（Δ+0.2，单维小步）的来源；含「单点分 2.5 vs 模型分 3.6 不可相减」的口径披露</p>
   </a>
 </div>
+<p style="font-size:13px;color:var(--muted);margin-top:var(--space-3)">标准实验组：<a href="exp-opencode-custom.html">exp-opencode-custom</a>（Reflection 链路 / 架构三层栈 / 能力扩展 SOP / MEMORY 门禁旁路）· <a href="exp-dsh-custom.html">exp-dsh-custom</a>（preset 编队 / persona 税 / 迁移损失 / PTC 空指向）——两个变体的实验组与画像页同构，可交叉对照。</p>
 """
     return page("知识库总览","五大核心环控制回路",body,"index",None,"framework")
 
@@ -387,12 +398,13 @@ PREMIUM_DATA = [
 ]
 
 # 现有 6 产品（技术框架）纳入同一坐标系 —— 均为开源、需装配/定制，精装度偏低
+# 口径：dsh/opencode 已回填 v2.0 8 维模型；其余 4 款仍为历史单点分，待回填
 FRAMEWORK_DATA = [
     # (slug, 名称, 厂商, 精装度, 一手二手, 大类, 证据级, 关键结论)
     ("claude-code","claude-code","Anthropic",3.0,"一手","开源成品化","源码级","官方CLI+skills+MCP，相对开箱但需自配"),
     ("codex","codex","OpenAI",3.0,"一手","开源成品化","源码级","Rust CLI+沙箱+双评审器，需自配"),
-    ("opencode","opencode","SST",3.0,"一手","开源成品化","源码级","plan/build双速+权限+snapshot，需配置装配层"),
-    ("dsh","deepseek-harness","DeepSeek",2.5,"一手","开源成品化","源码级","cordis插件装配，需组装76核心+36 seam"),
+    ("opencode","opencode","SST",2.9,"一手","开源成品化","源码级","官方口径（8 维模型）2.9；plan/build 双速+权限+snapshot，需配置装配层"),
+    ("dsh","deepseek-harness","DeepSeek",3.6,"一手","开源成品化","源码级","v0.2.1-alpha.2；8 维模型首次回填（旧单点分 2.5 属历史口径、不可相减）；PTC/沙箱族/Agent Teams，需装配层"),
     ("prime","PRIME","Prime Intellect",2.5,"一手","开源成品化","源码级","RLM+continual harness，需配gate/skills"),
     ("hermes","hermes","NousResearch",2.5,"一手","开源成品化","源码级","MCP-based观测器，需配置"),
 ]
@@ -612,8 +624,8 @@ def gen_compare_opencode():
     findings = [
         ("发现一 · 弱环反转", "官方两大最弱环 E/R 被装配层补齐并反转（仍成立）。",
          "E 环 2.0→4.0（信源分级 + search-worker 证据包 + 用户传感器 + gate_architecture.py 领域门控）；R 环 2.0→4.5（pending.json 状态机 + reflection-worker + /reflection 签名门禁）。补强方式不是改引擎，而是协议 + 专职 worker + 记忆系统。"),
-        ("发现二 · 精装度复评", f"{ps.fmt(ocs.final(OFF))} → {ps.fmt(ocs.final(CUS))}（Δ+%.1f）；v1.3 复评确认能力纵深未跨档位。" % (ocs.final(CUS) - ocs.final(OFF)),
-         "v1.2 完成 2.9→3.9 跃升：8 维中 6 维提升（记忆 +2 达满分、skill +2，多Agent/工作流/模型/MCP 各 +1）；v1.3 的 agent 9→10、skill 单根 45、架构三层栈等属能力纵深，未跨 5 档阈值，故维持 3.9、不虚报跃升。仅一键部署与沙箱未提升，是封顶主因。"),
+        ("发现二 · 精装度复评", f"{ps.fmt(ocs.final(OFF))} → {ps.fmt(ocs.final(CUS))}（Δ+%.1f）；本轮复评确认能力纵深未跨档位。" % (ocs.final(CUS) - ocs.final(OFF)),
+         "v1.2 完成 2.9→3.9 跃升：8 维中 6 维提升（记忆 +2 达满分、skill +2，多Agent/工作流/模型/MCP 各 +1）；其后 agent 9→10、skill 单根 45、架构三层栈等属能力纵深，未跨 5 档阈值，故维持 3.9、不虚报跃升。仅一键部署与沙箱未提升，是封顶主因。"),
         ("发现三 · 编排升级", "从单体双速控制器到分层编排平台。",
          "官方是 plan/build 双速 + task 委派的单体结构；自改造叠加 6 个专职 worker，形成「主 Agent 编排 + 专职 worker 执行 + Reflection 自演化 + 架构三层栈门控」分层平台，P 环与 T 环均升至 5.0。代价：编排拓扑仍靠协议文本而非 DAG 画布，闭环反思仍需人工确认。"),
         ("发现四 · 二阶扩展与领域门控", "装配层具备二阶自我扩展能力与领域化门控（新增）。",
@@ -677,7 +689,204 @@ def gen_compare_opencode():
 """
     return page("官方 vs 自改造对照", "opencode 官方基线 ⊗ opencode-custom 装配层",
                 "<p class='breadcrumb'><a href='index.html'>总览</a> › 官方 vs 自改造对照</p>" + body,
-                "compare-opencode", prev="case-opencode-custom", nxt="case-dsh")
+                "compare-opencode", prev="case-opencode-custom", nxt="case-dsh-custom")
+
+def gen_case_dsh_custom():
+    """dsh-custom 画像页：读 03-cases/dsh-custom.md，复用 gen_case 的渲染口径。"""
+    md = read("03-cases/dsh-custom.md")
+    import render_case as rc
+    body = rc.render_case(md, "dsh-custom")
+    return page("案例：dsh-custom（装配层）", "产品控制论画像",
+                "<p class='breadcrumb'><a href='index.html'>总览</a> › 案例</p>" + body,
+                "case-dsh-custom", prev="case-opencode-custom", nxt="compare-dsh")
+
+def gen_exp_dsh_custom():
+    """dsh-custom 实验页：读 06-experiments/dsh-custom.md，复用 gen_exp 的渲染口径。"""
+    md = read("06-experiments/dsh-custom.md")
+    import render_exp as rexp
+    body = rexp.render_exp(md, "dsh-custom")
+    return page("实验：dsh-custom", "标准实验组",
+                "<p class='breadcrumb'><a href='index.html'>总览</a> › 实验</p>" + body,
+                "exp-dsh-custom", prev="exp-opencode-custom", nxt="exp-dsh")
+
+def gen_compare_dsh():
+    """官方 dsh vs dsh-custom 装配层对照页：镜像 gen_compare_opencode 结构
+    （六环雷达叠加 + 逐环 delta + 精装度 8 维对比 + 10 类改造清单 + 四大核心发现）。
+    分值全部取自 09-src-data/dsh_custom_scores.py，禁止硬编码。
+    文案素材取 03-cases/dsh-custom-diff.md §2/§3/§4/§6。
+    """
+    import math
+    OFF, CUS = "dsh-official", "dsh-custom"
+    order, n = dcs.RING_ORDER, len(dcs.RING_ORDER)   # SP/M/P/R/T/E 六环
+    cx, cy, RAD = 240, 210, 150
+
+    def pt(i, val):
+        ang = math.radians(-90 + i * 360.0 / n)
+        r = RAD * val / 5.0
+        return cx + r * math.cos(ang), cy + r * math.sin(ang)
+
+    grids = []
+    for lvl in range(1, 6):
+        pts = " ".join("%.1f,%.1f" % pt(i, lvl) for i in range(n))
+        grids.append(f'<polygon points="{pts}" fill="none" stroke="#DFE5EC" stroke-width="1"/>')
+    spokes = []
+    for i in range(n):
+        x, y = pt(i, 5)
+        spokes.append(f'<line x1="{cx}" y1="{cy}" x2="{x:.1f}" y2="{y:.1f}" stroke="#E4E9F0" stroke-width="1"/>')
+
+    def poly(key, fill, stroke):
+        pts = " ".join("%.1f,%.1f" % pt(i, dcs.RING_SCORES[key][rid]) for i, rid in enumerate(order))
+        return f'<polygon points="{pts}" fill="{fill}" stroke="{stroke}" stroke-width="2.4" stroke-linejoin="round"/>'
+
+    def dots(key, color):
+        out = []
+        for i, rid in enumerate(order):
+            x, y = pt(i, dcs.RING_SCORES[key][rid])
+            out.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="3.2" fill="{color}"/>')
+        return "".join(out)
+
+    labels = []
+    for i, rid in enumerate(order):
+        x, y = pt(i, 5.62)
+        labels.append(f'<text x="{x:.1f}" y="{y:.1f}" text-anchor="middle" dominant-baseline="middle" '
+                      f'font-size="13" font-weight="700" fill="#0B1220">{rid} {dcs.RING_META[rid]["label"]}</text>')
+
+    radar_svg = ("\n<svg viewBox=\"0 0 480 420\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" "
+                 "aria-label=\"六环雷达图：官方 dsh 内核与 dsh-custom 装配层综合分值叠加对比\">\n"
+                 "  <g>" + "".join(grids) + "".join(spokes) + "</g>\n"
+                 "  <g>" + poly(OFF, "rgba(90,107,133,.20)", "#5A6B85")
+                 + poly(CUS, "rgba(199,119,0,.22)", "#C77700") + "</g>\n"
+                 "  <g>" + "".join(labels) + dots(OFF, "#5A6B85") + dots(CUS, "#C77700") + "</g>\n"
+                 "</svg>")
+
+    # 逐环 delta 卡片（含 SP 环；Δ>=2.0 反转 / Δ>0 增强 / Δ=0 持平）
+    cards = []
+    for rid in order:
+        o, c, d, tag = dcs.ring_delta(rid)
+        m = dcs.RING_META[rid]
+        badge_cls = "weak" if tag == "反转" else ("neutral" if tag == "持平" else "strong")
+        dstr = ("+%.1f" % d) if d > 0 else ("%.1f" % d)
+        cards.append(f"""
+<div class="card" style="border-left:4px solid {m['color']}">
+  <span class="num" style="color:{m['color']}">{rid} RING · {m['ctrl']}</span>
+  <h3 style="margin:2px 0 10px;color:var(--ink)">{m['label']} <span class="badge {badge_cls}">{tag}</span></h3>
+  <div style="display:flex;align-items:baseline;flex-wrap:wrap;gap:10px;font-family:var(--font-mono);margin-bottom:8px">
+    <span style="color:var(--muted);font-size:12.5px">官方内核</span><b style="font-size:20px;color:#5A6B85">{o}</b>
+    <span style="color:var(--muted-2)">→</span>
+    <span style="color:var(--muted);font-size:12.5px">装配层综合</span><b style="font-size:22px;color:{m['color']}">{c}</b>
+    <span style="color:var(--muted);font-size:12.5px">Δ{dstr}</span>
+  </div>
+  <p style="margin:0;font-size:13.5px;color:var(--muted)">{m['change']}</p>
+</div>""")
+
+    # 精装度 8 维对比表（数值唯一来源 dsh_custom_scores.SCORES）
+    dim_rows = []
+    for dim, label, w in ps.DIMS:
+        o = dcs.SCORES[OFF]["dims"][dim]
+        c = dcs.SCORES[CUS]["dims"][dim]
+        d = c - o
+        dstr = ("+%d" % d) if d > 0 else ("%d" % d)
+        col = "var(--state-green)" if d > 0 else "var(--muted-2)"
+        ev = dcs.SCORES[CUS]["evidence"][dim]
+        dim_rows.append(f'<tr><td>{label}</td><td class="mono">{w}%</td><td class="mono">{o}</td>'
+                        f'<td class="mono" style="font-weight:700">{c}</td>'
+                        f'<td class="mono" style="color:{col};font-weight:700">{dstr}</td>'
+                        f'<td style="font-size:12.5px;color:var(--muted)">{ev}</td></tr>')
+
+    # 10 类改造清单（来自 03-cases/dsh-custom-diff.md §2）
+    changes = [
+        ("preset 编队层", "新增 3 preset：opencode-standard(order 11) / opencode-creator(12) / opencode-ptc(13)；顶层插件行 21/22/22、递归展开子行 34/35/35", "SP 主 + P", "SP：三档设定值固化；P：模式即编队"),
+        ("persona 层", "15 节 / 8018 字符（≈3084 tokens）persona 逐字符进三 preset 的 dsh-persona 行；遮蔽宿主 system-prompt.personaPrefix（2790 字符 / 8 小节 → 变死配置）", "SP + E", "SP：行为纪律随模式走；E：判据可复算"),
+        ("skill 库", "45 派生目录单根（~/.dsh/skills/opencode/）；模型可见 42 = 45 − 3 件 disable-model-invocation；_overlay 6 件 openspec 系叠加", "T + E", "T：能力密度提升；E：门控 0 问题"),
+        ("委派编队", "7 worker（general/explore/architect/requirement-discovery/search/reflection/pdf）→ 别名 subagent/oc_explore/oc_architect/oc_requirement/oc_search/oc_reflection/oc_pdf；delegation 组 12 子行；worker 均省略 maxDepth，靠 toolFilter.deny 阻止再委派", "P 主 + T", "P：主 Agent 编排 + 专职执行；T：工具面按 worker 隔离"),
+        ("权限层", "宿主 presets 由 3 档 → 5 档（+opencode-plan / opencode-build），defaultPreset: read-only 未变", "T（安全）", "T：审批档增加，非隔离档增加"),
+        ("模型接入层", "宿主 4 provider（zai / opencode-go / commandcode / opencode-go-tmp）+ deepseek 直连；含 inputModalities 视觉声明", "T（基建）", "T：模型接入面扩大，支撑视觉降级路径"),
+        ("plan-mode 层", "plan:policy section 由内置 2358 → 2515 字符，追加 3 行中文逐题访谈指引（指向 grill-me）", "SP + P", "SP：计划门附访谈约束"),
+        ("工具面分层", "内置 standard 31 / opencode-standard 37（含 6 个 oc_*）/ opencode-creator 40（+cordis_inspect_*、plugin_manager）/ opencode-ptc 1（仅 run_code，workflow 双禁）", "T", "T：同一内核派生 4 种执行面"),
+        ("插件收口", "plugin_manager 计数 188 → 191（+3 行 preset）；standard/ptc 硬禁、creator 条件启用", "T（治理）", "T：自省面按模式收口，防越权自改"),
+        ("领域门控栈", "architecture-judgment（gate_architecture.py ADR schema 门控）+ requirement-discovery（分层定档）+ search-methodology（信源分级）+ criterion-design-validation", "E 主 + P", "E：首个领域级自动评估门；P：领域任务路由固化"),
+    ]
+    ch_rows = "".join(f'<tr><td><b>{a}</b></td><td>{b}</td><td class="mono">{c}</td><td>{d}</td></tr>'
+                      for a, b, c, d in changes)
+
+    findings = [
+        ("发现一 · 迁移有损", "同一装配层跨平台迁移存在「能力损失」——E 环只判增强、不判反转。",
+         "opencode 侧的 architect-worker 可自跑门控脚本（有 bash）；dsh 侧子 Agent 无 bash（仅 read/write/edit/glob/grep）→ gate_architecture.py 无法在子 Agent 内自跑。同一套「skill + worker + 门控脚本」装配，换了宿主就从「产出方与验证方天然分离且可自动执行」退化为「验证动作须由父层代跑」。故 E 环官方 2.0 → 装配层 3.5，Δ+1.5 只记「增强」不记「反转」（阈值 Δ≥2.0）。"),
+        ("发现二 · 反思断裂", "R 环迁移断裂，闭环未接通（Δ0）。",
+         "提供 reflection_add / reflection_mark 的 dsh-reflection 插件已于 2026-10-10 随批次移出 → persona 中的 MEMORY / reflection 段在 dsh 侧不可用。装配层照搬了 opencode 侧的反思纪律文本，却没有承载它的工具面：纪律是死的，链路是断的。这是「提示词可迁移、运行时能力不可迁移」的典型样本，R 环维持 3.0（标注「持平·迁移损失」）。"),
+        ("发现三 · 门控判据", "bundle 自家门控曾假阳性 FAIL——判据应绑「被消费字段」而非「整文件指纹」。",
+         "原判据对「活文件」取整文件 sha256，脆性极高：GUI 写回一个 ui-theme.fontSize 即导致指纹漂移 → 门控 FAIL，而 bundle 实际消费的字段一个都没变。已改为 scoped_digest，只判 bundle 实际消费字段。教训具跨域普适性：门控判据的对象须与被消费的真实形态对齐；对「既存且会被他方合法改写」的文件取整文件指纹，同时制造假 FAIL 与覆盖错觉。"),
+        ("发现四 · 结构性代价", "persona 税与 PTC 空指向——装配层的两处结构性代价。",
+         "其一，persona 税：每请求 +8018 字符（≈3084 tokens），而内置 standard 的对应 section 仅 54 字符——约 150 倍开销，且三 preset 各自完整复制一份。其二，PTC 空指向：PTC 模式下工具面坍缩为单 run_code（系统提示 13658 → 53826 字符），但 persona §二 仍写「本模式提供 subagent、oc_explore…」→ 指向了不存在的工具，模型据文本会尝试调用被禁能力。系统提示膨胀 4 倍、有效工具仅 1 个，是本装配层最尖锐的自相矛盾。"),
+    ]
+    find_cards = "".join(f'<div class="card"><span class="num">{t.split(" · ")[0]}</span>'
+                         f'<h3 style="margin:0 0 6px">{t.split(" · ", 1)[1]}</h3>'
+                         f'<p style="margin:0 0 8px;color:var(--ink);font-size:14px">{lead}</p>'
+                         f'<p style="margin:0;color:var(--muted);font-size:13.5px">{body}</p></div>'
+                         for t, lead, body in findings)
+
+    signal = f"""
+<div class="signal">
+  <div class="signal-head"><span class="label">Compare · 官方基线 ⊗ 装配层</span>
+    <span class="tag">dsh {ps.fmt(dcs.final(OFF))} → {ps.fmt(dcs.final(CUS))}</span></div>
+  <span class="kicker" style="font-family:var(--font-mono);letter-spacing:.12em;color:#7E8CA5;font-size:11px">COMPARE</span>
+  <h1 style="font-size:26px;margin:8px 0 10px;color:#fff;letter-spacing:-.02em">官方 dsh ⊗ dsh-custom</h1>
+  <p style="color:#CBD4E2;max-width:760px;line-height:1.7;font-size:15px;margin:0 0 14px">核心命题三线：<b>首次回填模型分</b>（本轮首次把 dsh 纳入精装度 v2.0：官方 {ps.fmt(dcs.final(OFF))} / 装配层 {ps.fmt(dcs.final(CUS))}，旧单点分 2.5 属历史口径、不可相减）· <b>单维小步跃升 {ps.fmt(dcs.final(OFF))}→{ps.fmt(dcs.final(CUS))}</b>（8 维中仅 Skill 库 +1）· <b>迁移有损</b>（E 环只判增强不判反转，R 环因 dsh-reflection 插件移出而持平）。</p>
+  <div class="signal-legend">
+    <span><i style="background:#5A6B85"></i>官方内核</span>
+    <span><i style="background:#C77700"></i>装配层综合</span>
+    <span><i style="width:22px;height:0;border-radius:0;border-top:2px solid #C77700"></i>增强环</span>
+    <span><i style="width:22px;height:0;border-radius:0;border-top:2px dashed #94A3B8"></i>持平环（迁移损失）</span>
+  </div>
+</div>"""
+
+    body = signal + f"""
+<h2><span class="idx">00</span>口径披露 · 单点分 vs 模型分</h2>
+<div class="note"><b>⚠️ 本节是防止虚报跃升的必要声明。</b>
+① <b>旧口径</b>（v1.3 及以前）：dsh 在 KB 里只有「技术框架对照」的<b>单点分 2.5</b>，硬编码在 <code>09-src-data/gen_html.py</code> 的 <code>FRAMEWORK_DATA</code>——它不是 8 维模型的输出，没有硬门槛、没有权重、没有一票否决。
+② <b>新口径</b>（本轮首次）：首次把 dsh 纳入精装度 v2.0 模型（硬门槛 + 8 维加权 + 一票否决），得官方 <b>{ps.fmt(dcs.final(OFF))}</b> / 装配层 <b>{ps.fmt(dcs.final(CUS))}</b>。
+③ <b>不可相减</b>：{ps.fmt(dcs.final(OFF))} 与 2.5 <b>不同源</b>，故「2.5 → {ps.fmt(dcs.final(OFF))}」在数学上不成立，本页拒绝给出该数字；旧单点分作为历史口径保留并标注。
+④ <b>同步校正</b>：本轮把 <code>FRAMEWORK_DATA</code> 里 opencode 的 3.0 校正为模型口径 2.9（原值属口径漂移，一并归位）。
+⑤ <b>排名隔离</b>：<code>dsh_custom_scores.py</code> 独立于 <code>premium_scores.PRODUCTS</code>，不参与 14 产品市售排名；官方 dsh 与 dsh-custom 构成同源对照对，只回答「装配层带来多少增量」。</div>
+
+<h2><span class="idx">01</span>六环雷达 · 官方内核 vs 装配层综合</h2>
+<div class="ring-section" style="padding:var(--space-4)">
+  <div style="display:flex;flex-wrap:wrap;gap:var(--space-4);align-items:center">
+    <div style="flex:1 1 420px;min-width:300px;max-width:560px">{radar_svg}</div>
+    <div style="flex:1 1 260px;min-width:240px">
+      <table>
+        <thead><tr><th>环</th><th>官方</th><th>装配层</th><th>Δ</th><th>标注</th></tr></thead>
+        <tbody>
+        {''.join(f'<tr><td><span class="ring-tag" style="background:{dcs.RING_META[r]["color"]}">{r}</span> {dcs.RING_META[r]["label"]}</td><td class="mono">{dcs.RING_SCORES[OFF][r]}</td><td class="mono" style="font-weight:700;color:{dcs.RING_META[r]["color"]}">{dcs.RING_SCORES[CUS][r]}</td><td class="mono">{dcs.ring_delta(r)[2]:+.1f}</td><td>{dcs.ring_delta(r)[3]}</td></tr>' for r in order)}
+        </tbody>
+      </table>
+      <p style="font-size:12.5px;color:var(--muted);margin:0">分值 0–5，取自 <code>09-src-data/dsh_custom_scores.py</code>（RING_SCORES）。判据：Δ≥2.0 记「反转」，Δ&gt;0 记「增强」，Δ=0 记「持平」。SP 环按 RING_ORDER 单列，不计入五环但为五环提供目标参考序列；本轮无环达反转阈值，E 环 Δ+1.5 为最强增强。</p>
+    </div>
+  </div>
+</div>
+
+<h2><span class="idx">02</span>逐环 delta 卡片（含 SP）</h2>
+<div class="grid cols-3">{''.join(cards)}</div>
+
+<h2><span class="idx">03</span>精装度 8 维对比</h2>
+<table>
+  <thead><tr><th>维度</th><th>权重</th><th>官方</th><th>装配层</th><th>Δ</th><th>依据</th></tr></thead>
+  <tbody>{''.join(dim_rows)}</tbody>
+</table>
+<p style="font-size:12.5px;color:var(--muted)">数值唯一来源：<code>dsh_custom_scores.py</code> 的 <code>SCORES</code> / <code>WEIGHTS</code>（与 <code>premium_scores.WEIGHTS</code> 同源）；官方加权 {dcs.weighted(OFF):.2f}→{ps.fmt(dcs.final(OFF))}，装配层加权 {dcs.weighted(CUS):.2f}→{ps.fmt(dcs.final(CUS))}，均过端到端硬门槛、无一票否决。Δ+0.2 的全部来源 = Skill 维度 +1 × 权重 12% = +0.12，叠加四舍五入后的显示差——这是一次「单维小步」而非「全面跃升」；二者同落 <code>tier()</code> 的「成品化受限」档（≥3.5 且 &lt;4.5），均未跨档。</p>
+
+<h2><span class="idx">04</span>10 类改造清单</h2>
+<table>
+  <thead><tr><th>类别</th><th>改造内容</th><th>对环权重</th><th>对环影响</th></tr></thead>
+  <tbody>{ch_rows}</tbody>
+</table>
+
+<h2><span class="idx">05</span>四大核心发现</h2>
+<div class="grid cols-2">{find_cards}</div>
+"""
+    return page("官方 dsh vs 装配层对照", "dsh 官方基线 ⊗ dsh-custom 装配层",
+                "<p class='breadcrumb'><a href='index.html'>总览</a> › 官方 dsh vs 装配层对照</p>" + body,
+                "compare-dsh", prev="case-dsh-custom", nxt="case-dsh")
 
 # 生成
 pages={}
@@ -688,20 +897,28 @@ for i,(fn,ti,mf) in enumerate(THEORY_META):
     nxt = "theory-state-est" if fn=="theory-closed-loop" else (THEORY_META[i+1][0] if i+1<len(THEORY_META) else "case-opencode")
     pages[fn]=gen_theory(fn,ti,mf,prev,nxt)
 
-CASES=[("case-opencode","案例：opencode","opencode.md"),("case-opencode-custom","案例：opencode-custom（自改造）","opencode-custom.md"),("case-dsh","案例：deepseek-harness","deepseek-harness.md"),("case-prime","案例：PRIME","prime.md"),("case-hermes","案例：hermes","hermes.md"),("case-claude-code","案例：claude-code","claude-code.md"),("case-codex","案例：codex","codex.md")]
+CASES=[("case-opencode","案例：opencode","opencode.md"),("case-opencode-custom","案例：opencode-custom（自改造）","opencode-custom.md"),("case-dsh-custom","案例：dsh-custom（装配层）","dsh-custom.md"),("case-dsh","案例：deepseek-harness","deepseek-harness.md"),("case-prime","案例：PRIME","prime.md"),("case-hermes","案例：hermes","hermes.md"),("case-claude-code","案例：claude-code","claude-code.md"),("case-codex","案例：codex","codex.md")]
 for i,(fn,ti,mf) in enumerate(CASES):
+    if fn=="case-dsh-custom":
+        pages[fn]=gen_case_dsh_custom()   # 专用生成器（固定 product 名 dsh-custom）
+        continue
     prev="theory-hierarchical" if i==0 else CASES[i-1][0]
     nxt=CASES[i+1][0] if i+1<len(CASES) else "exp-opencode"
     pages[fn]=gen_case(fn,ti,mf,prev,nxt)
 
-EXPS=[("exp-opencode","实验：opencode","opencode.md"),("exp-opencode-custom","实验：opencode-custom","opencode-custom.md"),("exp-dsh","实验：dsh","deepseek-harness.md"),("exp-prime","实验：PRIME","prime.md"),("exp-hermes","实验：hermes","hermes.md"),("exp-claude-code","实验：claude-code","claude-code.md"),("exp-codex","实验：codex","codex.md")]
+EXPS=[("exp-opencode","实验：opencode","opencode.md"),("exp-opencode-custom","实验：opencode-custom","opencode-custom.md"),("exp-dsh-custom","实验：dsh-custom","dsh-custom.md"),("exp-dsh","实验：dsh","deepseek-harness.md"),("exp-prime","实验：PRIME","prime.md"),("exp-hermes","实验：hermes","hermes.md"),("exp-claude-code","实验：claude-code","claude-code.md"),("exp-codex","实验：codex","codex.md")]
 for i,(fn,ti,mf) in enumerate(EXPS):
+    if fn=="exp-dsh-custom":
+        pages[fn]=gen_exp_dsh_custom()    # 专用生成器（固定 product 名 dsh-custom）
+        continue
     prev="case-codex" if i==0 else EXPS[i-1][0]
     nxt=EXPS[i+1][0] if i+1<len(EXPS) else None
     pages[fn]=gen_exp(fn,ti,mf,prev,nxt)
 
 # 官方 vs 自改造对照页
 pages["compare-opencode"]=gen_compare_opencode()
+# 官方 dsh vs 装配层对照页
+pages["compare-dsh"]=gen_compare_dsh()
 
 # 精装房全景页
 pages["premium-map"]=gen_premium_map()

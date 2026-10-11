@@ -1,6 +1,7 @@
-# opencode v1.18.30 — Agent 控制论画像
+# opencode v1.18.35 — Agent 控制论画像
 
 > 分析基于 `opencode-src-v1.18.29/` 官方源码（monorepo，`packages/opencode` 主应用 + `packages/core` 核心层 + `packages/cli` 命令框架）与已完成装配层分析（`06-md/`）。映射到 `02-framework/framework.md` 的五大核心环（M/P/R/T/E）× KT-ctrl 概念。
+> **版本标注说明**：本机运行时已升至 **1.18.35**（`~/.opencode/bin/opencode --version` 实测）；本地可得源码树仍为 `opencode-src-v1.18.29`（落后 6 个 patch），故下述**源码级分析基础不变、五环结论不变**，版本增量核对见文末「1.18.31 → 1.18.35 增量点检」。
 
 ## 1. 设定值（Setpoint）——用户意图 → 可验证子目标
 
@@ -141,6 +142,66 @@
 
 ---
 
+## 1.18.31 → 1.18.35 增量点检（2026-10-11）
+
+> 本节仅做官方版本增量核对；正文五环画像仍基于 `opencode-src-v1.18.29/` 的源码级分析。
+> 本轮基线取 **1.18.35**（本机可实证的运行时）；上游 v1.19.0 只登记不追（见下）。
+
+### 逐版变更（官方 release notes 实测）
+
+| 版本 | 日期 | 要点 |
+|---|---|---|
+| v1.18.31 | 2026-09-14 | 恢复 ACP 会话的 model/effort/mode/reasoning chunk 边界（load/resume/fork）；TUI 启动期显示远端配置认证错误并以失败状态退出；Extensions：为 GitHub Copilot 模型请求 summarized adaptive thinking |
+| v1.18.32 | 2026-09-21 | Bedrock 图片附件仅对 Claude / Nova / Llama 4 抬升；修复 Together AI 流式 usage 上报 |
+| v1.18.33 | 2026-09-28 | Cloudflare AI Gateway 模型遵循 provider 响应/流超时；MCP 浏览器启动失败在 launcher 立即退出时上报；**debug 配置输出改为对凭据与敏感 header 脱敏**；Gemini thinking 默认与 effort 选项跨代对齐 |
+| v1.18.34 | 2026-09-30 | **发送带命名空间的 session / parent-session 身份 header**；本地编译的 macOS 二进制重签名；macOS CLI release 用 Developer ID 签名 |
+| v1.18.35 | 2026-10-06 | 新增 canonical redirect 与 **JSON / Markdown 数据格式的 agent-readable stats**；xAI 工具结果携带受支持图片、不支持的格式跳过 |
+| v1.19.0 | 2026-10-11 | `opencode upgrade --major` 升级到 OpenCode 2；允许 OpenAI `ultrafast` 服务层级；校验 PTY 连接来源与票据；TUI `/update` 改为手动安装更新 |
+
+**改动分布**：集中于 ACP 会话边界、Provider 适配（Bedrock / Together AI / Cloudflare AI Gateway / Gemini / xAI）、MCP 启动上报、TUI 启动与更新路径、stats 输出与签名链；**无包级结构变化**。
+
+### 源码级点检（本机 git 实测，非仅 release notes）
+
+> 取证：`git fetch --depth=1 origin refs/tags/v1.18.35`（定向代理）+ `git ls-tree` / `git diff --shortstat`
+> 取证仓：`…/0902-opencode-dag/opencode-src-v1.18.29`（remote `github.com/anomalyco/opencode`）
+
+| 项 | v1.18.29 | v1.18.35 | 判定 |
+|---|---|---|---|
+| workspace 包数（`packages/*/package.json` ∪ `packages/*/*/package.json`） | **36** | **36** | 一致 |
+| 包集合（路径排序 diff） | — | — | **完全一致：无新增、无删除** |
+| `packages/` 顶层目录名 | 32 | 32 | 完全一致 |
+
+| 变更区间 | 文件变更量 |
+|---|---|
+| `v1.18.29 → v1.18.30` | **105 files, +1676 / −403** ← 与本库 v1.3 记录的「105 文件（+1676/−403）」**逐项吻合**，方法自校验通过 |
+| `v1.18.29 → v1.18.35` | **328 files, +17411 / −8779** |
+| `v1.18.30 → v1.18.35` | 318 files, +15961 / −8602 |
+
+变更分布（29→35，按顶层目录）：`packages/stats` 73 · `packages/console` 73 · `packages/web` 60 · `packages/opencode` 39 · `artifacts/glm52-rise-video` 20 · `packages/core` **仅 10** · `packages/tui` 7 · `.github/workflows` 7 · `packages/ui` 4 · `packages/app` 3。
+⇒ **改动集中在 stats / console / web / 主包，核心 `core` 仅 10 文件，未触及包间依赖图**——这是「官方五环分值不调整」的源码级依据（而非仅凭 release notes 推断）。
+
+### 外部影响：v1.18.34 session 身份 header 与 DSH 网关 `MissingSessionID`（闭合归因）
+
+- **现象**（2026-10-10）：DSH 走 opencode-go 网关时收到 `400 INVALID_REQUEST: {"type":"MissingSessionID"}`。
+- **裸 curl A/B 对照**：带合成 `x-opencode-session: ses_<32hex>` → **200**（模型正常返回，含 `reasoning_content`）；不带 → **400**；且 dsh 两版全仓对该字符串**零命中** ⇒ 当时判定为「网关侧新增契约」。
+- **本轮闭合**：v1.18.34 官方 release note 明写「发送带命名空间的 session / parent-session 身份 header」——**该契约来自 opencode 1.18.34 引入的 session 身份 header**，网关与客户端同源演进；dsh 侧零命中属预期（契约不在客户端仓库内，而在同源的 opencode 客户端/网关侧）。
+- **证据**：`…/Mission-file/2026-10/1010-dsh升级0.2.1/report.md` §3.5（A/B 对照臂 + dsh 全仓零命中）+ 本表 v1.18.34 行（官方 release notes）。
+- **启示**：网关隐性契约可先于本地升级独立打断链路，且只能用对照臂定性；上游客户端 header 契约的引入时点可用于事后归因。
+
+### 上游 v1.19.0 登记（只登记不追）
+
+- **登记**：v1.19.0 于 2026-10-11T01:39Z 发布（即今日）；release note 明写 `Run opencode upgrade --major to upgrade to OpenCode 2`。
+- **判定**：**1.18.x 为 1.x 末线，v1.19.0 是通往 2.x 的升级入口**（主版本跃迁信号）。
+- **不追理由**：本机**未安装** v1.19.0，**无本地源码/行为证据**；且其性质是主版本升级入口而非 1.x 功能增量。**待 OpenCode 2 正式落地并取得本地源码/行为证据后，再单独立项画像。**
+
+### 装配层基线同步（提示）
+
+`opencode-custom` 侧自 2026-09-11 起已漂移：agents 10→9、可加载 skill 41→45、commands 2→3、instructions 注册 5→6、MCP 6→4、plugins 0→2、providers 3→6。**官方内核五环基线分值（M/P/R/T/E）不因这些装配层变化调整**（分层原则：本画像只评官方内核，装配层增量归 `opencode-custom.md` 口径）。
+
+**画像结论**：上述增量改动集中于 ACP 会话边界、Provider 适配、MCP 启动上报、TUI 路径、stats 输出与签名链，**未触及五环机制**（设定值分解 / E 评估 / T 执行 / M 记忆 / P 规划 / R 反思），故**官方五环基线分值（M/P/R/T/E）不因该增量调整**（结构未变）。
+
+---
+
 ### 📚 证据来源
 
 | SRC | 级别 | 信源 | URL/路径 | 置信度 |
@@ -150,3 +211,6 @@
 | SRC-003 | S4 | 一手源码观察 | `core/src/snapshot.ts`、`processor.ts`、`summary.ts`（snapshot 变更追踪 E 信号 + doom_loop 检测） | 高 |
 | SRC-004 | S4 | 一手源码观察 | `tool/shell.ts`、`tool/truncate.ts`、`permission/index.ts`、`session/retry.ts`（执行器看门狗/限幅/仲裁/重试） | 高 |
 | SRC-005 | S4 | 一手源码观察 | `session/compaction.ts`、`core/session/context-epoch.ts`、`tool/task.ts`（M/P 环状态估计与分层委派） | 高 |
+| SRC-006 | S4 | 一手版本记录 | GitHub releases API 实测（v1.18.31 / v1.18.32 / v1.18.33 / v1.18.34 / v1.18.35 / v1.19.0 release notes，逐版） | 高 |
+| SRC-007 | S4 | 一手运行时观察 | 本机 `~/.opencode/bin/opencode --version`（**1.18.35**）+ `~/.local/share/opencode/log`（2026-10-07 升级至 1.18.35，此后全部会话为该版本） | 高 |
+| SRC-008 | S4 | 一手归因留档 | `…/Mission-file/2026-10/1010-dsh升级0.2.1/report.md` §3.5（网关 `MissingSessionID` 裸 curl A/B 对照 + dsh 全仓零命中） | 高 |

@@ -2,7 +2,7 @@
 
 > 本文件是本知识库的**宪法级硬约束**。所有子Agent 必须以本文件为唯一契约来源，禁止在 prompt 中复制本文件全文（避免长 prompt 截断），只允许引用其短路径 `00-contract/contract.md`。
 >
-> 版本：`v1.3.0`　创建：2026-09-07　v1.1 扩展：2026-09-08（精装房全景专题）　v1.2 扩展：2026-09-09（自改造 opencode 变体专题）　v1.3 扩展：2026-09-11（自改造 opencode 变体复评）　负责人：主Agent
+> 版本：`v1.4.0`　创建：2026-09-07　v1.1 扩展：2026-09-08（精装房全景专题）　v1.2 扩展：2026-09-09（自改造 opencode 变体专题）　v1.3 扩展：2026-09-11（自改造 opencode 变体复评）　v1.4 扩展：2026-10-11（dsh 装配层变体专题 + opencode 月度追平）　负责人：主Agent
 
 ---
 
@@ -56,27 +56,34 @@
 
 ---
 
-## 2.6 自改造 opencode 变体专题约定（v1.2 新增）
+## 2.6 装配层变体专题约定（v1.2 新增，v1.4 泛化）
 
-本专题分析**官方 opencode 的衍生变体**（个人装配层）——不重造引擎，仅在配置/协议/skill/MCP/记忆系统五层做定向补强。
+本专题分析**官方引擎的衍生变体**（变体：`opencode-custom` / `dsh-custom`，均为个人装配层）——**不重造引擎，仅在配置/协议/skill/MCP/记忆系统五层做定向补强**。
 
-- **基线**：官方 opencode 默认 + 最小常规装配（四 agent + 官方内置 skills + 基础 provider），基线口径见 `03-cases/opencode.md`。
+- **基线**：
+  - `opencode-custom`：官方 opencode 默认 + 最小常规装配（四 agent + 官方内置 skills + 基础 provider），基线口径见 `03-cases/opencode.md`；v1.4 起本机运行时基线为 **1.18.35**（上游最新 release `v1.19.0` 于 2026-10-11 发布，**只登记不追**）。
+  - `dsh-custom`：官方 **dsh v0.2.1-alpha.2**（2026-10-09，commit `d743267`，跨 21 个预发布 tag）默认装配作为宿主内核，装配层为 `dsh-opencode-port` bundle。
+- **落点**（`dsh-custom`）：`~/.dsh/presets/opencode/`（3 preset：opencode-standard / creator / ptc）+ `~/.dsh/skills/opencode/`（45 派生 skill）+ 宿主 profile patch（4 provider / permission 5 档 / plugin-manager `pnpmCommand`）。
 - **评分方法**：五环**双层评分**（内核层 + 装配层增量 Δ）+ 复用精装度 **v2.0**（硬门槛 + 8 维加权 + 一票否决，见 `07-checkpoint/premium-scoring-model.md`）。
-- **口径**（已定结论）：官方精装度 2.9 → 自改造 3.9（Δ+1.0）；五环双层 SP 3.5→4.5、M 3.5→4.0、P 4.5→5.0、R 2.0→4.5（反转）、T 4.5→5.0、E 2.0→4.0（反转）。
-- **排名约定**：变体**不参与 14 产品市售精装度排名**（个人装配层无分发渠道，不与市售产品同轴比较）。
-- **证据**：脱敏快照 `07-checkpoint/opencode-custom-snapshot/`（opencode.jsonc / instructions / command / inventory.json），评分单一数据源 `09-src-data/opencode_custom_scores.py`。
+- **口径**（已定结论）：
+  - `opencode-custom`：官方精装度 2.9 → 自改造 3.9（Δ+1.0）；五环双层 SP 3.5→4.5、M 3.5→4.0、P 4.5→5.0、R 2.0→4.5（反转）、T 4.5→5.0、E 2.0→4.0（反转）。
+  - `dsh-custom`：官方精装度 **3.6 → 3.8**（Δ+0.2）；五环双层 SP 4.5→5.0、M 4.0→4.0、P 4.5→5.0、R 3.0→3.0、T 5.0→5.0、E 2.0→3.5。
+- **排名约定**：变体（`opencode-custom` / `dsh-custom`）**不参与 14 产品市售精装度排名**（个人装配层无分发渠道，不与市售产品同轴比较）。
+- **证据**：
+  - `opencode-custom`：脱敏快照 `07-checkpoint/opencode-custom-snapshot/`（opencode.jsonc / instructions / command / inventory.json），评分单一数据源 `09-src-data/opencode_custom_scores.py`。
+  - `dsh-custom`：脱敏快照 `07-checkpoint/dsh-custom-snapshot/`（bundle / profile / inventory.json / manifest.json），评分单一数据源 `09-src-data/dsh_custom_scores.py`（与 `opencode_custom_scores.py` **同构**）。
 
 ---
 
 ## 2.7 变体复评约定（v1.3 新增）
 
-本约定固化 `opencode-custom` 等衍生变体的**后续再评估口径**，防止多次复评间口径漂移。
+本约定固化 `opencode-custom` / `dsh-custom` 等衍生变体的**后续再评估口径**，防止多次复评间口径漂移。
 
 ### ① 排名隔离（硬约束）
-变体（`opencode-custom`）为个人装配层，**不参与 14 产品市售精装度排名**；其分值仅用于「官方内核 vs 装配层增量」的内部对照，不得与市售产品同轴比较、不得对外排名。
+变体（`opencode-custom` / `dsh-custom`）为个人装配层，**不参与 14 产品市售精装度排名**；其分值仅用于「官方内核 vs 装配层增量」的内部对照，不得与市售产品同轴比较、不得对外排名。
 
 ### ② 复评口径（三段式，缺一不可）
-- **证据层全量重算**：脱敏快照 + `inventory.json` + `09-src-data/opencode_custom_scores.py` 全量刷新；8 维与五环分值由数据涌现定稿，**禁止手改数值**。
+- **证据层全量重算**：脱敏快照 + `inventory.json` + 评分**单一数据源**全量刷新——opencode 侧 = `09-src-data/opencode_custom_scores.py`，dsh 侧 = `09-src-data/dsh_custom_scores.py`（两者同构）；8 维与五环分值由数据涌现定稿，**禁止手改数值**。
 - **交付层全量更新**：画像 MD、diff MD、对照页、门户/README/索引/契约全量同步；生成物必须由生成脚本重生成（**禁只改生成物而不改生成脚本**）。
 - **实验层只补新机制**：仅对新机制补做实验，**不重跑既有实验**；历史实验结论保留原版本号并加「历史块」标注，新实验另起章节。
 
@@ -84,9 +91,16 @@
 `opencode.env` 不拷贝；密钥一律写作 `<REDACTED>`；`MEMORY.md` 不入公开库（`.gitignore` 排除）。实验仅限 `/tmp/opencode` 隔离区，前后对记忆文件做 sha256 校验。对实机配置只读，不修改 `~/.config/opencode/**`。
 
 ### ④ 复评节奏与版本号规则
-- **触发条件**：官方基线漂移（opencode 内核升版）或装配层发生「能力纵深增长 / 机制新增」时触发复评。
+- **触发条件**：官方基线漂移（opencode / dsh 内核升版）或装配层发生「能力纵深增长 / 机制新增」时触发复评。
 - **版本号规则**：复评后知识库版本号递增（如 v1.2 → v1.3），并同步刷新全站版本标识（生成脚本 + 生成物双轨，零残留）。
 - **诚实口径**：若复评未跨评分模型 5 档产品阈值，**维持原分值、不虚报跃升**，仅在画像/diff 中刷新 evidence 与机制叙述。
+
+### ⑤ 未入库轮次的补账义务（v1.4 新增）
+
+- **补账义务（硬约束）**：若某轮复评因用户口径「**不入库**」，则**其后一轮复评必须显式补入该轮的实机事实**，并在画像 / diff 中留痕，**不得静默跳过**。
+  - **本轮先例**：`2026-09/0914-自改造opencode再评估v1.4` 全量复评明确「**不更新知识库**」→ 本库存在 2026-09-11 → 2026-10-11 的**一个月 backlog**，本轮（v1.4）一次性补入。
+- **口径变更须披露（硬约束）**：当某产品从「**单点分**」改为「**8 维模型分**」时，必须**显式声明两者不同源、不可相减**，**禁止呈现为跃升**。
+  - **本轮先例**：dsh 旧口径仅「技术框架对照」的**单点分 2.5**（`gen_html.py` `FRAMEWORK_DATA`，**非** 8 维模型输出）；v1.4 首次回填 v2.0 模型得 **3.6**。`3.6` 与 `2.5` **不同源、不可相减**，旧单点分作为历史口径保留（见 `03-cases/dsh-custom-diff.md` §口径披露）。
 
 ---
 
@@ -104,14 +118,17 @@
 │   └── 05-hierarchical.md  # 分层控制/慢快双速
 ├── 02-framework/         # 五大核心环映射框架（Phase 2）
 │   └── framework.md
-├── 03-cases/             # 产品控制论画像（v1.1 扩展至 ~15 产品）
+├── 03-cases/             # 产品控制论画像（v1.1 扩展至 ~15 产品；v1.2/v1.4 增装配层变体）
 │   ├── prime.md / deepseek-harness.md / opencode.md / hermes.md / claudecode.md / codex.md  # 原 6
-│   └── premium-{product}.md  # v1.1 新增精装房案例（Cursor/Windsurf/... 等）
-├── 04-interactive/       # 交互 DAG 总览 + 精装房全景页（cytoscape）
+│   ├── premium-{product}.md   # v1.1 新增精装房案例（Cursor/Windsurf/... 等）
+│   └── {variant}.md / {variant}-diff.md  # v1.2/v1.4 装配层变体画像 + diff（opencode-custom、dsh-custom）
+├── 04-interactive/       # 交互 DAG 总览 + 精装房全景页 + 装配层变体页（cytoscape）
 │   ├── index.html
 │   ├── premium-map.html       # 精装房全景地图
 │   ├── premium-{product}.html # 精装房案例页
-│   └── premium-cyto.html      # 精装房 DAG 交互图
+│   ├── premium-cyto.html      # 精装房 DAG 交互图
+│   ├── case-{variant}.html / exp-{variant}.html   # v1.2/v1.4 变体案例页 / 实验页（opencode-custom、dsh-custom）
+│   └── compare-opencode.html / compare-dsh.html   # v1.2/v1.4 官方 vs 装配层对照页
 ├── 05-md/                # AI 友好 MD 镜像 + 索引
 │   ├── 00-index.md
 │   └── ...
@@ -136,8 +153,9 @@
 - **产品 ID**：`agent-{short}` short ∈ `{prime, dsh, opencode, hermes, claudecode, codex}`（原 6）
 - **精装房产品 ID**（v1.1 新增）：`premium-{short}` short ∈ `{cursor, windsurf, copilot, devin, workbuddy, codewhale, ccrouter, qcode, dify, coze, openhands, gptresearcher, ...}`
   - 案例页：`04-interactive/premium-{short}.html`；画像 MD：`03-cases/premium-{short}.md`
-- **衍生变体产品 ID**（v1.2 新增）：`opencode-custom`（官方 opencode 的衍生变体，案例 ID `KT-case-007`）
-  - 画像 MD：`03-cases/opencode-custom.md`；案例页：`04-interactive/case-opencode-custom.html`；对照页：`04-interactive/compare-opencode.html`
+- **衍生变体产品 ID**（v1.2 新增，v1.4 扩展）：装配层变体（官方引擎的衍生变体，**不参与市售排名**）
+  - `opencode-custom`（官方 opencode 的衍生变体，案例 ID `KT-case-007`）：画像 MD `03-cases/opencode-custom.md`；diff MD `03-cases/opencode-custom-diff.md`；案例页 `04-interactive/case-opencode-custom.html`；对照页 `04-interactive/compare-opencode.html`；实验页 `04-interactive/exp-opencode-custom.html`
+  - `dsh-custom`（官方 dsh 的衍生变体，案例 ID `KT-case-008`）：画像 MD `03-cases/dsh-custom.md`；diff MD `03-cases/dsh-custom-diff.md`；案例页 `04-interactive/case-dsh-custom.html`；对照页 `04-interactive/compare-dsh.html`；实验页 `04-interactive/exp-dsh-custom.html`
 
 ---
 

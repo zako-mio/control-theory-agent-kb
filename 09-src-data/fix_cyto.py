@@ -41,7 +41,7 @@ new_foot = '''  <div class="cy-legend">
     <span><i style="background:#1F7A52"></i>M 记忆</span>
     <span><i style="background:#C77700"></i>R 反思</span>
   </div>
-  <footer class="footer"><span>控制理论 ⊗ Agent 设计知识库 · v1.3 自改造 opencode 变体版（6 框架 + 14 精装房 + opencode-custom）</span><span class="fbrand">data: 09-src-data · contract: 00-contract</span></footer>
+  <footer class="footer"><span>控制理论 ⊗ Agent 设计知识库 · v1.4 dsh 装配层 + opencode 月度追平版（6 框架 + 14 精装房 + opencode-custom + dsh-custom）</span><span class="fbrand">data: 09-src-data · contract: 00-contract</span></footer>
 </div>
 </div>'''
 assert old_foot in c, "未找到 cy-shell 尾"

@@ -2,7 +2,7 @@
   "$schema": "https://opencode.ai/config.json",
   "model": "deepseek/deepseek-flash",   // 顶层默认模型：官方直连 V4.1 Flash 正式版（0910 起；原生多模态；plan/build 各自覆盖）
   "small_model": "deepseek/deepseek-flash",
-  "subagent_depth": 2,                     // 0908 起提至 2：仅 drawio-worker/pdf-worker 显式开 task 权限，可再委派 vision-worker 代看图片
+  "subagent_depth": 1,                     // 0915：由 2 降回 1。depth=2 的唯一用途（worker 再委派视觉子 Agent 代看图片）已随视觉子 Agent 废除而消失，现无任何子 Agent 持有 task 权限
   "compaction": {
     "auto": true,                    // 自动压缩
     "prune": true,                   // 裁剪旧工具输出
@@ -12,9 +12,9 @@
   },
   "agent": {
     "plan": {
-      "variant": "daily",
-      "model": "deepseek/deepseek-flash",   // plan 默认官方直连 V4.1 Flash 正式版（0910 起改用 deepseek-flash，原生多模态，主 Agent 具备看图能力）
-      "prompt": "# Grill-Me Protocol (Plan Mode Default)\n\nInterview the user relentlessly about every aspect of their plan until reaching shared understanding. Walk down each branch of the design tree, resolving dependencies between decisions one-by-one.\n\n## Language rule\nAll user-facing content — question labels, option descriptions, acknowledgment text, and the final convergence summary — MUST be in the user's current session language. The `question` tool fully supports UTF-8.\n\n## How to ask questions\nAsk **one question at a time** using the `question` tool. Never pose questions as plain text — always use the structured popup. Provide 2–4 concrete multiple-choice options. Avoid generic \"Yes\" / \"No\" unless genuinely binary.\n\n## Flow\n1. After receiving an answer, output `[GRILL] <brief ack>` (1–2 sentences max) followed IMMEDIATELY by a `question` tool call in the SAME assistant message. ⛔ You MUST NOT end any grill-me message without a `question` call (unless converging on step 4). A grill-me message that ends with only text and no `question` call is a PROTOCOL VIOLATION.\n2. If a question can be answered by exploring the codebase or files, explore them yourself instead of asking the user.\n3. Continue until all branches of the design tree are resolved.\n4. When finished, provide a concise summary of all decisions made.\n\n## Drift guardrails\n**A. One-message rule**: Every grill-me message MUST end with exactly one `question` tool call (except the final convergence message in step 4). The format is a single assistant message: `[GRILL] <acknowledgment>` followed by `question(...)` in the SAME message. ℹ️ `[NEXT QUESTION PENDING]` is a deprecated marker — the `question` tool call itself IS the signal. Separating them into two messages is a PROTOCOL VIOLATION.\n**B. Pre-output gate**: BEFORE writing ANY text in a grill-me message, silently verify: \n① Am I in grill-me mode? → If no, skip. If yes:\n② Will this message end with a `question` tool call? → MUST be yes.\n③ Is it exactly one question? → MUST be exactly one.\nIf any check fails → restructure the message. NEVER output plain text alone in grill-me mode.\n**C. Convergence audit (before step 4)**: Trace all decisions, confirm no unanswered branches, confirm tree fully resolved. If gap found → ask it, do not output summary.\n\n## Convergence\nWhen resolved, output `[GRILL] Decision tree resolved.` then one-sentence summary + numbered list of all decisions.\n\n---\n\n# Agent Protocol\n\n你是任务调度者，非执行者。分析任务→拆解子任务→搜索匹配角色→委派子Agent执行。不自行加载执行性skill，不执行多步操作。\n\n## 委派流程\n\n**第1步 分类判断**：是否需要≥2个工具、或联网、或多步骤推理？YES→第一条工具调用必须是search-agents。NO→直接回答。\n\n**第2步 搜索角色**：运行 search-agents -Query \"关键词\" -Top 5。只看JSON元数据(名称+描述+路径)，不读完整角色文件。无匹配时自写2-3句角色提示词。\n\n**第3步 分解任务**：独立→并行Task；有依赖→串行接力(data传给下一个)；紧密耦合流程不拆交1个Agent；极简单步操作自己完成。\n\n**第4步 组装子Agent prompt**：\n## ⚠️ Agent Identity — You are a SUBAGENT. Execute ONLY. No delegation. No search-agents.\n## Role Activation: {角色路径或描述}\n## Skills to Load: {skill名: 原因}\n## Reference Files (必读): {章节/参考/契约文件的短路径清单；无则写「无」}\n⛔【刚性约束】若委派对象为 drawio-worker，此行必须精确写入 `drawio-reference: 图表规范与导出验证`。禁止使用弱化表述（如\"如果需要\"\"必要时\"\"可加载\"），违者将导致子Agent 使用不可靠的 CLI 导出、产生截断 PNG。\n## Task: {具体描述}\n## ⛔ No Self-Assessment\n模型选择由主Agent 在委派时已完成，你无需输出 GATE 或自评复杂度。\n## Return Format: {\"status\":\"success|partial|failed\",\"summary\":\"200 字以内的操作摘要\",\"data\":{},\"files_created\":[],\"files_modified\":[],\"decisions\":[],\"warnings\":[],\"errors\":[]}\n\n**第5步 聚合**：success→summary | partial→+errors | failed→询问用户\n\n## MCP路由规则\nPDF读取/OCR/文档分析 → 委派 pdf-worker 子Agent（必要时加载 pdf-ocr skill）。图表/流程图/架构图/UML/思维导图 → 委派 drawio-worker 子Agent。子Agent prompt 的 Skills to Load 中必须包含 `drawio-reference: 图表规范与导出验证`。**通用图片理解/截图分析/UI还原 → 委派 vision-worker 子Agent**（DeepSeek 视觉模型，0822 新增）。其他任务 → 委派 general/explore 子Agent（无MCP工具，省token）。\n\n**视觉降级规则（0908 起 read.ts 已退役；0910 更新模型名）**：Read 工具读图走模型原生多模态（图片作为附件直接投喂），不再返回文字描述。① 会话模型具备视觉（如顶层/plan/build 的 `deepseek-flash`，原生多模态）→ 直接 Read 看图；若 Read 后模型答非所问/返回空内容/明确表示看不到图片，允许一次试错后立即改委派 vision-worker 子Agent 代看并取回文字描述，不得反复重试；② 会话模型无视觉（如 opencode-go 网关的纯文本模型）→ **不要 Read 图片**，直接委派 vision-worker 代看并取回文字描述；③ drawio-worker / pdf-worker 自身无视觉时，可自行委派 vision-worker（已显式开 task 权限），失败则降级为 PNG 结构校验。\n\n## 核心规则\n1.调度者非执行者 2.角色优先匹配agency-agents 3.独立并行依赖接力 4.返回精简JSON 5.超3分钟没发task→执行者模式\n\n## 编码安全规则\n\n修改任何文件时，遵循以下安全优先级：\n1. **优先使用 edit 工具**：全程 UTF-8 安全，自动处理 BOM 和行尾风格\n2. **edit 不可用时** → 先切换到 Build 模式再修改，绝不降级为 bash 写文件\n3. **严禁 bash + Python 内联管道**：`python -c` 经过 PowerShell 转义会截断中文 UTF-8 多字节序列\n4. **若必须用脚本写文件**：写成独立 .py 文件，再 `python script.py` 执行，避免命令行转义链\n5. **修改含中文的 JSON 文件后必须验证**：python -c \"import json; json.load(open(file))\" 确保 JSON 合法且中文完整\n\n## Mission留档规则\n\n### 目录结构\n所有任务产出（报告、脚本、数据、下载文件等）默认保存到留档目录：\n`~/opencode/archive/Mission-file\\{YYYY-MM}\\{MMDD-任务名}\\（例如 2026-08\\0802-改造盘点\\）`\n\n### 触发机制（半自动）\n任务完成后，必须使用 `question` 工具询问用户「是否留档？」。用户确认后执行保存。\n\n### 报告模板（5段）\n任务完成情况报告必须包含以下 5 段，缺一不可：\n1. **当时情况** — 任务提出的背景、用户原始需求、当前环境状态\n2. **制定计划** — 任务拆解、执行步骤、决策依据\n3. **执行情况** — 实际操作步骤、遇到的问题及应对、子Agent委派情况\n4. **完成情况** — 最终交付物清单、验证结果、改动明细\n5. **反思/分析/建议** — 过程反思、收获认知、未来改进建议\n\n### 门控机制\n- **完整性门控**：报告必须包含全部 5 段，缺失任何一段视为不合格，输出前自检\n- **询问门控**：任务完成后必须向用户发起留档询问（question），不得跳过\n- **路径门控**：保存前验证路径格式是否符合正则 `Mission-file\\d{4}-\\d{2}\\d{4}-.*\\`（四位年份\\两位月份\\四位日期-任务名\\），不通过则拒绝保存并报错\n\n### 路径规则\n- 任务产出（非项目本地文件）：保存到 `~/opencode/archive/Mission-file\\{YYYY-MM}\\{MMDD-任务名}\\（例如 2026-08\\0802-改造盘点\\）`\n- 项目源代码/配置/本地修改：保存到工作目录\n- 用户明确指定路径时：优先使用指定路径\n\n### Build 末尾 Reflection 写入\n\n每个 Plan+Build 周期完成后（留档询问结束后），执行以下步骤：\n1. 封装 4 层输入数据：Layer A (GATE自评 + COMPLEXITY + 决策列表)、Layer B (子Agent返回JSON + 聚合摘要)、Layer C (MEMORY.md 当前快照)、Layer D (留档报告内容，如已留档)\n2. 读取 `~/opencode/archive/Reflection/pending.json`→ 追加新 cycle (status=waiting, 含 4 层 layers 数据) → 原子写回\n3. 不阻塞、不展示给用户、fire-and-forget。下一轮对话启动时自动处理\n\n\n### MEMORY.md 硬门禁（2026-08-19 根因修复）\n\n⛔ **MEMORY.md 严禁直接修改**（edit/write/脚本写入均禁止）。\n所有记忆条目的写入必须经以下链路，任何绕过均为违规：\n① 封装 4 层输入 → ② 追加 pending.json (status=waiting) → ③ reflection-worker 处理 → ④ 用户 /reflection 逐条确认 (yes/edit) → ⑤ 确认后才写入 MEMORY.md。\n写入的每个 § 段必须带来源签名 `[src: <cycle_id>]`，无签名的段禁止写入。\n唯一例外：`/reflection` 命令本身（作为审阅执行者）可写入。\n\n## 浏览器标签页管理\n使用 browser-harness 时：①每次 new_tab() 完成后关闭标签页(powershell close-chrome-tabs.ps1 -KeepFirst)。②任务全部完成后必须用 question 询问用户是否关闭标签页。③批量爬取中途不逐页关闭(影响速度)。\n\n## Variant 继承规则\n\nPlan 阶段收敛摘要中必须包含 `[COMPLEXITY: X/20]` 标记。Build 阶段启动时，若检测到上一条 plan 消息含 `[COMPLEXITY]` 标记，必须使用匹配的推理深度（≥13→Deep推理, ≤12→Daily推理），不得重新评估。若未检测到该标记，则按 auto-mode 门控正常评估。\n\n---\n\n## Reflection 自检规则\n\n收到用户消息后，在 Agent Protocol 任务分类之前：\n1. 检查 `~/opencode/archive/Reflection/pending.json` 的 `meta.waiting_count` 是否 > 0\n2. 若有 waiting：读取 pending.json → 找 status=waiting 的最早 cycle → 标记 status=processing → 写回 → 委派 reflection-worker 子Agent 处理反思\n3. 无论 Fork Agent 成功或失败，继续正常流程\n\n## /reflection 命令\n\n`/reflection` 已注册为 opencode 原生命令（~/.config/opencode/command/reflection.md，agent=build）。用户输入 /reflection 或 /reflection memory|skill|status|browse 时，由命令体自包含流程执行（读 pending.json → 筛选 done → 逐条 yes/no/edit 确认 → 写入 MEMORY.md / Reflection/skills/ → 更新 meta 计数）。本段不再重复实现细节，命令行为以命令文件为准。\n\n---",
+      "variant": "daily",   // 0914 G-18：保留——auto-mode 刚性规则#5 禁改 agent.plan/build 的 variant 配置；daily=variants[0] 默认档
+      // 0914 G-18：model 删去改继承顶层 model（deepseek/deepseek-flash）；解析值不变（input.model ?? currentModel 默认=顶层）
+      "prompt": "# Plan Mode 协议\n\nPlan 模式默认逐题访谈：一次一问，每条消息末尾必须带一次 `question` 工具调用（决策树收敛汇总那一条除外）；能由代码库或文件自答的分支先自行探索，不反问用户；所有分支收敛后给出决议汇总，并输出 `[COMPLEXITY: X/20]`。所有对外文案使用用户当前会话语言。完整逐题访谈协议、措辞语言规则与漂移护栏见 `skills/grill-me/SKILL.md`。\n\n任务调度与委派执行协议统一收敛到 `instructions/agent-protocol.md`：**开始任务前必须先读取该文件，读取前不得执行任何委派**；委派流程 5 步、MCP 路由与视觉降级、编码安全、Mission 留档与 5 段报告、浏览器标签页管理、Variant 继承规则、Reflection 指针均以该文件为准，本会话须严格执行。Plan 阶段只收敛方案与决策，不执行多步写操作；确需只读探索时可用 read/grep/glob，任务分类与复杂度门控按 auto-mode.md 执行。\n",
       "permission": {
         "bash": {
           "*": "deny",
@@ -25,8 +25,8 @@
       }
     },
     "build": {
-      "variant": "daily",
-      "model": "deepseek/deepseek-flash",   // build 默认官方直连 V4.1 Flash 正式版（0910 起改用 deepseek-flash，原生多模态，主 Agent 具备看图能力）
+      "variant": "daily",   // 0914 G-18：保留——auto-mode 刚性规则#5 禁改 agent.plan/build 的 variant 配置；daily=variants[0] 默认档
+      // 0914 G-18：model 删去改继承顶层 model（deepseek/deepseek-flash）；解析值不变（input.model ?? currentModel 默认=顶层）
       // edit 分层只读：放 agent.build 而非全局（全局 user 规则会覆盖 plan/explore 的内置 edit deny）
       // edit 覆盖 edit/write/apply_patch；匹配串 = 相对 worktree 路径（本项目非 git，worktree="/" 故无前导斜杠）
       "permission": {
@@ -38,49 +38,23 @@
           "home/zako-mio/.config/opencode/MEMORY.md": "allow"
         }
       },
-      "prompt": "# Grill-Me Protocol (Plan Mode Default)\n\nInterview the user relentlessly about every aspect of their plan until reaching shared understanding. Walk down each branch of the design tree, resolving dependencies between decisions one-by-one.\n\n## Language rule\nAll user-facing content — question labels, option descriptions, acknowledgment text, and the final convergence summary — MUST be in the user's current session language. The `question` tool fully supports UTF-8.\n\n## How to ask questions\nAsk **one question at a time** using the `question` tool. Never pose questions as plain text — always use the structured popup. Provide 2–4 concrete multiple-choice options. Avoid generic \"Yes\" / \"No\" unless genuinely binary.\n\n## Flow\n1. After receiving an answer, output `[GRILL] <brief ack>` (1–2 sentences max) followed IMMEDIATELY by a `question` tool call in the SAME assistant message. ⛔ You MUST NOT end any grill-me message without a `question` call (unless converging on step 4). A grill-me message that ends with only text and no `question` call is a PROTOCOL VIOLATION.\n2. If a question can be answered by exploring the codebase or files, explore them yourself instead of asking the user.\n3. Continue until all branches of the design tree are resolved.\n4. When finished, provide a concise summary of all decisions made.\n\n## Drift guardrails\n**A. One-message rule**: Every grill-me message MUST end with exactly one `question` tool call (except the final convergence message in step 4). The format is a single assistant message: `[GRILL] <acknowledgment>` followed by `question(...)` in the SAME message. ℹ️ `[NEXT QUESTION PENDING]` is a deprecated marker — the `question` tool call itself IS the signal. Separating them into two messages is a PROTOCOL VIOLATION.\n**B. Pre-output gate**: BEFORE writing ANY text in a grill-me message, silently verify: \n① Am I in grill-me mode? → If no, skip. If yes:\n② Will this message end with a `question` tool call? → MUST be yes.\n③ Is it exactly one question? → MUST be exactly one.\nIf any check fails → restructure the message. NEVER output plain text alone in grill-me mode.\n**C. Convergence audit (before step 4)**: Trace all decisions, confirm no unanswered branches, confirm tree fully resolved. If gap found → ask it, do not output summary.\n\n## Convergence\nWhen resolved, output `[GRILL] Decision tree resolved.` then one-sentence summary + numbered list of all decisions.\n\n---\n\n# Agent Protocol\n\n你是任务调度者，非执行者。分析任务→拆解子任务→搜索匹配角色→委派子Agent执行。不自行加载执行性skill，不执行多步操作。\n\n## 委派流程\n\n**第1步 分类判断**：是否需要≥2个工具、或联网、或多步骤推理？YES→第一条工具调用必须是search-agents。NO→直接回答。\n\n**第2步 搜索角色**：运行 search-agents -Query \"关键词\" -Top 5。只看JSON元数据(名称+描述+路径)，不读完整角色文件。无匹配时自写2-3句角色提示词。\n\n**第3步 分解任务**：独立→并行Task；有依赖→串行接力(data传给下一个)；紧密耦合流程不拆交1个Agent；极简单步操作自己完成。\n\n**第4步 组装子Agent prompt**：\n## ⚠️ Agent Identity — You are a SUBAGENT. Execute ONLY. No delegation. No search-agents.\n## Role Activation: {角色路径或描述}\n## Skills to Load: {skill名: 原因}\n## Reference Files (必读): {章节/参考/契约文件的短路径清单；无则写「无」}\n⛔【刚性约束】若委派对象为 drawio-worker，此行必须精确写入 `drawio-reference: 图表规范与导出验证`。禁止使用弱化表述（如\"如果需要\"\"必要时\"\"可加载\"），违者将导致子Agent 使用不可靠的 CLI 导出、产生截断 PNG。\n## Task: {具体描述}\n## ⛔ No Self-Assessment\n模型选择由主Agent 在委派时已完成，你无需输出 GATE 或自评复杂度。\n## Return Format: {\"status\":\"success|partial|failed\",\"summary\":\"200 字以内的操作摘要\",\"data\":{},\"files_created\":[],\"files_modified\":[],\"decisions\":[],\"warnings\":[],\"errors\":[]}\n\n**第5步 聚合**：success→summary | partial→+errors | failed→询问用户\n\n## MCP路由规则\nPDF读取/OCR/文档分析 → 委派 pdf-worker 子Agent（必要时加载 pdf-ocr skill）。图表/流程图/架构图/UML/思维导图 → 委派 drawio-worker 子Agent。子Agent prompt 的 Skills to Load 中必须包含 `drawio-reference: 图表规范与导出验证`。**通用图片理解/截图分析/UI还原 → 委派 vision-worker 子Agent**（DeepSeek 视觉模型，0822 新增）。其他任务 → 委派 general/explore 子Agent（无MCP工具，省token）。\n\n**视觉降级规则（0908 起 read.ts 已退役；0910 更新模型名）**：Read 工具读图走模型原生多模态（图片作为附件直接投喂），不再返回文字描述。① 会话模型具备视觉（如顶层/plan/build 的 `deepseek-flash`，原生多模态）→ 直接 Read 看图；若 Read 后模型答非所问/返回空内容/明确表示看不到图片，允许一次试错后立即改委派 vision-worker 子Agent 代看并取回文字描述，不得反复重试；② 会话模型无视觉（如 opencode-go 网关的纯文本模型）→ **不要 Read 图片**，直接委派 vision-worker 代看并取回文字描述；③ drawio-worker / pdf-worker 自身无视觉时，可自行委派 vision-worker（已显式开 task 权限），失败则降级为 PNG 结构校验。\n\n## 核心规则\n1.调度者非执行者 2.角色优先匹配agency-agents 3.独立并行依赖接力 4.返回精简JSON 5.超3分钟没发task→执行者模式\n\n## 编码安全规则\n\n修改任何文件时，遵循以下安全优先级：\n1. **优先使用 edit 工具**：全程 UTF-8 安全，自动处理 BOM 和行尾风格\n2. **edit 不可用时** → 先切换到 Build 模式再修改，绝不降级为 bash 写文件\n3. **严禁 bash + Python 内联管道**：`python -c` 经过 PowerShell 转义会截断中文 UTF-8 多字节序列\n4. **若必须用脚本写文件**：写成独立 .py 文件，再 `python script.py` 执行，避免命令行转义链\n5. **修改含中文的 JSON 文件后必须验证**：python -c \"import json; json.load(open(file))\" 确保 JSON 合法且中文完整\n\n## Mission留档规则\n\n### 目录结构\n所有任务产出（报告、脚本、数据、下载文件等）默认保存到留档目录：\n`~/opencode/archive/Mission-file\\{YYYY-MM}\\{MMDD-任务名}\\（例如 2026-08\\0802-改造盘点\\）`\n\n### 触发机制（半自动）\n任务完成后，必须使用 `question` 工具询问用户「是否留档？」。用户确认后执行保存。\n\n### 报告模板（5段）\n任务完成情况报告必须包含以下 5 段，缺一不可：\n1. **当时情况** — 任务提出的背景、用户原始需求、当前环境状态\n2. **制定计划** — 任务拆解、执行步骤、决策依据\n3. **执行情况** — 实际操作步骤、遇到的问题及应对、子Agent委派情况\n4. **完成情况** — 最终交付物清单、验证结果、改动明细\n5. **反思/分析/建议** — 过程反思、收获认知、未来改进建议\n\n### 门控机制\n- **完整性门控**：报告必须包含全部 5 段，缺失任何一段视为不合格，输出前自检\n- **询问门控**：任务完成后必须向用户发起留档询问（question），不得跳过\n- **路径门控**：保存前验证路径格式是否符合正则 `Mission-file\\d{4}-\\d{2}\\d{4}-.*\\`（四位年份\\两位月份\\四位日期-任务名\\），不通过则拒绝保存并报错\n\n### 路径规则\n- 任务产出（非项目本地文件）：保存到 `~/opencode/archive/Mission-file\\{YYYY-MM}\\{MMDD-任务名}\\（例如 2026-08\\0802-改造盘点\\）`\n- 项目源代码/配置/本地修改：保存到工作目录\n- 用户明确指定路径时：优先使用指定路径\n\n### Build 末尾 Reflection 写入\n\n每个 Plan+Build 周期完成后（留档询问结束后），执行以下步骤：\n1. 封装 4 层输入数据：Layer A (GATE自评 + COMPLEXITY + 决策列表)、Layer B (子Agent返回JSON + 聚合摘要)、Layer C (MEMORY.md 当前快照)、Layer D (留档报告内容，如已留档)\n2. 读取 `~/opencode/archive/Reflection/pending.json`→ 追加新 cycle (status=waiting, 含 4 层 layers 数据) → 原子写回\n3. 不阻塞、不展示给用户、fire-and-forget。下一轮对话启动时自动处理\n\n\n### MEMORY.md 硬门禁（2026-08-19 根因修复）\n\n⛔ **MEMORY.md 严禁直接修改**（edit/write/脚本写入均禁止）。\n所有记忆条目的写入必须经以下链路，任何绕过均为违规：\n① 封装 4 层输入 → ② 追加 pending.json (status=waiting) → ③ reflection-worker 处理 → ④ 用户 /reflection 逐条确认 (yes/edit) → ⑤ 确认后才写入 MEMORY.md。\n写入的每个 § 段必须带来源签名 `[src: <cycle_id>]`，无签名的段禁止写入。\n唯一例外：`/reflection` 命令本身（作为审阅执行者）可写入。\n\n## 浏览器标签页管理\n使用 browser-harness 时：①每次 new_tab() 完成后关闭标签页(powershell close-chrome-tabs.ps1 -KeepFirst)。②任务全部完成后必须用 question 询问用户是否关闭标签页。③批量爬取中途不逐页关闭(影响速度)。\n\n## Variant 继承规则\n\nPlan 阶段收敛摘要中必须包含 `[COMPLEXITY: X/20]` 标记。Build 阶段启动时，若检测到上一条 plan 消息含 `[COMPLEXITY]` 标记，必须使用匹配的推理深度（≥13→Deep推理, ≤12→Daily推理），不得重新评估。若未检测到该标记，则按 auto-mode 门控正常评估。\n\n---\n\n## Reflection 自检规则\n\n收到用户消息后，在 Agent Protocol 任务分类之前：\n1. 检查 `~/opencode/archive/Reflection/pending.json` 的 `meta.waiting_count` 是否 > 0\n2. 若有 waiting：读取 pending.json → 找 status=waiting 的最早 cycle → 标记 status=processing → 写回 → 委派 reflection-worker 子Agent 处理反思\n3. 无论 Fork Agent 成功或失败，继续正常流程\n\n## /reflection 命令\n\n`/reflection` 已注册为 opencode 原生命令（~/.config/opencode/command/reflection.md，agent=build）。用户输入 /reflection 或 /reflection memory|skill|status|browse 时，由命令体自包含流程执行（读 pending.json → 筛选 done → 逐条 yes/no/edit 确认 → 写入 MEMORY.md / Reflection/skills/ → 更新 meta 计数）。本段不再重复实现细节，命令行为以命令文件为准。\n\n---"
+      "prompt": "# Agent Protocol\n\n完整 Agent Protocol 见 `instructions/agent-protocol.md`：**开始任务前必须先读取该文件，读取前不得执行任何委派**，必须遵守。\n"
     },
     "pdf-worker": {
       "description": "PDF reader, OCR, and document analysis specialist. Use for any task involving PDF files.",
       "mode": "subagent",
       "hidden": true,
       // 0826 解除视觉模型绑定（0822 曾绑定 vision-exp）：继承父会话模型；假定无视觉能力，
-      // PDF 走文本提取/OCR 文本链路，图片理解需求自行委派 vision-worker（0908 起显式开 task 权限）
+      // PDF 走文本提取/OCR 文本链路；图片理解由会话模型原生视觉直接 Read，无视觉则人看（0915：代看子 Agent 已废除）
       "permission": {
         "pdf-reader_*": "allow",
-        "task": {
-          "*": "deny",
-          "vision-worker": "allow"
-        },
         // 子Agent 不继承父 session 的 edit ask/allow（只继承 external_directory + deny），故逐 agent 复制分层
+        // 0914 G-01：不授予 MEMORY.md 写权限（全局 deny 兜底）；记忆写入经 pending.json → /reflection(build) 链路
         "edit": {
           "*": "ask",
           "home/zako-mio/opencode/**": "allow",
           "tmp/opencode/**": "allow",
-          "mnt/d/Opencode_Download/**": "allow",
-          "home/zako-mio/.config/opencode/MEMORY.md": "allow"
-        }
-      }
-    },
-    "drawio-worker": {
-      "description": "Diagram creation specialist using draw.io. Use for flowcharts, architecture diagrams, UML, mind maps, org charts, and any visual diagrams.",
-      "mode": "subagent",
-      "hidden": false,   // 0911 转可见：用户可 @drawio-worker 显式指定制图；Task 自动委派不受影响
-      // 0826 解除视觉模型绑定（0822 曾绑定 vision-exp）：继承父会话模型；假定无视觉能力，
-      // 导出验证改为自行委派 vision-worker 代看 + PNG 结构校验兜底（0908 起显式开 task 权限）
-      "permission": {
-        "drawio_*": "allow",
-        "task": {
-          "*": "deny",
-          "vision-worker": "allow"
-        },
-        // 子Agent 不继承父 session 的 edit ask/allow（只继承 external_directory + deny），故逐 agent 复制分层
-        "edit": {
-          "*": "ask",
-          "home/zako-mio/opencode/**": "allow",
-          "tmp/opencode/**": "allow",
-          "mnt/d/Opencode_Download/**": "allow",
-          "home/zako-mio/.config/opencode/MEMORY.md": "allow"
+          "mnt/d/Opencode_Download/**": "allow"
         }
       }
     },
@@ -88,14 +62,18 @@
       "description": "架构判断与设计裁决专家。技术选型/架构风格/模块与服务边界/架构评审/质量属性权衡/技术债治理时委派。产出 ADR 与多维权衡矩阵，并经 gate_architecture.py 门控。",
       "mode": "subagent",
       "hidden": false,            // 0911 新增：可见子Agent（可 @ 召唤 + 主Agent 自动委派）
-      // 0911 不配 model → 继承父会话模型（与 pdf/drawio 0826 起的继承制一致）
+      // 0911 不配 model → 继承父会话模型（与 pdf-worker 0826 起的继承制一致）
       "permission": {
-        // 职责单一：不含制图，故不自委派（架构图由主 Agent 另委 drawio-worker）
+        // 职责单一：不含制图，故不自委派（架构图由主 Agent 按 diagram-lite 档位出图）
         "task": { "*": "deny" },
         "bash": {
           "*": "deny",
           "git status *": "allow",
-          "git diff *": "allow"
+          "git diff *": "allow",
+          // 0916 D-01：「打通生产者-验证者」——workflow.md 第 4 步要求跑门控自检，
+          // 但原先 bash 仅 git status/diff → 生产者跑不了自己的门控，必须主 Agent 代跑（多一轮往返）。
+          // 此处只放行门控脚本本身（`*` 跨斜杠全串匹配，末条命中优先）。
+          "python3 *gate_architecture.py*": "allow"
         },
         // 子Agent 不继承父 session 的 edit ask/allow（只继承 external_directory + deny），故逐 agent 复制分层
         "edit": {
@@ -105,23 +83,16 @@
         }
       }
     },
-    "vision-worker": {
-      "description": "Vision analysis specialist using DeepSeek vision model. Use for image understanding, screenshot analysis, UI restoration, and any task requiring direct image input.",
-      "mode": "subagent",
-      "hidden": true,
-      "model": "deepseek/deepseek-flash",   // 0822 新增视觉兜底（0910 起改指 deepseek-flash 原生多模态）：通用图片理解/截图分析/UI 还原
-      "permission": {}
-    },
     "general": {
       "description": "General-purpose agent for researching complex questions and executing multi-step tasks. Inherits parent session model.",
       "permission": {
         // 子Agent 不继承父 session 的 edit ask/allow（只继承 external_directory + deny），故逐 agent 复制分层
+        // 0914 G-01：不授予 MEMORY.md 写权限（全局 deny 兜底）；记忆写入经 pending.json → /reflection(build) 链路
         "edit": {
           "*": "ask",
           "home/zako-mio/opencode/**": "allow",
           "tmp/opencode/**": "allow",
-          "mnt/d/Opencode_Download/**": "allow",
-          "home/zako-mio/.config/opencode/MEMORY.md": "allow"
+          "mnt/d/Opencode_Download/**": "allow"
         }
       }
     },
@@ -137,12 +108,12 @@
           "*": "deny"
         },
         // 子Agent 不继承父 session 的 edit ask/allow（只继承 external_directory + deny），故逐 agent 复制分层
+        // 0914 G-01：不授予 MEMORY.md 写权限（全局 deny 兜底）；记忆写入经 pending.json → /reflection(build) 链路
         "edit": {
           "*": "ask",
           "home/zako-mio/opencode/**": "allow",
           "tmp/opencode/**": "allow",
-          "mnt/d/Opencode_Download/**": "allow",
-          "home/zako-mio/.config/opencode/MEMORY.md": "allow"
+          "mnt/d/Opencode_Download/**": "allow"
         }
       }
     },
@@ -150,15 +121,38 @@
       "description": "搜索管线执行 Agent。只做搜索管线(发现+获取+交叉验证)，输出结构化证据包。Use for any task requiring external search, query disambiguation, multi-source fact-checking, or evidence-pack construction.",
       "mode": "subagent",
       "hidden": true,
-      // 继承父会话模型（与 pdf/drawio-worker 0826 趋势一致），不绑定视觉模型
+      // 继承父会话模型（与 pdf-worker 0826 趋势一致），不绑定视觉模型
       "permission": {
         // 子Agent 不继承父 session 的 edit ask/allow（只继承 external_directory + deny），故逐 agent 复制分层
+        // 0914 G-01：不授予 MEMORY.md 写权限（全局 deny 兜底）；记忆写入经 pending.json → /reflection(build) 链路
         "edit": {
           "*": "ask",
           "home/zako-mio/opencode/**": "allow",
           "tmp/opencode/**": "allow",
-          "mnt/d/Opencode_Download/**": "allow",
-          "home/zako-mio/.config/opencode/MEMORY.md": "allow"
+          "mnt/d/Opencode_Download/**": "allow"
+        }
+      }
+    },
+    "requirement-discovery-worker": {
+      // 0921 (ii)：需求发现三层栈的**子 Agent**。Skill=requirement-discovery，行为层=requirement-discovery-behavior.md
+      "description": "需求发现与澄清专家（需求层·内部意图固化）。需求表述模糊、含互斥走法、可行性未知或需按产品设计复杂度走一遍时委派。产出 POV／HMW／product outcome／appetite／最小交接契约，并经 gate_requirement_discovery.py 门控。",
+      "mode": "subagent",
+      "hidden": false,            // 可见子Agent（可 @ 召唤 + 主Agent 自动委派），与 architect-worker 一致
+      // 不配 model → 继承父会话模型（与 architect-worker 0911 起的继承制一致）
+      "permission": {
+        "task": { "*": "deny" },  // 职责单一：不含制图，故不自委派（原型/流程出图由主 Agent 按 diagram-lite 档位出图）
+        "bash": {
+          "*": "deny",
+          "git status *": "allow",
+          "git diff *": "allow",
+          // 0916 D-01 范式：打通生产者-验证者——只放行门控脚本本身，使产出方能自跑门控并回传输出原文
+          "python3 *gate_requirement_discovery.py*": "allow"
+        },
+        // 子Agent 不继承父 session 的 edit ask/allow（只继承 external_directory + deny），故逐 agent 复制分层
+        "edit": {
+          "*": "ask",
+          "home/zako-mio/opencode/**": "allow",
+          "tmp/opencode/**": "allow"
         }
       }
     }
@@ -173,7 +167,7 @@
         "apiKey": "{env:OPENCODE_GO_API_KEY}",
         "timeout": 300000,
         "headerTimeout": 120000,
-        "chunkTimeout": 60000
+        "chunkTimeout": 300000
       },
       "blacklist": [
         "deepseek-v4-pro",   // Pro 禁用 Go，仅官方直连（用户要求）
@@ -202,16 +196,8 @@
             "cache_read": 0.007
           },
           "variants": {
-            "daily": {
-              "options": {
-                "max_tokens": 8192
-              }
-            },
-            "deep": {
-              "options": {
-                "max_tokens": 16384
-              }
-            }
+            "daily": { "reasoningEffort": "high" },
+            "deep": { "reasoningEffort": "max" }
           }
         },
         "glm-5.2": {
@@ -235,24 +221,8 @@
             "cache_read": 0.26
           },
           "variants": {
-            "daily": {
-              "options": {
-                "thinking": {
-                  "type": "enabled"
-                },
-                "reasoning_effort": "high",
-                "max_tokens": 32768
-              }
-            },
-            "deep": {
-              "options": {
-                "thinking": {
-                  "type": "enabled"
-                },
-                "reasoning_effort": "max",
-                "max_tokens": 65536
-              }
-            }
+            "daily": { "thinking": { "type": "enabled" }, "reasoningEffort": "high" },
+            "deep": { "thinking": { "type": "enabled" }, "reasoningEffort": "max" }
           }
         },
         "kimi-k2.7-code": {
@@ -276,16 +246,8 @@
             "cache_read": 0.19
           },
           "variants": {
-            "daily": {
-              "options": {
-                "max_tokens": 32768
-              }
-            },
-            "deep": {
-              "options": {
-                "max_tokens": 65536
-              }
-            }
+            "daily": { "reasoningEffort": "high" },
+            "deep": { "reasoningEffort": "max" }
           }
         },
         "qwen3.7-plus": {
@@ -309,18 +271,93 @@
             "cache_read": 0.04
           },
           "variants": {
-            "daily": {
-              "options": {
-                "enable_thinking": true,
-                "max_tokens": 8192
-              }
-            },
-            "deep": {
-              "options": {
-                "enable_thinking": true,
-                "max_tokens": 32768
-              }
-            }
+            "daily": { "enable_thinking": true, "reasoningEffort": "high" },
+            "deep": { "enable_thinking": true, "reasoningEffort": "max" }
+          }
+        }
+      }
+    },
+    "opencode-go-tmp": {
+      // ===== 2026-10-10 新建（临时）：独立承载「临时 Go 套餐 key」=====
+      // ⛔ 与上方 opencode-go（长期 key）凭据完全不同，不覆盖、不复用 OPENCODE_GO_API_KEY，两 provider 互不影响。
+      // ⚠ 有效期 5 天 → 到期日 2026-10-15。到期后整套删除：本段 + opencode.env 的 OPENCODE_GO_TMP_API_KEY 行
+      //    （留档见 opencode.jsonc.bak-20261010-tmpgo / opencode.env.bak-20261010-tmpgo）。
+      //
+      // 网络路径（2026-10-10 实测，3 轮复测）：
+      //   · 直连可用且更快 —— *.opencode.ai 已在 no_proxy 白名单：/models ttfb 0.88~0.90s
+      //   · 经规则代理 172.29.0.1:7890 亦通（200）但 /models ttfb 5.76s，慢约 6.5x（代理未启动窗口内曾整体超时，属代理侧状态）
+      //   ⇒ 本 provider 不配任何代理参数，保持走白名单直连。（代理路径实测吞吐与直连同量级，TTFT 更差）
+      //
+      // 会话头（硬要求）：网关要求 x-opencode-session，缺失即 400 MissingSessionID（实测无头 400 / 有头 200）。
+      //   opencode 1.18.35 仅在 providerID.startsWith("opencode") 时自动注入该头（二进制内实证）
+      //   ⇒ provider id 的 "opencode" 前缀为保证可用性的硬约束，勿改名。
+      //
+      // 模型清单＝用户指定的**仅这两个**。实测该 key 在服务端**未**被限制到这两个模型（glm-5.2 亦返回 200）
+      //   ⇒「只这两个模型」由本段本地收敛实现（Go 套餐目录 38 个模型一律不登记）。
+      // 元数据来源：models.dev provider `opencode-go`（2026-10-10 取；与网关 /zen/go/v1/models 目录一致）。
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "OpenCode Go (临时·5天)",
+      "description": "OpenCode Go 临时 key（2026-10-15 到期）。仅暴露 DeepSeek V4.1 Flash 与 GLM-5.3 Flash 两个模型。apiKey 从 OPENCODE_GO_TMP_API_KEY 读取，与长期 opencode-go provider 完全独立。实测：直连可用（.opencode.ai 在 no_proxy 白名单），经代理亦通但 TTFT 更差；网关要求 x-opencode-session 头（客户端对 opencode* 前缀 provider 自动注入）",
+      "options": {
+        "baseURL": "https://opencode.ai/zen/go/v1",
+        "apiKey": "{env:OPENCODE_GO_TMP_API_KEY}",
+        "timeout": 300000,
+        "headerTimeout": 120000,
+        "chunkTimeout": 300000
+      },
+      "models": {
+        // 实测 2026-10-10（curl 直连 + x-opencode-session）：reasoning_effort=max + tools → 200，
+        //   finish_reason=tool_calls，返回 reasoning_content（与 interleaved.field 一致）。
+        // 吞吐（512 tok 流式 ×3 轮，直连）：默认档解码中位 192 tok/s（190~262）、e2e 中位 118 tok/s；
+        //   effort=max 档解码中位 249（197~259）、e2e 中位 115；TTFT 1.3~2.8s。
+        // ===== 模型 key 与 API 模型名**解耦**（2026-10-10 干净室实测）=====
+        // 为什么：会话头只打印 model key（`build · <key>`）、`opencode models` 也只列 key ——
+        //   若 key 用真实模型名（glm-5.3-flash），这些面**看不出这是临时 key**，会影响选用判断。
+        // 做法：key 加 `-tmp` 后缀（所有显示面自带临时标记），`id` 才是发给 API 的真实模型名。
+        // 实测：将 key 改为 glm-5.3-flash-tmp + id=glm-5.3-flash，客户端实跑成功且头打印 `build · glm-5.3-flash-tmp`；
+        //   对照实验（直接向 API 发 -tmp 名）→ 400 `Model is unavailable` ⇒ 证明 API 实际收到的是 id 字段值。
+        // ⚠ 隐式契约（非文档字段）：opencode 1.18.35 遵从 `id`；若未来版本忽略该字段，调用会静默 400。
+        //   升级 opencode 后复验：
+        //   curl -s https://opencode.ai/zen/go/v1/chat/completions -H "Authorization: Bearer $KEY" \
+        //     -H "x-opencode-session: ses_xxx" -H 'Content-Type: application/json' \
+        //     -d '{"model":"glm-5.3-flash","max_tokens":4,"messages":[{"role":"user","content":"hi"}]}'   # 须 200
+        "deepseek-v4.1-flash-tmp": {
+          "id": "deepseek-v4.1-flash",
+          "name": "DeepSeek V4.1 Flash (Go·临时·至10-15)",
+          "modalities": { "input": ["text", "image"], "output": ["text"] },
+          "attachment": true,
+          "reasoning": true,
+          "tool_call": true,
+          "temperature": false,
+          "interleaved": { "field": "reasoning_content" },
+          "limit": { "context": 1000000, "output": 384000 },
+          "cost": { "input": 0.15, "output": 0.6, "cache_read": 0.003 },
+          "variants": {
+            "daily": { "reasoningEffort": "high" },
+            "deep": { "reasoningEffort": "max" }
+          }
+        },
+        // 实测 2026-10-10：
+        //   ① reasoning_effort=max + tools → 200（tool_calls + reasoning_content）✔
+        //   ② ⛔ 禁传 `thinking` 参数：实测 400 invalid_request_error / unknown_parameter: unknown field "thinking"
+        //      （对照：同网关 glm-5.2 可容忍该参数 ⇒ 上游不同，勿照抄既有 glm-5.2 段的 variants 写法）
+        //   ③ modalities 按仓库惯例收敛为 text+image（models.dev 另记 video/pdf，但全仓 modalities 从无 video/pdf 先例）
+        // 吞吐（512 tok 流式 ×3 轮，直连）：默认档解码中位 193 tok/s（126~484）、e2e 中位 134；
+        //   ⚠ effort=max 档抖动极大（解码 30~145，e2e 26~108）；TTFT 1.1~2.5s。
+        "glm-5.3-flash-tmp": {
+          "id": "glm-5.3-flash",
+          "name": "GLM-5.3 Flash (Go·临时·至10-15)",
+          "modalities": { "input": ["text", "image"], "output": ["text"] },
+          "attachment": true,
+          "reasoning": true,
+          "tool_call": true,
+          "temperature": false,
+          "interleaved": { "field": "reasoning_content" },
+          "limit": { "context": 1000000, "output": 131072 },
+          "cost": { "input": 0.15, "output": 0.5, "cache_read": 0.03 },
+          "variants": {
+            "daily": { "reasoningEffort": "high" },
+            "deep": { "reasoningEffort": "max" }
           }
         }
       }
@@ -333,7 +370,7 @@
         "baseURL": "https://api.deepseek.com/v1",
         "timeout": 300000,
         "headerTimeout": 120000,
-        "chunkTimeout": 60000
+        "chunkTimeout": 300000
       },
       "blacklist": [
         "deepseek-v4-flash",             // 0910：flash 线已统一为 deepseek-flash，屏蔽 models.dev 注册表旧条目
@@ -375,16 +412,8 @@
             "cache_write": 0.14
           },
           "variants": {
-            "daily": {
-              "options": {
-                "max_tokens": 8192
-              }
-            },
-            "deep": {
-              "options": {
-                "max_tokens": 16384
-              }
-            }
+            "daily": { "reasoningEffort": "high" },
+            "deep": { "reasoningEffort": "max" }
           }
         }
       }
@@ -398,7 +427,7 @@
         "apiKey": "{env:ZHIPU_API_KEY}",
         "timeout": 300000,
         "headerTimeout": 120000,
-        "chunkTimeout": 60000
+        "chunkTimeout": 300000
       },
       "models": {
         "glm-5.3-flash": {
@@ -417,20 +446,8 @@
             "cache_read": 0.2
           },
           "variants": {
-            "daily": {
-              "options": {
-                "thinking": { "type": "enabled" },
-                "reasoning_effort": "high",
-                "max_tokens": 32768
-              }
-            },
-            "deep": {
-              "options": {
-                "thinking": { "type": "enabled" },
-                "reasoning_effort": "max",
-                "max_tokens": 65536
-              }
-            }
+            "daily": { "thinking": { "type": "enabled" }, "reasoningEffort": "high" },
+            "deep": { "thinking": { "type": "enabled" }, "reasoningEffort": "max" }
           }
         },
         "glm-4.6v": {
@@ -449,16 +466,233 @@
             "cache_read": 0.3
           },
           "variants": {
-            "daily": {
-              "options": {
-                "max_tokens": 8192
-              }
-            },
-            "deep": {
-              "options": {
-                "max_tokens": 16384
-              }
-            }
+            "daily": { "reasoningEffort": "high" },
+            "deep": { "reasoningEffort": "max" }
+          }
+        }
+      }
+    },
+    "commandcode": {
+      "npm": "@ai-sdk/openai-compatible",       // Command Code 走 OpenAI 兼容协议（/chat/completions）；Claude 系需 /messages，本期未纳入
+      "name": "Command Code",
+      "description": "Command Code 订阅（**旧 key 账户**，user_3ira…；按模型 API 价透传）。⚠ 必须经代理：api.commandcode.ai 不在 no_proxy 白名单，2026-09-27 实测直连被 reset、经 172.29.0.1:7890 正常。含 GPT-5.6 系 / Kimi K3 / Grok 4.6 / DeepSeek V4.1 Flash 等 9 个付费模型；不含 Claude 系（需另配 anthropic 兼容 provider）。apiKey 从 COMMANDCODE_API_KEY 读取。（2026-09-27 实测该账户周额度已用尽，重置 2026-09-27T11:37Z。）免费模型已拆到同源独立 provider commandcode-free（新 key 账户），不再混用凭据",
+      "options": {
+        "baseURL": "https://api.commandcode.ai/provider/v1",  // SDK 自动拼 /chat/completions（勿写完整路径否则 404）
+        "apiKey": "{env:COMMANDCODE_API_KEY}",
+        "timeout": 300000,
+        "headerTimeout": 120000,
+        "chunkTimeout": 300000
+      },
+      "models": {
+        // ========== 付费模型组（原有）==========
+        "gpt-5.6-sol": {
+          "name": "GPT-5.6 Sol (复杂特攻)",
+          "modalities": { "input": ["text", "image"], "output": ["text"] },
+          "attachment": true,
+          "reasoning": true,
+          "tool_call": true,
+          "temperature": false,
+          "limit": { "context": 1050000, "output": 128000 },
+          "cost": { "input": 5, "output": 30, "cache_read": 0.5 },
+          "variants": {
+            "daily": { "reasoningEffort": "high" },
+            "deep": { "reasoningEffort": "max" }
+          }
+        },
+        "gpt-5.6-terra": {
+          "name": "GPT-5.6 Terra (性价比中坚)",
+          "modalities": { "input": ["text", "image"], "output": ["text"] },
+          "attachment": true,
+          "reasoning": true,
+          "tool_call": true,
+          "temperature": false,
+          "limit": { "context": 1050000, "output": 128000 },
+          "cost": { "input": 2, "output": 12, "cache_read": 0.2 },
+          "variants": {
+            "daily": { "reasoningEffort": "high" },
+            "deep": { "reasoningEffort": "max" }
+          }
+        },
+        "gpt-5.6-luna": {
+          "name": "GPT-5.6 Luna (低成本)",
+          "modalities": { "input": ["text", "image"], "output": ["text"] },
+          "attachment": true,
+          "reasoning": true,
+          "tool_call": true,
+          "temperature": false,
+          "limit": { "context": 1050000, "output": 128000 },
+          "cost": { "input": 0.2, "output": 1.2, "cache_read": 0.02 },
+          "variants": {
+            "daily": { "reasoningEffort": "high" },
+            "deep": { "reasoningEffort": "max" }
+          }
+        },
+        "moonshotai/Kimi-K3": {
+          "name": "Kimi K3 (长程编码)",
+          "modalities": { "input": ["text", "image"], "output": ["text"] },
+          "attachment": true,
+          "reasoning": true,
+          "tool_call": true,
+          "temperature": false,
+          "limit": { "context": 1000000, "output": 65536 },
+          "cost": { "input": 3, "output": 15, "cache_read": 0.3 },
+          "variants": {
+            "daily": { "reasoningEffort": "high" },
+            "deep": { "reasoningEffort": "max" }
+          }
+        },
+        "moonshotai/Kimi-K2.7-Code": {
+          "name": "Kimi K2.7 Code",
+          "modalities": { "input": ["text", "image"], "output": ["text"] },
+          "attachment": true,
+          "reasoning": true,
+          "tool_call": true,
+          "temperature": false,
+          "limit": { "context": 256000, "output": 32768 },
+          "cost": { "input": 0.95, "output": 4, "cache_read": 0.19 },
+          "variants": {
+            "daily": { "reasoningEffort": "high" },
+            "deep": { "reasoningEffort": "max" }
+          }
+        },
+        "deepseek/deepseek-v4.1-flash": {
+          "name": "DeepSeek V4.1 Flash (主力多模态)",
+          "modalities": { "input": ["text", "image"], "output": ["text"] },
+          "attachment": true,
+          "reasoning": true,
+          "tool_call": true,
+          "temperature": false,
+          "limit": { "context": 1000000, "output": 65536 },
+          "cost": { "input": 0.15, "output": 0.6, "cache_read": 0.003 },
+          "variants": {
+            "daily": { "reasoningEffort": "high" },
+            "deep": { "reasoningEffort": "max" }
+          }
+        },
+        "xai/grok-4.6": {
+          "name": "Grok 4.6 (外网检索特化)",
+          "modalities": { "input": ["text", "image"], "output": ["text"] },
+          "attachment": true,
+          "reasoning": true,
+          "tool_call": true,
+          "temperature": false,
+          "limit": { "context": 500000, "output": 65536 },
+          "cost": { "input": 2, "output": 6, "cache_read": 0.5 },
+          "variants": {
+            "daily": { "reasoningEffort": "high" },
+            "deep": { "reasoningEffort": "max" }
+          }
+        },
+        "Qwen/Qwen3.8-Max-0902": {
+          "name": "Qwen 3.8 Max 0902",
+          "modalities": { "input": ["text", "image"], "output": ["text"] },
+          "attachment": true,
+          "reasoning": true,
+          "tool_call": true,
+          "temperature": false,
+          "limit": { "context": 1000000, "output": 131072 },
+          "cost": { "input": 2, "output": 6, "cache_read": 0.25 },
+          "variants": {
+            "daily": { "reasoningEffort": "high" },
+            "deep": { "reasoningEffort": "max" }
+          }
+        },
+        "tencent/hy4-preview": {
+          "name": "Tencent Hy4 Preview (无视觉)",
+          "modalities": { "input": ["text"], "output": ["text"] },
+          "attachment": false,
+          "reasoning": true,
+          "tool_call": true,
+          "temperature": false,
+          "limit": { "context": 1048576, "output": 65536 },
+          "cost": { "input": 0.834, "output": 2.501, "cache_read": 0.042 },
+          "variants": {
+            "daily": { "reasoningEffort": "high" },
+            "deep": { "reasoningEffort": "max" }
+          }
+        }
+      }
+    },
+    "commandcode-free": {
+      // 2026-09-27 拆出：本 provider 专用「新 key 账户」，与上方 commandcode（旧 key 账户）
+      //   凭据不同、不可混用，故独立 provider 承载。免费模型 0 credit，不消耗任何账户额度。
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Command Code Free",
+      "description": "Command Code 免费模型（独立 key：COMMANDCODE_FREE_API_KEY）。⚠ 必须经代理（同 commandcode）。⚠ stealth 系是匿名第三方 provider 的隐身预览：官方明示可能留存 prompt/completion 且不提供 ZDR（零数据留存），勿投喂敏感代码/密钥；预览可能随时下线",
+      "options": {
+        "baseURL": "https://api.commandcode.ai/provider/v1",
+        "apiKey": "{env:COMMANDCODE_FREE_API_KEY}",
+        "timeout": 300000,
+        "headerTimeout": 120000,
+        "chunkTimeout": 300000
+      },
+      "models": {
+        // 判据（可机检）：commandcode.ai/docs/resources/pricing-limits 页内置模型数据集，取
+        //   rows[].tiers[0].rates 的 input/output/cacheRead 三项全为 0 且 deal.free=true 者。
+        //   另两条 free 记录 ling-3.0-flash-free（2026-08-02 到期，标 deprecated）、
+        //   typesafe/jev（2026-09-24 到期）已排除。
+        // 4 条均以本 provider 的 key（COMMANDCODE_FREE_API_KEY）实测 POST /chat/completions 返回 200，
+        //   含带 tools 的工具调用一次。
+        // ⚠ stealth 系是匿名第三方提供商运营的「隐身预览」：官方明示该 provider「可能留存
+        //   prompt 与 completion，且不提供 ZDR（零数据留存）」。勿向其投喂敏感代码/密钥/内网
+        //   信息；且预览可能随时变更或下线（失效时用 /models 换模型）。
+        "stealth/space-bunny-alpha": {
+          "name": "Space Bunny Alpha ★免费·隐身预览",
+          "modalities": { "input": ["text", "image"], "output": ["text"] },
+          "attachment": true,
+          "reasoning": true,
+          "tool_call": true,       // 实测：返回 tool_calls（finish_reason=tool_calls）
+          "temperature": false,
+          "limit": { "context": 1000000, "output": 524288 },   // models.dev 三家独立 provider（nano-gpt / kilo / openrouter）记录一致
+          "cost": { "input": 0, "output": 0, "cache_read": 0 },
+          "variants": {
+            "daily": { "reasoningEffort": "high" },
+            "deep": { "reasoningEffort": "max" }
+          }
+        },
+        "stealth/pixel-canary": {
+          "name": "Pixel Canary ★免费·隐身预览",
+          "modalities": { "input": ["text", "image"], "output": ["text"] },
+          "attachment": true,
+          "reasoning": true,
+          "tool_call": true,       // 实测：返回 tool_calls
+          "temperature": false,
+          // 上下文取自 Command Code 官方（262K）；官方未公布输出上限，故取「同 262K 上下文的免费
+          // 预览模型」通行值 32768（models.dev 对 ling-3.0-flash-sante:free / laguna-s-2.1:free 等
+          // 多家记录一致），实测 API 接受 ≥131072，取小值以给输入留出上下文预算
+          "limit": { "context": 262144, "output": 32768 },
+          "cost": { "input": 0, "output": 0, "cache_read": 0 },
+          "variants": {
+            "daily": { "reasoningEffort": "high" },
+            "deep": { "reasoningEffort": "max" }
+          }
+        },
+        "poolside/laguna-s-2.1-free": {
+          "name": "Laguna S 2.1 ★免费·容量期",
+          "modalities": { "input": ["text"], "output": ["text"] },
+          "attachment": false,     // Command Code caps.vision=false
+          "reasoning": true,
+          "tool_call": true,
+          "temperature": false,
+          "limit": { "context": 256000, "output": 32768 },      // models.dev vercel 同 id 记录一致
+          "cost": { "input": 0, "output": 0, "cache_read": 0 },
+          "variants": {
+            "daily": { "reasoningEffort": "high" },
+            "deep": { "reasoningEffort": "max" }
+          }
+        },
+        "inclusionai/ling-3.0-flash-sante:free": {
+          "name": "Ling 3.0 Flash Sante ★免费·100次/天",
+          "modalities": { "input": ["text"], "output": ["text"] },
+          "attachment": false,
+          "reasoning": true,
+          "tool_call": true,       // 实测：返回 tool_calls
+          "temperature": false,
+          "limit": { "context": 262144, "output": 32768 },      // models.dev openrouter / kilo 同 id 记录一致
+          "cost": { "input": 0, "output": 0, "cache_read": 0 },
+          "variants": {
+            "daily": { "reasoningEffort": "high" },
+            "deep": { "reasoningEffort": "max" }
           }
         }
       }
@@ -468,15 +702,25 @@
     "~/.config/opencode/instructions/auto-mode.md",
     "~/.config/opencode/MEMORY.md",
     "~/.config/opencode/instructions/search-behavior.md",
-    "~/.config/opencode/instructions/architecture-behavior.md"
+    "~/.config/opencode/instructions/architecture-behavior.md",
+    "~/.config/opencode/instructions/requirement-discovery-behavior.md",   // 0921 (ii)：需求发现行为层（全局注入但**压紧 ≤22 行**；定档前置 K1–K5＋M1，简单档不加载/不委派/不产工件）
+    "~/.config/opencode/instructions/browser-management.md"   // 0914 G-08：注册（原未注册却被 agent-protocol 内联复述；已删内联，本文件为唯一真相源）
   ],
-  // 0911: skill 双根已统一到 skills/（skill/ 置空）。因两个根本就在 opencode 默认扫描
-  // glob `{skill,skills}/**/SKILL.md` 内（见 opencode 二进制 SA 常量 + opencode-config/ref/skills.md 第4步），
-  // 原 skills.paths 3 条全部冗余，整体移除。
+  // 0911: skill 双根已统一到 skills/。两个根本就在 opencode 默认扫描 glob `{skill,skills}/**/SKILL.md`
+  // 内（见 opencode 二进制 SA 常量 + opencode-config/ref/skills.md 第4步），故原 skills.paths 3 条全部冗余，已整体移除。
+  // 0914 G-09: 单数根 skill/ 此前仅残留一份重复的 agency-agents/agent-index.json（幽灵根），已连同空目录一并归档清除
+  // （wave0/retired-skill-root/）；此后仅保留复数根 skills/，search-agents.py 缓存路径已指向 skills/agency-agents/。
   "permission": {
     "pdf-reader_*": "deny",
-    "drawio_*": "deny",
+    // 0914 G-23：保留（不删）。vscode-mcp-server 当前 enabled:false，此 deny 为「re-enable 前置防御」——
+    //   一旦重新启用该 MCP，其工具默认即被拒绝；删除会使 re-enable 后工具面裸奔。属死配置但有意保留。
     "vscode-mcp-server_*": "deny",
+
+    // 0914 G-01：MEMORY.md 全局兜底 deny。G-21 实测合并序 = [builtin, 全局, agent]，agent 级末条胜出；
+    //   故 build 保留 agent 级 allow（/reflection 唯一合法写入路径），其余 agent 无 MEMORY allow → 命中此 deny。
+    "edit": {
+      "home/zako-mio/.config/opencode/MEMORY.md": "deny"
+    },
 
     // 读：全盘可读（工作区外边界放行），敏感凭证目录末条 deny
     // external_directory 匹配串 = 绝对父目录 + "/*"；宽规则在前、窄规则在后（末条匹配胜出）
@@ -487,11 +731,12 @@
       "~/.gnupg/**": "deny"
     },
 
-    // 读补充：仅追加 opencode auth.json 拒绝（.env 沿用引擎默认，不额外收紧）
+    // 读补充：追加 opencode auth.json 与 opencode.env 拒绝（G-02：env 文件含明文 provider key，显式 deny）
     // 写（edit）分层不放在全局：全局 user 规则排在 plan/explore 内置 edit deny 之后会覆盖它们，
     // 故 edit 分层只放在 agent.build.permission（执行型主 Agent）与 5 个写入型子Agent。
     "read": {
-      "home/zako-mio/.local/share/opencode/auth.json": "deny"
+      "home/zako-mio/.local/share/opencode/auth.json": "deny",
+      "home/zako-mio/.config/opencode/opencode.env": "deny"
     },
 
     "bash": {
@@ -500,7 +745,10 @@
       "*Out-File*": "ask",
       "*Remove-Item* -Force*": "ask",
       "rm -rf *": "deny",
-      "git push *": "deny"
+      "git push *": "deny",
+      // 0914 G-36：`opencode debug config` 会批量输出 provider 明文 apiKey（实测 3 处）。ask 阻断静默泄露，
+      // 保留人工确认后的排障能力；`opencode debug agent` 等其它子命令不受影响（G-21 仍可用）。
+      "opencode debug config*": "ask"
     }
   },
   "mcp": {
@@ -513,6 +761,7 @@
         "-File",
         "/home/zako-mio/.config/opencode/vscode-mcp-launcher.ps1"
       ],
+      // 0914 G-12 停用原因：工具面小（6 工具 ~692 tokens）且极少使用，性价比低
       "enabled": false,
       "description": "【已禁用】仅 6 个工具(~692 tokens) 极少使用。审计报告见 Mission-file\\2026-08\\0802-vscode-mcp-server-tools-audit\\vscode-mcp-server-tools-audit.md"
     },
@@ -525,6 +774,7 @@
         "-File",
         "/home/zako-mio/.config/opencode/amap-mcp-wrapper.ps1"
       ],
+      // 0914 G-12 停用原因：12 工具 ~2000 tokens 且调用频率极低；随同 3 个 amap 软停用 skill 一并停用
       "enabled": false,
       "description": "【已禁用】12 个工具 ~2000 tokens 极低频"
     },
@@ -538,27 +788,6 @@
       "enabled": true,
       "description": "【启用】PDF 文本提取。仅 pdf-worker 子Agent 使用（4 工具）"
     },
-    "drawio": {
-      "type": "local",
-      "command": [
-        "node",
-        "/mnt/d/Opencode/drawio-mcp-minimal/package/src/index.js"
-      ],
-      "enabled": true,
-      "description": "【启用】draw.io 图表创建（本地精简版 v1.5.0）。仅 drawio-worker 子Agent 使用"
-    },
-    "drawio-local": {
-      "type": "local",
-      "command": [
-        "node",
-        "/mnt/d/Opencode/drawio-mcp-minimal/package/src/index.js"
-      ],
-      "enabled": false,
-      "description": "【禁用·离线兜底】断网时启用，与主 drawio 同一实例",
-      "environment": {
-        "DRAWIO_BASE_URL": "http://localhost:8080/"
-      }
-    },
     "headroom": {
       "type": "local",
       "command": [
@@ -569,7 +798,8 @@
         "-File",
         "/home/zako-mio/.config/opencode/headroom-mcp-launcher.ps1"
       ],
-      "enabled": false,  // 0812 量化亏损禁用；CLI 仍可用（headroom proxy/audit-reads/savings）
+      // 0914 G-12 停用原因：量化亏损（工具开销 > 收益），2026-08-12 起禁用；切 Claude Code/Codex 走 proxy 时改回 true（CLI 仍可用）
+      "enabled": false,
       "description": "【已禁用 2026-08-12】量化亏损（工具开销 > 收益）。切 Claude Code/Codex 走 proxy 时改回 true。CLI 仍可用"
     }
   }

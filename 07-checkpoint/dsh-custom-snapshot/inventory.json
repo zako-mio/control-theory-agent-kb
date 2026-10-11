@@ -1,0 +1,82 @@
+{
+  "collected_at": "2026-10-11T17:09:09+08:00",
+  "source": {
+    "bundle": "/home/zako-mio/.dsh/presets/opencode",
+    "profile": "/home/zako-mio/.dsh/profiles/web",
+    "skills": "/home/zako-mio/.dsh/skills/opencode"
+  },
+  "presets": [
+    {
+      "id": "preset-opencode-standard",
+      "order": 11,
+      "top_level_rows": null
+    },
+    {
+      "id": "preset-opencode-creator",
+      "order": 12,
+      "top_level_rows": null
+    },
+    {
+      "id": "preset-opencode-ptc",
+      "order": 13,
+      "top_level_rows": null
+    }
+  ],
+  "worker_aliases": [
+    "oc_architect",
+    "oc_explore",
+    "oc_pdf",
+    "oc_reflection",
+    "oc_requirement",
+    "oc_search"
+  ],
+  "permission_presets": [
+    "read-only",
+    "workspace-write",
+    "opencode-plan",
+    "opencode-build",
+    "danger-full-access"
+  ],
+  "skills": {
+    "main_root": 45,
+    "overlay": 6,
+    "skill_md_total": 51,
+    "model_invocable_off": [
+      "opencode-capability-audit",
+      "opencode-capability-extension",
+      "opencode-config"
+    ],
+    "model_visible_estimate": 42
+  },
+  "providers": {
+    "keys_found": [
+      "commandcode",
+      "compat",
+      "danger-full-access",
+      "headers",
+      "models",
+      "off",
+      "opencode-build",
+      "opencode-go",
+      "opencode-go-tmp",
+      "opencode-plan",
+      "read-only",
+      "workspace-write"
+    ],
+    "apiKeyEnv_names": [
+      "COMMANDCODE_FREE_API_KEY",
+      "OPENCODE_GO_API_KEY",
+      "OPENCODE_GO_TMP_API_KEY"
+    ]
+  },
+  "bundle_bundles": [
+    "dsh-opencode-port",
+    "dsh-opencode-port",
+    "link:/home/zako-mio/.dsh/presets/opencode"
+  ],
+  "notes": [
+    "只读采集；~/dsh/.env 与 ~/.dsh/.credentials.yaml 未拷贝",
+    "persona 与 bundle README 含本机绝对路径（bundle 自述不可移植）",
+    "permission 档位由文本存在性判定（非 YAML 解析），缺 YAML 语义时可回退看原文快照"
+  ]
+}

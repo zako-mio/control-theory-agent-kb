@@ -7,12 +7,14 @@ agent: build
 
 你在 build 模式下执行架构任务。用户输入 `/arch <任务描述>`（或 `/arch 选型|评审|边界|技术债 …`）时，按以下流程执行，不依赖其他文档。
 
-## 0. 前置路径
+## 0. 前置路径（绑定解析，不直写宿主机绝对路径）
+
+下列宿主根经绑定文件 `skills/architecture-judgment/_private/local-bindings.json` 解析（门控脚本自动解析同一文件，基准与 `gate_architecture.py` 一致）：
 
 ```
-SKILL   = /home/zako-mio/.config/opencode/skills/architecture-judgment
-MROOT   = /home/zako-mio/opencode/archive/Mission-file/2026-09/0910-软件工程架构方法论
-GRAPH   = $MROOT/10-dag-data/methodology-dag.json
+SKILL = $TARGET_DIR      # 能力包根（config 树内自包含）
+MROOT = $MISSION_ROOT     # Mission-file 方法论语料根（config 树外母库，经绑定声明）
+GRAPH = $GRAPH_DAG        # $MROOT/10-dag-data/methodology-dag.json
 ```
 
 - 执行主流程：`$SKILL/workflow.md`
@@ -66,8 +68,12 @@ python3 "$SKILL/_private/gate_architecture.py" --kind boundary \
   --graph "$GRAPH" --schema "$SKILL/schemas/boundary.schema.json"
 ```
 
+- **执行主体（0916 D-01）**：`architect-worker` 已获放行 `python3 *gate_architecture.py*`，**门控由产出方自跑**
+  并把输出原文回传；主 Agent 仅做**独立复跑复核**（抽验 1 次），不再承担唯一执行者。
 - **PASS（退出码 0）** → 交付（`adr`/`boundary`）。
-- **FAIL（退出码 1）** → 把门控输出的 `checks`/`errors` 原样回传 `architect-worker` 修正，**最多 2 轮**；仍不过则如实报告失败与原因，**不得降级为"口头通过"**。
+- **FAIL（退出码 1）** → 用 `task` 工具**带 `task_id` 续跑同一 architect-worker 会话**，附门控
+  `checks`/`errors` 原文，做**最小字段补丁**；**最多 2 轮**；仍不过则如实报告失败与原因，
+  **不得降级为"口头通过"**。⛔ 不要新开委派整份重生成（会重读 ~23.8 KB 必读件）。
 - `review`/`tech-debt` 为模板级产出，不走机检门控，但须人工确认后定稿。
 
 ## 4. 交付
@@ -80,13 +86,13 @@ python3 "$SKILL/_private/gate_architecture.py" --kind boundary \
 
 ## 5. 是否需要架构图（主动询问）
 
-交付后**主动询问**用户：「是否需要生成架构图（drawio）？」
-- 是 → 主 Agent 委派 `drawio-worker`，其 prompt **必须精确写入** `drawio-reference: 图表规范与导出验证`（不得弱化表述）。
+交付后**主动询问**用户：「是否需要生成架构图？」
+- 是 → 主 Agent 加载 `diagram-lite` skill，按档位出图（默认 T2：`dot -Tsvg` 出中文 SVG；对外发布级走 T3）；**不委派制图子 Agent、不装绘图 MCP**。
 - 否 → 结束。
 
 ## 约束
 
 - 技术实践层节点仅作「选型标尺」：`TEC-*` 只能进 `standards_refs`。
 - 方法论层重召回，技术层宁缺毋滥（字面不精确命中就不引）。
-- `architect-worker` 不含制图（架构图由主 Agent 另委 `drawio-worker`）。
+- `architect-worker` 不含制图（架构图由主 Agent 按 `diagram-lite` 档位出图）。
 - 门控未过不得声称完成。

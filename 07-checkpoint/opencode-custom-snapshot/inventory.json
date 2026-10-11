@@ -2,15 +2,14 @@
   "skills": [
     "_shared",
     "agency-agents",
-    "amap-budget-control",
-    "amap-jsapi-skill",
-    "amap-lbs-skill",
     "architecture-judgment",
     "browser-harness",
+    "criterion-design-validation",
     "cytoscape-dag-visualization",
     "dag-tutorial-authoring",
-    "drawio-reference",
-    "frontend-design",
+    "design-material-library",
+    "diagram-lite",
+    "disabled",
     "github-bulk-upload",
     "grill-me",
     "headroom",
@@ -18,8 +17,8 @@
     "kb-construction",
     "lark-suite",
     "login-auth-channel",
-    "model-switcher",
     "multi-window-dag-delivery",
+    "opencode-capability-audit",
     "opencode-capability-extension",
     "opencode-config",
     "openspec-apply-change",
@@ -37,6 +36,7 @@
     "pdf-ocr",
     "recruit-assist",
     "release-openspec",
+    "requirement-discovery",
     "restricted-corpus-acquisition",
     "resumable-content-pipeline",
     "resume-builder",
@@ -45,45 +45,129 @@
     "soe-resume",
     "superpowers-feature-workflow",
     "superpowers-learning-workflow",
-    "superpowers-openspec-superpowers-workflow"
+    "superpowers-openspec-superpowers-workflow",
+    "version-upgrade-cascade"
+  ],
+  "skills_disabled": [
+    "amap-budget-control",
+    "amap-jsapi-skill",
+    "amap-lbs-skill",
+    "model-switcher"
   ],
   "legacy_skill": [],
-  "plugins": [],
+  "plugins": [
+    "notify-on-pause.ts",
+    "system-date-transform.ts"
+  ],
   "tools": [],
   "scripts": [
+    "__pycache__",
+    "asset_inventory.py",
+    "capabilities_reconcile.py",
     "chrome-debug.ps1",
     "close-chrome-tabs.ps1",
-    "install-dotnet.ps1"
+    "drift_reconcile.py",
+    "dual_root_baseline.json",
+    "dual_root_check.py",
+    "evidence_freshness.py",
+    "gate_host_check.py",
+    "install-dotnet.ps1",
+    "memory_capacity_check.py",
+    "memory_write_path_audit.py",
+    "pending_io.py",
+    "pending_io_g40_test.py",
+    "pending_io_selftest.py",
+    "prompt_audit.py",
+    "ref_audit.py",
+    "subtraction_coverage_check.py"
   ],
   "command": [
     "arch.md",
+    "rd.md",
     "reflection.md"
   ],
   "instructions": [
+    "agent-protocol.md",
     "architecture-behavior.md",
     "auto-mode.md",
     "browser-management.md",
-    "downloads.md",
+    "requirement-discovery-behavior.md",
     "search-behavior.md"
   ],
   "agents": [
     "plan",
     "build",
     "pdf-worker",
-    "drawio-worker",
     "architect-worker",
-    "vision-worker",
     "general",
     "explore",
     "reflection-worker",
-    "search-worker"
+    "search-worker",
+    "requirement-discovery-worker"
   ],
   "mcp": [
     "vscode-mcp-server",
     "amap",
     "pdf-reader",
-    "drawio",
-    "drawio-local",
     "headroom"
-  ]
+  ],
+  "providers": [
+    "opencode-go",
+    "opencode-go-tmp",
+    "deepseek",
+    "zhipu",
+    "commandcode",
+    "commandcode-free"
+  ],
+  "config": {
+    "top_level_keys": [
+      "$schema",
+      "agent",
+      "compaction",
+      "instructions",
+      "mcp",
+      "model",
+      "permission",
+      "provider",
+      "small_model",
+      "subagent_depth"
+    ],
+    "model": "deepseek/deepseek-flash",
+    "small_model": "deepseek/deepseek-flash",
+    "subagent_depth": 1,
+    "compaction_keys": [
+      "auto",
+      "preserve_recent_tokens",
+      "prune",
+      "reserved",
+      "tail_turns"
+    ],
+    "instructions_registered": [
+      "~/.config/opencode/instructions/auto-mode.md",
+      "~/.config/opencode/MEMORY.md",
+      "~/.config/opencode/instructions/search-behavior.md",
+      "~/.config/opencode/instructions/architecture-behavior.md",
+      "~/.config/opencode/instructions/requirement-discovery-behavior.md",
+      "~/.config/opencode/instructions/browser-management.md"
+    ],
+    "permission_keys": [
+      "bash",
+      "edit",
+      "external_directory",
+      "pdf-reader_*",
+      "read",
+      "vscode-mcp-server_*"
+    ],
+    "mcp_enabled": [
+      "pdf-reader"
+    ],
+    "provider_apikey_env_names": [
+      "{env:COMMANDCODE_API_KEY}",
+      "{env:COMMANDCODE_FREE_API_KEY}",
+      "{env:OPENCODE_GO_API_KEY}",
+      "{env:OPENCODE_GO_TMP_API_KEY}",
+      "{env:ZHIPU_API_KEY}"
+    ]
+  },
+  "collected_at": "2026-10-11T17:04:12+08:00"
 }

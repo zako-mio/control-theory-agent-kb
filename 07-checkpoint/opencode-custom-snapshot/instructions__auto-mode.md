@@ -32,16 +32,16 @@
 
 ### 决策边界
 
-| 总分 | Variant | max_tokens | reasoning_effort |
+| 总分 | Variant | reasoning_effort | 输出上限 |
 |:---:|:---:|:---:|:---:|
-| ≤ 12 | Daily | 8192 | high |
-| ≥ 13 | Deep | 16384 | max |
+| ≤ 12 | Daily | high | 引擎默认（min(model.limit.output, 32000)） |
+| ≥ 13 | Deep | max | 同上（变体不控制输出上限） |
 
 ### Daily vs Deep 差距对比
 
 | 维度 | Daily (≤12分) | Deep (≥13分) | 差距 |
 |------|:---:|:---:|:---:|
-| max_tokens | 8,192 | 16,384 | 2x |
+| 输出上限 | 引擎默认 | 引擎默认（同值） | 不随变体变化；提高需 `OPENCODE_EXPERIMENTAL_OUTPUT_TOKEN_MAX` |
 | reasoning_effort | high | max | 推理链条长度 |
 | 有效中文输出 | ~3,000 字 | ~6,000 字 | 2x |
 | 推理步数 | 2-5 步后调用工具 | 5-10 步后调用工具 | 深度差距 |
@@ -60,20 +60,30 @@
 
 ---
 
+## 角色化指令注入（主 Agent vs 子 Agent）
+
+> **修订说明（2026-09-14，G-06fix 注入收口）**：本段为**有意的结构修订**，针对原「Cache-Stable Prefix — Do NOT modify mid-session」提示作例外处理——该提示对其余段落仍有效。原因：`instructions/agent-protocol.md`（调度协议）此前被注册进全局 `instructions` 数组，会注入**所有**会话（含子 Agent），其首句「你是任务调度者……委派子Agent」与本文档「你是 SUBAGENT，不委派」构成**语义冲突**。收口方式＝**将其移出全局注入，改为仅主 Agent 按需读取**（不改其内容，也不改子 Agent 身份约束）。
+
+- **主 Agent（plan / build）**：开始任务前**必须读取** `~/.config/opencode/instructions/agent-protocol.md`（任务调度协议的**唯一真相源**），随后按该文件执行任务调度与委派。
+- **子 Agent**：**不需要**该文件；遵守本文档下方「Universal SubAgent Rules（所有子Agent 通用规则）」。子 Agent **不委派**、不调度、不调用其他 Agent。
+  - **（0915 起无例外）**：原「唯一例外」条款已被删除——视觉分析子 Agent 已废除，`subagent_depth` 已由 2 降回 1，当前**没有任何子 Agent 持有 `task` 权限**。
+
+---
+
 ## Variant 运行时控制
 
 ### 运行时切换（推荐）
 
 会话中按 **Ctrl+T** 循环切换 variant（daily ↔ deep），无需修改文件、无需重启。
 也可在 `tui.json` 中绑定 `variant_list` 键位来打开 variant 选择列表查看所有可用变体。
-Variant 的 max_tokens / reasoning_effort / 适用场景见上文「决策边界」与「Daily vs Deep 差距对比」表。
+Variant 的 reasoning_effort / 输出上限 / 适用场景见上文「决策边界」与「Daily vs Deep 差距对比」表。
 
 ### DeepSeek 思考模式有效参数
 
 | 参数 | 类型 | 说明 | 可选值 |
 |------|------|------|------|
-| `reasoning_effort` | string | 思考强度，控制推理链深度 | `"high"`, `"max"`（`low`/`medium` 自动映射为 `high`） |
-| `max_tokens` | number | 最大输出 token 数（含推理链） | V4 Pro 最大约 32768 |
+| `reasoning_effort` | string | 思考强度（opencode 侧写 camelCase `reasoningEffort`，引擎转 body `reasoning_effort`） | `"high"`, `"max"`（`low`/`medium` 自动映射为 `high`） |
+| `max_tokens` | number | 最大输出 token 数（含推理链） | 引擎默认 min(limit.output, 32000)；经 `OPENCODE_EXPERIMENTAL_OUTPUT_TOKEN_MAX` 覆盖，**非 variant 控制** |
 | `stop` | array | 停止序列 | `["\n\n"]` 等 |
 | `seed` | number | 确定性种子（可复现输出） | 任意整数 |
 | `response_format` | object | JSON 模式 | `{"type": "json_object"}` |
@@ -95,13 +105,16 @@ Variant 的 max_tokens / reasoning_effort / 适用场景见上文「决策边界
 
 本机代理网关：宿主机 XQNetwork 监听 `0.0.0.0:7890`，WSL2 内经网关 `172.29.0.1:7890` 访问（HTTP+SOCKS5 混合端口）。
 
-**默认策略（2026-08-22 更新）：默认直连，不依赖代理。** `.bashrc` 不再自动 export 全局代理 env；仅当需要访问境外被墙站点时手动 `proxy_on` 开启，`proxy_off` 关闭。国内流量（百度/阿里云/npmmirror/deepseek 等）与模型 API 全部直连，无需代理。
+**默认策略（2026-09-14 修订）：默认常开代理 env。** `.bashrc` 默认即 `export http_proxy/https_proxy/all_proxy` 指向 `$XQ_PROXY`（无需先 `proxy_on`）；非白名单流量走代理，`proxy_off` 可临时全直连、`proxy_on` 恢复。国内流量（百度/阿里云/npmmirror/deepseek 等）与已入白名单的模型端点仍经 `no_proxy` 恒直连。
 
-- **模型 API 调用链（Node fetch/undici）不读代理 env** → `api.deepseek.com` / `opencode.ai` 必须直连（直连实测可达），禁止为其设置代理
+- **模型 API 的直连/代理由 `no_proxy` 白名单决定（2026-09-14 修订）**：opencode 跑在 Bun 上，**会读 `http_proxy/https_proxy/no_proxy`**（旧文档「undici 不读代理 env」已过时，勿再据它推断）。白名单内恒直连：`.deepseek.com`（官方直连）、`.opencode.ai`、`.models.dev`；**`.commandcode.ai` 已移出白名单 → 恒走代理**（Command Code 直连有 Cloudflare 分钟级抽风窗口；走代理实测 30/30 通过、延迟 ~2–5s）。默认即代理开启，故 commandcode 无需 `proxy_on` 即走代理。
+  - 白名单机制：proxy env 开启时不在名单会被**强制走代理**；而当**代理 env 残留但代理本体已停（死代理）**时，opencode 中**未在白名单的** provider 请求会 30s 超时（已在名单者如 `.deepseek.com` 不受影响）。实测：`http(s)_proxy` 指向死地址时，不在白名单 → 连接失败；在白名单 → 200。
+  - `no_proxy` 与 `NO_PROXY` 同值导出（Bun 两者都认）。`.cn` 通配已覆盖 `.bigmodel.cn` 等国内域。
+  - 已知残留风险（2026-09-14 起）：`.commandcode.ai` 恒走代理 → **宿主机 XQNetwork 未开 / `172.29.0.1:7890` 不可达时 commandcode 必失败**（这是「只走代理」的预期代价）；需临时直连用 `proxy_off`（cmdcode 直连可用但存在 Cloudflare 抽风窗口）。
 - **webfetch 工具同样不读代理 env** → 访问境内站点可直接成功；境外被墙站点（Google/X 等）会直连超时，需境外内容时用 `curl -x http://172.29.0.1:7890 <url>`、`git`（已配定向代理）或 browser-harness
-- **curl/CLI 工具默认继承 shell env**：默认 shell 无代理 env → 直连；需访问境外时 `curl -x http://172.29.0.1:7890 <url>`；`proxy_on` 后可全局走代理，`no_proxy`（含国内域名全量）保证国内流量仍直连
+- **curl/CLI 工具继承 shell env**：默认 shell 已带代理 env → 非白名单流量走代理；`no_proxy`/`NO_PROXY`（含国内域名 + deepseek/opencode.ai/models.dev）保证这些流量仍直连。需完全直连时 `proxy_off`；仅单条命令走代理可 `curl -x http://172.29.0.1:7890 <url>`，仅单条命令直连可 `env -u http_proxy -u https_proxy <cmd>`
 - **git 已配置定向代理**（`git config --global http.proxy/https.proxy` 指向 172.29.0.1:7890）→ git 操作 github 始终走代理，不受 proxy_on/off 影响，属刚需代理
-- 子 Agent 联网默认直连国内源（百度/国内镜像/官方 API）；访问境外被墙站点时显式 `curl -x http://172.29.0.1:7890` 或依赖 git 定向代理
+- 子 Agent 继承 shell 代理 env（非白名单走代理）；国内源（百度/国内镜像/官方 API）经白名单仍直连；访问境外被墙站点时显式 `curl -x http://172.29.0.1:7890` 或依赖 git 定向代理
 - apt/nvm 已换国内镜像（阿里云 / npmmirror），包管理流量直连即可
 
 ## Universal SubAgent Rules（所有子Agent 通用规则）
@@ -111,7 +124,7 @@ Variant 的 max_tokens / reasoning_effort / 适用场景见上文「决策边界
 ### 身份约束
 - 你是 SUBAGENT，仅执行被分配的具体任务，不委派、不调度、不调用其他 Agent
 - 不使用 search-agents.ps1 / search-agents.py 或其他 Agent 搜索机制
-- **严禁直接修改 `~/.config/opencode/MEMORY.md` 或 `~/opencode/archive/Reflection/pending.json` 之外的记忆系统文件**。MEMORY.md 只能由主Agent 经 pending.json → reflection-worker → /reflection 链路写入；子Agent 若产出记忆条目，写入 `~/opencode/archive/Reflection/memory_pending/` 供后续审阅即可
+- **记忆系统文件（`~/.config/opencode/MEMORY.md` 及 Reflection 队列/候选池）严禁子Agent 直接修改**。记忆写入链路以 `~/.config/opencode/command/reflection.md`（唯一真相源）为准；子Agent 若产出记忆条目，只写入 Reflection 候选池供后续审阅
 - 所有输出必须以以下结构化 JSON 格式返回：
 ```json
 {

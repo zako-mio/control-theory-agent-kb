@@ -1,7 +1,7 @@
 # AI 索引 — 控制理论 ⊗ Agent 设计知识库 (00-index.md)
 
 > **AI 友好镜像**，检索优先走本目录（`05-md/`）。人类可读版在 `04-interactive/` + `03-cases/`。
-> 版本：v1.3.0（6 框架 + 14 精装房全景 + 自改造 opencode 变体）　创建：2026-09-07　v1.1 扩展：2026-09-08　v1.2 扩展：2026-09-09（自改造 opencode 变体专题）　v1.3 扩展：2026-09-11（自改造 opencode 变体复评）
+> 版本：v1.4.0（6 框架 + 14 精装房全景 + 装配层变体 opencode-custom / dsh-custom）　创建：2026-09-07　v1.1 扩展：2026-09-08　v1.2 扩展：2026-09-09（自改造 opencode 变体专题）　v1.3 扩展：2026-09-11（自改造 opencode 变体复评）　v1.4 扩展：2026-10-11（dsh 装配层变体专题 + opencode 月度追平）
 
 ## 知识库定位
 
@@ -86,9 +86,10 @@
 
 | 产品 | 类型 | 整体范式 | 最强环 | 最弱环 | 独立 Critic | 源码 |
 |------|------|---------|-------|-------|:---:|:---:|
-| **opencode** v1.18.29 | monorepo+装配层 | 前馈-执行+局部反馈（Plan-and-Execute） | P/T | E | ❌ | 本地 |
+| **opencode** v1.18.35 | monorepo+装配层 | 前馈-执行+局部反馈（Plan-and-Execute） | P/T | E | ❌ | 本地 |
 | **opencode-custom** | 官方 opencode 衍生变体·装配层 | 分层编排+跨会话自演化闭环 | P/T | 已补齐（原 E/R） | ✅ 装配层有（reflection-worker/grill-me） | 本地 |
-| **deepseek-harness** v0.1.1-rc.2 | cordis 插件 | MPC 滚动规划+强约束执行器 | T | E | ❌ | 本地 |
+| **deepseek-harness** v0.2.1-alpha.2 | cordis 插件 | MPC 滚动规划+强约束执行器 | T | E | ❌ | 本地 |
+| **dsh-custom** | 官方 dsh 衍生变体·装配层 | 强内核+薄装配层（编队/策略库/行为纪律） | SP/P/T | R 3.0（原 E 已 2.0→3.5 增强，不再最弱） | ⚠️ 领域级门控（oc_architect + gate_architecture.py） | 本地 |
 | **PRIME** (RLM) | RLM+Continual Harness | 自适应/自整定负反馈 | R | E | ❌(gates空) | clone |
 | **hermes** | NousResearch | 鲁棒控制+多传感器+观测器型 | M/T | P | ✅ | clone |
 | **claude-code** | anthropics | 外挂 Critic + 执行器限幅 | T | E | ⚠️外挂贴片 | clone |
@@ -100,16 +101,37 @@
 2. **T 环（执行器）是 6 框架共同「最强环」**——看门狗/限幅/沙箱是 Agent 工程最成熟环节（无一例外）。
 3. **各产品最弱环分化**——opencode/dsh/PRIME/claude-code = E，hermes/codex = P。
 4. **M 环普遍缺置信度（P 协方差）**——记忆多记事实不记"我有多确定"（PRIME 带版本/hermes 带离散标记相对最好）。
-5. **装配层可定向补齐内核弱环**——官方 opencode E/R 弱，经自改造（reflection/grill-me/search-worker/门控）E/R 反转，精装度 2.9→3.9（+1.0）。
+5. **装配层可定向补齐内核弱环**——官方 opencode E/R 弱，经自改造（reflection/grill-me/search-worker/门控）E/R 反转，精装度 2.9→3.9（+1.0）；官方 dsh 内核已强（T 5.0 / M 4.0），装配层（`dsh-opencode-port`）只补 SP/P 编队与 E 环领域门控，精装度 3.6→3.8（+0.2）——**「弱内核 + 强装配层」（opencode-custom）与「强内核 + 薄装配层」（dsh-custom）互补**。
 
-## 自改造 opencode 变体专题（v1.3）
+## 装配层变体专题（v1.4）
 
-> 版本：v1.3（2026-09-11）。相对 v1.2：装配层由 9 agent / 28+11 双根 skill / 1 command 演进为 **10 agent / 45 skill 单根 / 2 command**，新增「架构判断三层栈」与「能力自我扩展 SOP」；复评确认属能力纵深增长、未跨评分模型 5 档阈值，**精装度维持 3.9**。
+> 版本：v1.4（2026-10-11）。两线：① 新增 **`dsh-custom`**（dsh 官方 `v0.2.1-alpha.2` + `dsh-opencode-port` bundle）；② **`opencode-custom` 月度追平**（补账轮，一次性补入 2026-09-11 → 2026-10-11 backlog，见契约 §2.7⑤）。**两个变体均为个人装配层，不参与 14 产品市售排名**（见契约 §2.6 / §2.7①）。
+
+### A. `dsh-custom`（v1.4 新增）
+
+- **口径**：dsh 官方 **`v0.2.1-alpha.2`**（2026-10-09，commit `d743267`，跨 **21 个预发布 tag**）+ bundle `dsh-opencode-port`（落点 `~/.dsh/presets/opencode/` 3 preset / `~/.dsh/skills/opencode/` **45 派生 skill**，模型可见 **42** / **7 worker** / permission **5 档** / persona **15 节 8018 字符** / 插件 **188→191**）。
+- **评分**：官方 **3.6** → `dsh-custom` **3.8**（**Δ+0.2**）；五环双层 SP 4.5→5.0、M 4.0→4.0、P 4.5→5.0、R 3.0→3.0、T 5.0→5.0、E 2.0→3.5。
+- ⚠️ **口径披露（重要）**：dsh 旧口径仅为「技术框架对照」**单点分 2.5**（**非** 8 维模型输出）；v1.4 首次回填 v2.0 模型得 **3.6**——**两者不同源、不可相减**，旧单点分作为历史口径保留（契约 §2.7⑤）。
+- **权威文件**：画像 `03-cases/dsh-custom.md`、diff `03-cases/dsh-custom-diff.md`、实验 `06-experiments/dsh-custom.md`（实验 11-14）、评分源 `09-src-data/dsh_custom_scores.py`、快照 `07-checkpoint/dsh-custom-snapshot/`。
+
+### B. `opencode-custom`（v1.4 月度追平 · 补账轮）
+
+- **官方基线**：`1.18.30` → **`1.18.35`**（本机运行时）；上游最新 release **`v1.19.0`**（2026-10-11）**只登记不追**。
+- **装配层漂移**：agents 10→9（−drawio-worker −vision-worker，+requirement-discovery-worker）/ skills 可加载 41→45 / commands 2→3（+rd）/ instructions 注册 5→6 / MCP 6→4 / plugins 0→2 / providers 3→6；`MEMORY.md` 于 2026-10-10 三轮 `/reflection` 深迁移 **−46%**（24318 → 13137 B，15 段零和）。
+- **两项能力损失须登记**：**L1** 视觉代看机制退役（vision-worker 于 0915 废除）；**L2** MCP 工具面收窄（drawio / drawio-local 退役，制图改走 `diagram-lite` skill 档位）。
+- **评分**：官方 2.9 / 自改造 3.9 **维持不变**（无任一维度跨 5 档阈值；MCP 曾触及 4→3 边界，判据为「平台多传输能力未变、仅本地 server 数与启用数变化」→ 维持 4），仅刷新 evidence 并登记损失。
+- **权威文件**：画像 `03-cases/opencode-custom.md`、diff `03-cases/opencode-custom-diff.md`、实验 `06-experiments/opencode-custom.md`（实验 1-10）、评分源 `09-src-data/opencode_custom_scores.py`。
+
+<details>
+<summary><b>历史块 · v1.3 自改造 opencode 变体复评（2026-09-11，保留原版本号）</b></summary>
+
+相对 v1.2：装配层由 9 agent / 28+11 双根 skill / 1 command 演进为 **10 agent / 45 skill 单根 / 2 command**，新增「架构判断三层栈」与「能力自我扩展 SOP」；复评确认属能力纵深增长、未跨评分模型 5 档阈值，**精装度维持 3.9**。
 
 - **口径**：10 agent（+6 专职 worker：pdf/drawio/architect/vision/reflection/search）/ 45 skill 单根统一（41 可加载，4 个 `_SKILL.md` 命名不达标未加载）/ 6 MCP / 2 command（reflection、arch）/ 5 instructions（新增 architecture-behavior.md，agent-protocol.md 并入 auto-mode.md）。
 - **新增纵深机制**：架构判断三层栈（architecture-judgment skill 167 节点离线 KG + architect-worker + architecture-behavior.md + `/arch` + `gate_architecture.py` ADR 门控）；能力自我扩展 SOP（`opencode-capability-extension`：诊断→双根统一→引用普查→契约先行→门控+冒烟→单一真相源+派生对账）。
 - **评分**：官方 2.9 → 自改造 3.9（Δ+1.0）维持不变；变体不参与 14 产品市售排名（见契约 §2.7）。
-- **权威文件**：画像 `03-cases/opencode-custom.md`、diff `03-cases/opencode-custom-diff.md`、实验 `06-experiments/opencode-custom.md`（实验 7-10）。
+
+</details>
 
 ## 精装房全景专题（v1.1，14 产品）
 
@@ -144,30 +166,31 @@
 
 | 目录 | 内容 |
 |------|------|
-| `00-contract/contract.md` | 契约（命名/信源分级/破坏性范围/门控 + 精装房专题） |
+| `00-contract/contract.md` | 契约（命名/信源分级/破坏性范围/门控 + 精装房专题 + 装配层变体专题） |
 | `01-theory/` | 5 分区理论证据包（31 知识点，≥2 权威源） |
 | `02-framework/framework.md` | 五环映射框架 |
-| `03-cases/` | 6 框架画像 + 1 自改造变体（opencode-custom*.md）+ 14 精装房画像（premium-*.md） |
-| `04-interactive/` | 人类端 39 页（总览/理论/案例/实验/对照/精装房全景+DAG） |
-| `06-experiments/` | 6 产品标准实验组记录 |
-| `07-checkpoint/` | 中间产物/门控脚本 + 精装房实证证据 |
+| `03-cases/` | 6 框架画像 + **2 装配层变体**（opencode-custom*.md / dsh-custom*.md）+ 14 精装房画像（premium-*.md） |
+| `04-interactive/` | 人类端 **42 页**（总览/理论/案例/实验/对照/精装房全景+DAG/装配层变体） |
+| `06-experiments/` | 6 产品标准实验组记录 + 装配层变体实验（opencode-custom 1-10 / dsh-custom 11-14） |
+| `07-checkpoint/` | 中间产物/门控脚本 + 精装房实证证据 + 变体脱敏快照 |
 | `08-drawio/` | drawio 图表 |
-| `09-src-data/` | DAG DATA/生成脚本（含 gen_premium_cyto.py） |
+| `09-src-data/` | DAG DATA/生成脚本（含 gen_premium_cyto.py）+ 变体评分单一数据源 |
 
 ## 关联
 
 - 契约：`00-contract/contract.md`
 - 人类可读版入口：`04-interactive/index.html`
 - 精装房全景入口：`04-interactive/premium-map.html`
+- 装配层变体对照入口：`04-interactive/compare-opencode.html`、`04-interactive/compare-dsh.html`
 
-## 人类可读页索引（04-interactive/，39 页）
+## 人类可读页索引（04-interactive/，42 页）
 
 | 分组 | 页面 | 说明 |
 |------|------|------|
 | 概览 | `index.html` / `index_cyto.html` | 文档总览 / 交互 DAG |
 | 核心 | `framework.html` | 五环映射框架 |
 | 理论 | `theory-closed-loop.html` / `theory-state-est.html` / `theory-pid.html` / `theory-robust.html` / `theory-hierarchical.html` | 5 分区理论页 |
-| 案例 | `case-opencode.html` / `case-opencode-custom.html` / `case-dsh.html` / `case-prime.html` / `case-hermes.html` / `case-claude-code.html` / `case-codex.html` | 6 框架画像 + 自改造变体 |
-| 实验 | `exp-opencode.html` / `exp-opencode-custom.html` / `exp-dsh.html` / `exp-prime.html` / `exp-hermes.html` / `exp-claude-code.html` / `exp-codex.html` | 6 实验组 + 自改造变体记录 |
-| 对照 | `compare-opencode.html` | 官方 opencode vs 自改造变体对照 |
+| 案例 | `case-opencode.html` / `case-opencode-custom.html` / `case-dsh.html` / **`case-dsh-custom.html`** / `case-prime.html` / `case-hermes.html` / `case-claude-code.html` / `case-codex.html` | 6 框架画像 + 2 装配层变体 |
+| 实验 | `exp-opencode.html` / `exp-opencode-custom.html` / `exp-dsh.html` / **`exp-dsh-custom.html`** / `exp-prime.html` / `exp-hermes.html` / `exp-claude-code.html` / `exp-codex.html` | 6 实验组 + 装配层变体记录 |
+| 对照 | `compare-opencode.html` / **`compare-dsh.html`** | 官方 opencode vs 自改造变体 / 官方 dsh vs 装配层变体 |
 | 精装房 | `premium-map.html` / `premium-cyto.html` / `premium-cursor.html` / `premium-devin.html` / `premium-workbuddy.html` / `premium-windsurf.html` / `premium-copilot.html` / `premium-dify.html` / `premium-openhands.html` / `premium-coze.html` / `premium-openclaude.html` / `premium-codewhale.html` / `premium-gptresearcher.html` / `premium-qcode.html` / `premium-ccrouter.html` / `premium-crewai.html` | 全景/ DAG / 14 案例页 |

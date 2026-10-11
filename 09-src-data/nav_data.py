@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""共享导航数据 + 渲染 - 全站统一完整目录(00门户入口 + 01总览~36精装CrewAI，含6框架+14精装房)"""
+"""共享导航数据 + 渲染 - 全站统一完整目录(00门户入口 + 01总览~38精装CrewAI，含6框架+14精装房+2自改造变体)"""
 import html
 
 # 完整目录: (标签, 文件名, 分组)
@@ -15,7 +15,9 @@ NAV = [
     ("理论:分层控制", "theory-hierarchical", "theory"),
     ("案例:opencode", "case-opencode", "cases"),
     ("案例:opencode-custom", "case-opencode-custom", "cases"),
+    ("案例:dsh-custom", "case-dsh-custom", "cases"),
     ("对照:官方vs自改造", "compare-opencode", "cases"),
+    ("对照:官方dsh vs装配层", "compare-dsh", "cases"),
     ("案例:dsh", "case-dsh", "cases"),
     ("案例:PRIME", "case-prime", "cases"),
     ("案例:hermes", "case-hermes", "cases"),
@@ -23,6 +25,7 @@ NAV = [
     ("案例:codex", "case-codex", "cases"),
     ("实验:opencode", "exp-opencode", "exp"),
     ("实验:opencode-custom", "exp-opencode-custom", "exp"),
+    ("实验:dsh-custom", "exp-dsh-custom", "exp"),
     ("实验:dsh", "exp-dsh", "exp"),
     ("实验:PRIME", "exp-prime", "exp"),
     ("实验:hermes", "exp-hermes", "exp"),
@@ -76,5 +79,5 @@ def sidebar_brand():
     return f"""
 <div class="sidebar-brand">
   <div class="mark"><span class="dot"></span><h1>控制理论 ⊗ Agent</h1></div>
-  <p>五大核心环 · 6 框架 + 14 精装房 + 自改造 opencode · 6 实验组</p>
+  <p>五大核心环 · 6 框架 + 14 精装房 + 2 自改造变体 · 6 实验组</p>
 </div>"""

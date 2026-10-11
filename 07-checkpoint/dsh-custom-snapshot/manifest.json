@@ -1,0 +1,79 @@
+{
+  "source": "~/.dsh/presets/opencode + ~/.dsh/profiles/web",
+  "collected_at": "2026-10-11T17:09:09+08:00",
+  "note": "脱敏快照；.env / credentials / sessions / attachments 均不拷贝",
+  "files": [
+    {
+      "path": "/home/zako-mio/.dsh/presets/opencode/cordis.patch.yml",
+      "label": "bundle/cordis.patch.yml",
+      "bytes": 93283,
+      "sha256_16": "f3d64cd37221dfd3",
+      "snapshot": "bundle__cordis.patch.yml",
+      "redacted_occurrences": 0
+    },
+    {
+      "path": "/home/zako-mio/.dsh/presets/opencode/package.json",
+      "label": "bundle/package.json",
+      "bytes": 392,
+      "sha256_16": "4f17fbb4a2b77e5f",
+      "snapshot": "bundle__package.json",
+      "redacted_occurrences": 0
+    },
+    {
+      "path": "/home/zako-mio/.dsh/presets/opencode/persona.md",
+      "label": "bundle/persona.md",
+      "bytes": 15403,
+      "sha256_16": "e4d177b982bff996",
+      "snapshot": "bundle__persona.md",
+      "redacted_occurrences": 0
+    },
+    {
+      "path": "/home/zako-mio/.dsh/presets/opencode/README.md",
+      "label": "bundle/README.md",
+      "bytes": 22168,
+      "sha256_16": "68131e620d0c2258",
+      "snapshot": "bundle__README.md",
+      "redacted_occurrences": 0
+    },
+    {
+      "path": "/home/zako-mio/.dsh/presets/opencode/ADAPTATION-NOTES.md",
+      "label": "bundle/ADAPTATION-NOTES.md",
+      "bytes": 9108,
+      "sha256_16": "02e227ead1a51a39",
+      "snapshot": "bundle__ADAPTATION-NOTES.md",
+      "redacted_occurrences": 0
+    },
+    {
+      "path": "/home/zako-mio/.dsh/presets/opencode/PROVENANCE.md",
+      "label": "bundle/PROVENANCE.md",
+      "bytes": 5692,
+      "sha256_16": "e969f6ee2e4b41a0",
+      "snapshot": "bundle__PROVENANCE.md",
+      "redacted_occurrences": 0
+    },
+    {
+      "path": "/home/zako-mio/.dsh/presets/opencode/provenance.json",
+      "label": "bundle/provenance.json",
+      "bytes": 11907,
+      "sha256_16": "502758ea7b360185",
+      "snapshot": "bundle__provenance.json",
+      "redacted_occurrences": 0
+    },
+    {
+      "path": "/home/zako-mio/.dsh/profiles/web/package.json",
+      "label": "profile/web-package.json",
+      "bytes": 337,
+      "sha256_16": "ea898ccf14537876",
+      "snapshot": "profile__web-package.json",
+      "redacted_occurrences": 0
+    },
+    {
+      "path": "/home/zako-mio/.dsh/profiles/web/cordis.patch.yml",
+      "label": "profile/web-cordis.patch.yml",
+      "bytes": 17538,
+      "sha256_16": "53f260c10bed2cd9",
+      "snapshot": "profile__web-cordis.patch.yml",
+      "redacted_occurrences": 0
+    }
+  ]
+}
