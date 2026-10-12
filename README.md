@@ -51,6 +51,7 @@ skill 计数四口径并存（v1.4 时点 45 / README 46 / `reconcile` 47 / 实�
 | 证据 | `07-checkpoint/dsh-custom-snapshot/`（v1.5 新快照，含 `skills_list` / `plugins` / `reflection` / `gate` 四个新取证面）；v1.4 旧快照归档至 `archive/1011-KB-v1.4-dsh装配与opencode追平/dsh-custom-snapshot-v1.4/` |
 | 数据源 | `09-src-data/dsh_custom_scores.py`（含 `HISTORY` 机读历史值与口径变更对账） |
 | 画像 | `03-cases/dsh-custom.md`（新增 R1–R12 轮次表）、`dsh-custom-diff.md`（双层 delta + 文档 vs 实况冲突） |
+| 实验 | `06-experiments/dsh-custom.md` 新增 **实验 15–18**（v1.5 新机制**本库自跑**行为实验：门控通道 57/57 + 23/23 + 10 变异体全判死 / R-A 链 14/14 + 容量 soft / 沙箱三档 `enforcement=full` 真写盘取证 / 账本四查全过 + 15 例负向） |
 | 契约 | `00-contract/contract.md` §2.6（口径唯一化）+ §2.7⑥（追平轮登记） |
 | 页面 | `04-interactive/{case-dsh-custom,compare-dsh}.html`（由生成脚本全量重生成） |
 

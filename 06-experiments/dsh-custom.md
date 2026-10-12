@@ -4,7 +4,7 @@
 > 实验日期：2026-10-11（实验 11-14）　实验方式：**装配层取证型实验**——bundle 安装/卸载/重装真实执行 + 会话日志（`session.v4.jsonl.zstd` 多帧 zstd 解帧）取运行时装配结果 + bundle 自家门控新鲜复跑 + 源码级机制核对；**不使用交互式会话做注入**（注入类实验留待后续轮次）
 > 隔离区声明（契约 §7 红线）：**实验的写入面仅限 `/tmp` 隔离区**——`/tmp/opencode-b-review.md`、`/tmp/builtin-system.json`、`/tmp/sys-*.json`、`/tmp/bdiff*.py` 及 `/tmp/opencode` 下临时产物；本库侧不改动任何文件。取证与判据复算全部**只读**：`$BUNDLE`（`~/.dsh/presets/opencode/`）、`$PROFILE`（`~/.dsh/profiles/web/`）、`$DSH`（源码树）读取后 mtime 均早于取证动作，无文件被改动。实验14 的安装/卸载/重装是本轮唯一触碰宿主装配注册面的动作，走官方 `install_bundle` / `remove_bundle`，备份件 `~/.dsh-backups/opencode-port-20261011/` 全程在位，且已演练回滚至基线（**该动作不属本库红线范围，且不写入 `~/.dsh` 配置内容本体**）。⛔ **未修改任何记忆系统文件**（`~/.dsh/MEMORY.md`、reflection pending 队列均未触碰）、未做任何不可逆破坏、未改动源码树 `/home/zako-mio/dsh`。
 > 环境事实（**v1.5 更正**）：本机 **`bwrap` 已安装且 runner 链选中 bwrap**，`enforcement=full` → `read-only` / `workspace-write` 档在 **shell + fs 双侧真强制**（v1.4 所记「本机无可用沙箱后端 → 一律 fail-closed」**已证伪**，属环境事实更正，⛔ 不计入装配层收益）；web 服务 `PATH` 不含 nvm 的 `node`/`pnpm`（`plugin_manager` 曾因此完全不可用，已用 `~/.dsh/bin/pnpm` 包装脚本修复）。
-> 编号约定：本文件实验编号 **11-14**，延续 `06-experiments/opencode-custom.md` 的实验 1-10，避免与之冲突。
+> 编号约定：本文件实验编号 **11-14**（v1.4 装配层取证型实验）与 **15-18**（v1.5 新机制本库自跑行为实验），延续 `06-experiments/opencode-custom.md` 的实验 1-10，避免与之冲突。
 
 ---
 
@@ -85,7 +85,70 @@
 
 ---
 
-## v1.5 新机制登记（实验面：他线实跑取证引用）
+## 实验15–18：v1.5 新机制 · 本库自跑行为实验（2026-10-13）
+
+> **口径升级说明**：本节把下方「v1.5 新机制登记」中的 N1–N4 由「**他线实跑取证引用**」升级为「**本库自跑**」。
+> ⚠️ **诚实边界（⛔ 不得读作全量行为验收）**：本节自跑的是**机制的真实行为**（脚本级 / 进程级 / 文件级），由主 Agent 在本机以 `bash` 执行；**preset 会话内的模型行为**（命令面板可见性、skill 自动加载、真实会话内产出候选）仍须用户开新会话才能测，**未在本节覆盖**（缺口登记见下方该节末）。
+
+### 实验15：门控执行通道 `run_gate`（N1）——三层判据自跑
+
+**实验设计**：控制组 = 通道的「窄性不变量」静态契约（`policy.js` 的解释器 / roots 白名单表）；实验组 = 三件判据的真跑（单元测试 / 策略断言 / 变异体负向自检）。观测指标 = 测试与断言通过数、变异体判死率、只读 worker 的构造性排除。扰动：变异体注入（对策略实现打 10 个已知变异）。
+
+**执行数据**：`cd ~/.dsh/presets/opencode/plugins/dsh-opencode-gate-runner && node --test tests/*.test.mjs`；`node ~/.dsh/presets/opencode/check_gate_policy.mjs`；`python3 ~/.dsh/presets/opencode/check_gate_channel_selftest.py`；node v24.19.0（PATH 引导后）；时间戳 2026-10-13。
+
+**观测结果**：单元测试 **57/57 通过**（10 suites / fail 0 / skipped 0 / 187 ms）；策略断言 **23 passed, 0 failed**（含工作区令牌 `workspace` 与 4 条解释器映射窄性不变量）；变异体负向自检 **10 个变异体全部被判死、控制组零报错**，且三 preset 各自「顶层行 1 个 / config 契约符合 / 只读 worker 构造性排除」。
+
+**量化指标**：单元测试 57/57（100%）；策略断言 23/23；变异体判死 10/10；只读 worker 排除 3/3 preset；失败 0。
+
+**控制论解读**：属 **E 环（评估 / 传感器）的自身可信度**——判据不仅「有」，而且**能判假**（变异体判死 10/10 是「非恒真」的直接证据），这正是 v1.4 缺失的一环（v1.4 时产出方无法自跑门控，E 环只能由父层代跑）。`run_gate` 的窄参数面（脚本路径 + argv、roots / 扩展名白名单、无内联代码通路）把「执行能力」与「任意 shell」分离，使 E 环在**不放弃 fail-closed 前提**下恢复。
+
+**链接**：所属 AC 章 `ch-eval` / `ch-tool`；关联 KT `KT-exp-015`、`KT-ctrl-004`；关联案例 `03-cases/dsh-custom.md` §2；证据回链 `…1011-迁移适配-E环门控通道与R环纠正/arch/ADR-010.json`（`proposed`）。
+
+### 实验16：R 环 R-A 链（N2）——字节级链路 + 容量判据
+
+**实验设计**：控制组 = 候选目录与正文的**成对记录**（落库记录里的 sha256）；实验组 = 独立复算每一段正文与其候选的字节关系。观测指标 = 复算成立的段数 / 总段数、容量档位（hard / soft）、段长分布。扰动：无（纯复算）。
+
+**执行数据**：`python3 ~/.dsh/skills/opencode/dsh-reflection/scripts/verify_landed_chain.py`；`python3 ~/.dsh/skills/opencode/dsh-reflection/scripts/memory_capacity_check.py`；目标 `~/.dsh/MEMORY.md`、候选目录 `~/.dsh/reflection/candidates/`；时间戳 2026-10-13。
+
+**观测结果**：链路复算 **段 14 条，逐条全部成立**；判据自带诚实边界声明（只证「该段正文 ↔ 该候选的落库记录」成对，⛔ 不证「候选文字产出了该段」）。容量：`chars=5198 / bytes=10815 / lines=57 / segments=14`；段长 max 2642 B、median 530 B、max 占比 **25%**（未触「单段占比 >50%」的零和派生限）；tokens 估算 cl100k=4291 / o200k=3425；**band=soft**（自愿软限 `chars>5000` 被触及），hard 限（`lines>200` / `bytes>25000`）**未触**，exit_code=0。
+
+**量化指标**：链路成立 14/14；hard 限余量 lines 143 / bytes 14185；soft 越限 1 项（chars 5198 vs 5000，**自愿纪律、无权威依据**）；段长中位 530 B；候选 15 份 / archive 1 份。
+
+**控制论解读**：属 **R 环（反馈闭环）+ M 环（状态估计）**。v1.4 判 R 环「只剩纪律文本、没有执行器」；本轮自跑证明链路**已接通且可机检**——候选 → 审阅 → 落库三段都有可复算的字节凭据。**soft 越限是设计内的**：软限属自愿纪律，它触发的是「下一轮该考虑精简」的提示而非故障，正是零和预算（新增一条 ⇔ 退役或下沉一条）该起作用的位置。
+
+**链接**：所属 AC 章 `ch-reflection` / `ch-memory`；关联 KT `KT-exp-016`、`KT-ctrl-001`、`KT-ctrl-002`；关联案例 `03-cases/dsh-custom.md` §4 / §6；证据回链 `…/1011-全面适配性迁移分析/arch/ADR-012.json`（`proposed`，门控 6/6）。
+
+### 实验17：沙箱真实强制（N3）——真 spawn + 真写盘
+
+**实验设计**：控制组 = `danger-full-access` 档**不经 `confine`** 的写入（证「环境本身可写」）；实验组 = `read-only` 与 `workspace-write` 两档经 `confine` 后的真实 spawn 与真实写盘尝试。观测指标 = 三档的 `enforcement` 与 `argv0`、写 `/tmp` 与写工作区的成败、full-access 的 wrap 行为。扰动：无（受控探针，工作区为临时目录）。
+
+**执行数据**：`cd /home/zako-mio/dsh && node --import tsx/esm /home/zako-mio/.dsh/presets/opencode/verify_sandbox_enforcement.mts`（`DSH_SANDBOX_AUDIT_PORT` 默认 3098，与线上 3080 隔离；工作区为 `mkdtempSync` 临时目录）；node v24.19.0；时间戳 2026-10-13。
+
+**观测结果**：`sandbox provider: 已挂载`；**`[read-only] enforcement=full argv0=bwrap`** → 写 `/tmp` **被拒**（`Read-only file system`）、写工作区 **被拒**；**`[workspace-write] enforcement=full argv0=bwrap`** → 写工作区 **成功**、写工作区之外 **被拒**；`[danger-full-access]` 的 `confine` 仍返回受限 argv（**符合契约**），而**不经 `confine` 时写工作区成功** ⇒ 前面的「被拒」确由沙箱所致、非环境不可写。整体 `PASS`，退出码 0。
+
+**量化指标**：三档 enforcement 均 **full**；runner 链选中 **bwrap**；受控写探针 4 次，符合预期 4/4；负向控制 1 次（full-access 不 wrap）成立。
+
+**控制论解读**：属 **T 环（执行器）的硬限幅**。这是对 v1.4「本机无可用沙箱后端 → 一律 fail-closed」的**直接行为级证伪**：本机沙箱**真的在拦**，且拦的是「沙箱之外」而非「环境不可写」——控制组设计（full-access 不经 `confine` 可写）正是为排除后一种解释而设。⛔ **归因纪律**：这是**环境事实**（后端从不可用变为可用），**不是装配层新增隔离能力**，故 8 维沙箱分维持 4/4。
+
+**链接**：所属 AC 章 `ch-tool`；关联 KT `KT-exp-017`、`KT-ctrl-031`、`KT-ctrl-033`；关联案例 `03-cases/dsh-custom.md` §3；证据回链 bundle `README.md` §4.1 与 `~/.dsh/profiles/web/cordis.patch.yml`（permission 5 档）。
+
+### 实验18：`dsh-config` 声明账本门控（N4）——四查 + 负向自检
+
+**实验设计**：控制组 = 声明账本自身的一致性契约（源指针 / 层归属 / 层间冲突 / 台账一致性）；实验组 = 判据真跑与负向自检。观测指标 = 四查结论、负向用例数与被抓率、附带发现的「死配置」条数。扰动：负向夹具注入（15 例，含 4 组控制组）。
+
+**执行数据**：`cd ~/.dsh/presets/opencode && python3 verify_dsh_config.py --check`；`python3 verify_dsh_config.py --selftest`；时间戳 2026-10-13。
+
+**观测结果**：四查 **全过**（`PASS: dsh-config 声明账本一致`），其中 C4 迁移台账 **42 条任务**通过枚举 / 证据 / 判据三查；负向自检 **15 用例通过（含 4 组控制组）**，逐例断言「枚举外状态必须被抓 / 悬空证据必须被抓 / 空文件不得算证据 / 空判据必须被抓」；附带输出 **9 条 C3「死配置」note**（如 `tool-todo.allowParallelInProgress`、`workflow-ptc.provider` 等在赢家层 config 里不存在 ⇒ 整块替换后不生效）。
+
+**量化指标**：四查 4/4 PASS；负向用例 15/15 被抓；台账 42 条全过三查；死配置 9 条（note 级，非 FAIL）。
+
+**控制论解读**：属 **E 环 + SP 环**。它把「改了没生效」这类**静默失效**从「靠人记得」变成**可机检**：C3 逐条指出「谁覆盖了谁、哪一层设的键在赢家 config 里不存在」——这正是「配置层 last-write-wins + config 整块替换」语义下最危险的一类缺陷（无报错、无告警，只有生效值与预期不符）。9 条死配置 note 本身即该判据的价值证明：它们**不阻断**交付，但**暴露了宿主 bundle 层的冗余设置**。
+
+**链接**：所属 AC 章 `ch-eval` / `ch-planning`；关联 KT `KT-exp-018`、`KT-ctrl-002`、`KT-ctrl-031`；关联案例 `03-cases/dsh-custom.md` §7.5；证据回链 `…/1011-全面适配性迁移分析/arch/ADR-011.json`（`proposed`，门控 6/6）与 `~/.dsh/skills/opencode/dsh-config/{claims.yaml,conflicts.md}`。
+
+---
+
+## v1.5 新机制登记（他线实跑取证引用；机制行为已由实验 15–18 本库自跑复核）
 
 > **口径与限制（先声明，避免误读）**：契约 §2.7② 要求「实验层只补新机制、不重跑既有实验」。本轮新增的四个机制**均由迁移线实跑取证**（本库只读引用），**本库未新增自跑行为实验**，原因是两条硬约束：① preset 会话**无法程序化创建**（CLI 只有 `profile` / `plugin` / `dump-config*` / `headless <task>`，无 preset 选择项）⇒ 行为类实验须由用户开新会话；② 本库红线要求对 `~/.dsh/**` **绝对只读**，故不复跑会写状态的门控脚本。以下每条均为**他线实跑结论 + 本库只读复算**的组合，并标注证据级别。
 
@@ -96,7 +159,7 @@
 | N3 | **沙箱真实强制**（环境事实更正） | 本机 `bwrap` 已装、链选中 bwrap、`enforcement=full` | v1.4 记「本机无可用后端」已证伪（bundle `README.md` §4.1 已改写；`verify_sandbox_enforcement.mts` / `sandbox_p0_probe.py` 为取证工具） | 宿主 patch 中 permission 5 档与 `defaultPreset: opencode-plan` 可复算 | T |
 | N4 | **`dsh-config` 声明账本门控**（ADR-011） | 本机分层实况索引（`claims.yaml` 声明账本 + `conflicts.md` 冲突台账）；判据 = `verify_dsh_config.py`（源指针 / 层归属 / 层间冲突 / 台账一致性） | ADR-011 门控 **6/6 PASS**；`verify_bundle` check 18 接入 | 新增 skill 目录 `dsh-config`（快照 `skills_list.dsh_native` 之一）；`verify_bundle` 判据 20 项中第 18 项 | E / SP |
 
-> ⚠️ **已知缺口（登记不掩盖）**：本轮**未做** N1–N4 的**本库自跑行为实验**。若后续需要「由本库自行复现」，最小启动条件是：① 用户开一条 `opencode-creator` 会话（命令注册与 `run_gate` 可见性验证）；② 用户开一条普通会话做 R-A 候选落库演练；③ 允许本库在 `/tmp` 隔离区复跑 `verify_dsh_config.py --check` 与 `verify_sandbox_enforcement.mts`。三项均需用户在场或显式放行。
+> ⚠️ **已知缺口（登记不掩盖；v1.5 收尾时已部分关闭）**：N1–N4 的**机制真实行为**已由**本库自跑**复核（见上方 **实验 15–18**，2026-10-13）。**仍未覆盖的是 preset 会话内的模型行为**：① 用户开一条 `opencode-creator` 会话（命令面板列出 `/arch` `/rd` `/reflection`、`run_gate` 可见性）；② 用户开一条普通会话做 R-A 候选产出演练（`oc_reflection` 在真实会话中产出候选）。这两项**必须由用户开新会话**（preset 会话无法程序化创建），本库不得以脚本级自跑冒充。
 
 ---
 
@@ -132,4 +195,5 @@
 | SRC-010 | S4 | 一手观察（本库 dsh 变体评分单一数据源，口径披露：v1.4 首次回填 v2.0 模型、旧单点分 2.5 不同源） | `/home/zako-mio/opencode/archive/Mission-file/2026-09/0907-控制理论Agent设计知识库/09-src-data/dsh_custom_scores.py` | 高 |
 | SRC-011 | S4 | 一手只读复算（v1.5 新快照四取证面） | `07-checkpoint/dsh-custom-snapshot/inventory.json`（`skills_list` / `plugins` / `reflection` / `gate` 四段；`collected_at` = 2026-10-13T05:09:43+08:00） | 高 |
 | SRC-012 | S4 | 他线实跑取证（只读引用，非本库自跑） | `Mission-file/2026-10/1011-deepseek harness-提示词迁移工程-从opencode/1011-全面适配性迁移分析/evidence/{r09-e9-node-test.out.txt, r09-adr012-gate-rerun.out.txt, r09-memory-body-landed.out.txt, r11-final-gates.out.txt}` | 中高 |
-| SRC-013 | S4 | 决策依据指针（均 `proposed` 状态） | `Mission-file/2026-10/1011-迁移适配-E环门控通道与R环纠正/arch/ADR-010.json`；`Mission-file/2026-10/1011-deepseek harness-提示词迁移工程-从opencode/1011-全面适配性迁移分析/arch/{ADR-011.json, ADR-012.json}` + `迁移台账.yaml`（43 任务：done 36 / partial 2 / not_done 3 / deferred 1） | 中高 |
+| SRC-013 | S4 | 决策依据指针（均 `proposed` 状态） | `Mission-file/2026-10/1011-迁移适配-E环门控通道与R环纠正/arch/ADR-010.json`；`Mission-file/2026-10/1011-deepseek harness-提示词迁移工程-从opencode/1011-全面适配性迁移分析/arch/{ADR-011.json, ADR-012.json}` + `迁移台账.yaml`（42 任务） | 中高 |
+| SRC-014 | S4 | **本库自跑（v1.5 实验 15–18）** | 主 Agent 于 2026-10-13 在本机实跑：`node --test`（gate-runner **57/57**）、`check_gate_policy.mjs`（**23/23**）、`check_gate_channel_selftest.py`（**10 变异体全判死**）、`verify_sandbox_enforcement.mts`（三档 **enforcement=full / argv0=bwrap**，真 spawn + 真写盘）、`verify_landed_chain.py`（**段 14/14 成立**）、`memory_capacity_check.py`（`band=soft`，hard 未触）、`verify_dsh_config.py --check`（**四查全过**，台账 42 条）与 `--selftest`（**15/15**） | 高 |
