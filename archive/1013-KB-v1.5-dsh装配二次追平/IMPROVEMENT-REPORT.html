@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-source-sha256="6112a08d3c772626f5fffafead727ad4f78c0b70009d35d91d20fd12ea7fc882">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KB v1.5 改进方向建议报告 — 从「dsh 装配层二次追平」实测出发</title>
+<style>
+/* report.css · 留档报告统一令牌与结构层
+ * ============================================================================
+ * 来源与承接关系（⛔ 本文件不是新令牌体系）：
+ *   值真相源：~/opencode/projects/fe-starter-kit/tokens/contract.json
+ *             （roles / palettes.content / usage_tiers；authority.threshold_source
+ *              → 0916-前端技术栈基线/adr/ADR-004.json 第 6/7/8 条）
+ *   排版令牌：fe-starter-kit/templates/content-a-static/assets/M3-tokens.css
+ *             （--measure:42em / 几何级数字号阶梯 / --lh-body:1.8）
+ *   本文件只做两件事：① 原样承接上述令牌值；② 追加「报告体裁」结构规则。
+ *   ⛔ 不新增色值、不发明阈值、不改上游令牌名。
+ *
+ * 报告体裁的可机检目标（对应门控 E13）：
+ *   正文 16px · 行高 1.8（≥1.6）· 行宽 42em（≤42em）· 正文对比度 ≥4.5:1
+ *
+ * 预览安全约束（对应门控 E4，由 DSH 侧栏 HTML 预览的清洗器反推）：
+ *   ⛔ 无 script 元素 · 无 SMIL · 无 img 元素 · 无加载类外链
+ *   ⇒ 深色模式**纯 CSS**：light-dark() + color-scheme，不依赖任何 JS 开关。
+ *   ⇒ 图**一律内联 SVG**，靠 viewBox 自适应，不用 img 元素。
+ *   ★ 注：本注释刻意**不写字面标签**——本文件会被内联进交付物，若注释里出现
+ *     script / img 的字面开标签，会把「按原文扫描」的门控判成假 FAIL（自指陷阱，
+ *     同 0918 字形门控的「交付物描述不安全字形须用码位」）。
+ * ========================================================================== */
+
+:root{
+  color-scheme: light dark;
+
+  /* ---------- 尺度令牌（承接 M3-tokens.css） ---------- */
+  --measure:42em;
+  --fs-body:16px;
+  --fs-h4:1.25rem;
+  --fs-h3:1.5rem;
+  --fs-h2:1.875rem;
+  --fs-h1:2.25rem;
+  --lh-body:1.8;
+  --lh-head:1.35;
+  --space-block:1.15em;
+  --radius:6px;
+  --fs-table:.94em;
+  --fs-code:.9em;
+  --fs-pre:.88em;
+  --fs-caption:.875rem;
+
+  /* ---------- 色彩令牌（★ 派生区：由 scripts/contract_tokens.py 从上游契约生成） ----------
+   * 真相源：`fe-starter-kit/tokens/contract.json` 的 `palettes.content.values`
+   *   （7 个内容族角色）。改色请改**上游契约**，再跑：
+   *     python3 scripts/contract_tokens.py            # 重新派生本区
+   *     python3 scripts/contract_tokens.py --check    # 只读对账（漂移 → rc 1）
+   * marker 区内**一行都不许手改**；区外的手写令牌见下方「报告体裁追加令牌」。
+   * 每色两行：先浅色字面值作**旧浏览器回退**，再用 light-dark() 覆盖为双值；
+   *   不支持 light-dark() 的引擎会丢弃第二条声明 ⇒ 退回浅色，不会出现无样式。
+   *   ★ 门控 E13/E16 的 token_light() 优先取 light-dark() 的浅色分量，故顺序不可颠倒。 */
+  /* >>> GENERATED:contract (由 scripts/contract_tokens.py 从 tokens/contract.json 生成；⛔ 勿手改) */
+  --bg:#ffffff;
+  --bg: light-dark(#ffffff, #14171a);
+  --bg-soft:#f6f8fa;
+  --bg-soft: light-dark(#f6f8fa, #1b2026);
+  --bg-stripe:#fbfcfd;
+  --bg-stripe: light-dark(#fbfcfd, #181d22);
+  --fg:#16191d;
+  --fg: light-dark(#16191d, #e3e6ea);
+  --fg-muted:#4a5058;
+  --fg-muted: light-dark(#4a5058, #a9b3bd);
+  --link:#0b57d0;
+  --link: light-dark(#0b57d0, #8ab4f8);
+  --rule:#d8dde3;
+  --rule: light-dark(#d8dde3, #2f363d);
+  /* <<< GENERATED:contract */
+
+  /* ---------- 报告体裁追加令牌（⛔ 非色值；仅尺度） ----------
+   * ★ 每个令牌都必须能说出它要达成什么效果（r1 缺陷 D2/D3/D4/D5 的教训：
+   *   图件原先没有任何令牌，「图该多宽 / 字最小多少 / 深色下怎么办」三问在令牌层无解，
+   *   只能落到实现里，于是产生了 6.7px 的字与 1.30:1 的对比度）。 */
+  /* 【why】外壳须容得下「目录栏 + 图件上限」：240(rail)+40(gap)+1080(fig) ≈ 1360px = 85rem。
+   *   原 60rem 会让 main 只剩 680px，即使 1440px 视口下图件也要横向滚动（实测）。 */
+  --shell:85rem;
+  --toc-w:15rem;          /* 目录栏宽 */
+  /* 【why】图的信息密度天然高于正文：一张 1000px 宽的画布压进 42em(672px) 正文栏，
+   *   10px 的图内标签会被缩到 6.7px。故图件**脱出正文行宽**，另给一个更宽的容器上限。 */
+  --fig-measure:min(92vw, 1080px);
+  /* 【why】图内标签的最小**实际显示**字号。取 11px：低于此值在 100% 缩放下即不可读；
+   *   它也是图表标签的通用下限（≈ 正文 16px 的 0.7 倍，与 --fs-caption 同档）。 */
+  --fig-fs-floor:11px;
+  /* 【why】图件底色与页面主题**解耦**。确定性布局引擎产出的是浅色线框（深色文字），
+   *   若让它继承页面 --bg-soft，深色模式下会变成「深字落深底」= 1.30:1 完全不可读。
+   *   故图件固定为「纸面」底色，在明暗两态下都保持高对比。 */
+  --fig-bg:#fdfdfc;
+  --fig-rule:#dcdcdc;     /* 图件外框，让「纸面」在深色页面上有边界感 */
+
+  /* ---------- 字体 ---------- */
+  --font-body:-apple-system,"Segoe UI","Noto Sans CJK SC","Source Han Sans SC","Microsoft YaHei",sans-serif;
+  --font-mono:ui-monospace,SFMono-Regular,Consolas,"Noto Sans Mono CJK SC",monospace;
+}
+
+/* ============================ 基础 ============================ */
+html{background:var(--bg);-webkit-text-size-adjust:100%}
+body{
+  margin:0;padding:32px 20px 64px;
+  font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);
+  letter-spacing:.008em;color:var(--fg);background:var(--bg);
+  overflow-wrap:anywhere;
+}
+.shell{max-width:var(--shell);margin:0 auto;display:grid;grid-template-columns:var(--toc-w) minmax(0,1fr);gap:2.5rem;align-items:start}
+/* 【why】main 取**图件**宽度，正文元素各自退回 --measure。
+ *   若 main 仍是 42em，图件无论怎么写都展不开（r1 缺陷 D4/D5：半屏下右侧空置而图不展宽）。 */
+main{max-width:var(--fig-measure);min-width:0}
+/* 【why】正文行宽是**排版**约束（中文长文 35–45 字/行），只该作用在文本块上，⛔ 不该外溢到图件。 */
+/* 【why】正文块在放宽后的 main 里**居中**，否则右侧会留下约 400px 空档、版面失衡。
+ *   图件同样居中且更宽 ⇒ 「居中文字列 + 更宽的居中图件」是稳定版式。 */
+main :is(p,ul,ol,blockquote,h1,h2,h3,h4,h5,h6,table,pre,.colophon,.crumb){max-width:var(--measure);margin-inline:auto}
+
+h1,h2,h3,h4{line-height:var(--lh-head);font-weight:650;letter-spacing:.01em}
+h1{font-size:var(--fs-h1);margin:0 0 .7em;padding-bottom:.35em;border-bottom:2px solid var(--rule)}
+h2{font-size:var(--fs-h2);margin:1.9em 0 .6em;padding-bottom:.28em;border-bottom:1px solid var(--rule)}
+h3{font-size:var(--fs-h3);margin:1.55em 0 .5em}
+h4{font-size:var(--fs-h4);margin:1.3em 0 .45em;color:var(--fg-muted)}
+p{margin:var(--space-block) 0}
+a{color:var(--link);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--link) 35%,transparent)}
+a:hover{border-bottom-color:var(--link)}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--link);outline-offset:2px;border-radius:3px}
+strong{font-weight:680}
+hr{border:0;border-top:1px solid var(--rule);margin:2.2em 0}
+ul,ol{padding-left:1.5em;margin:var(--space-block) 0}
+li{margin:.34em 0}
+li>ul,li>ol{margin:.3em 0}
+
+/* ============================ 表格 ============================ */
+table{border-collapse:collapse;width:100%;margin:1.2em 0;font-size:var(--fs-table);line-height:1.65}
+th,td{border:1px solid var(--rule);padding:8px 11px;text-align:left;vertical-align:top;
+  overflow-wrap:anywhere;word-break:normal}
+th{background:var(--bg-soft);font-weight:650}
+tbody tr:nth-child(even) td{background:var(--bg-stripe)}
+
+/* ============================ 代码 ============================ */
+code{background:var(--bg-soft);padding:.14em .38em;border-radius:4px;
+  font-family:var(--font-mono);font-size:var(--fs-code);overflow-wrap:anywhere}
+pre{background:var(--bg-soft);border:1px solid var(--rule);border-radius:var(--radius);
+  padding:13px 15px;overflow-x:auto;line-height:1.62;margin:1.2em 0}
+pre code{background:none;padding:0;font-size:var(--fs-pre);overflow-wrap:normal;white-space:pre}
+
+/* ============================ 引用 / 提示块 ============================ */
+blockquote{border-left:3px solid var(--link);background:var(--bg-soft);
+  margin:1.2em 0;padding:.7em 1em;color:var(--fg-muted);border-radius:0 var(--radius) var(--radius) 0}
+blockquote p{margin:.4em 0}
+blockquote p:first-child{margin-top:0}
+blockquote p:last-child{margin-bottom:0}
+
+/* ============================ 图（内联 SVG） ============================ */
+/* 【why】figure 取 --fig-measure（可宽于正文行宽）；svg 由 viewBox 自适应。
+ *   min-width 由渲染器按「画布宽 × 字号下限 ÷ 图内最小字号」算出并写进 style，
+ *   保证**任何视口下**图内字号都不低于 --fig-fs-floor（窄屏则横向滚动，⛔ 不缩到不可读）。 */
+figure{margin:1.6em auto;padding:0;max-width:var(--fig-measure)}
+figure svg{display:block;width:100%;height:auto;
+  background:var(--fig-bg);border:1px solid var(--fig-rule);border-radius:var(--radius)}
+figcaption{margin-top:.6em;font-size:var(--fs-caption);line-height:1.6;color:var(--fg-muted);max-width:var(--measure)}
+figcaption b{color:var(--fg);font-weight:650}
+/* 【why】图件在窄屏允许横向滚动，而不是继续缩小到不可读。 */
+.fig-scroll{overflow-x:auto;max-width:100%}
+
+/* ============================ 目录栏 ============================ */
+.rail{position:sticky;top:32px;font-size:var(--fs-caption);line-height:1.5;max-height:calc(100vh - 64px);overflow:auto}
+/* ⛔ 目录栏标题**不用 h2**：正文 h2 集合须与 MD 严格对齐（门控 E8），
+ *    目录若占用 h2 会被判为「HTML 多出标题」。故用 div.rail-h。 */
+.rail .rail-h{font-size:var(--fs-caption);text-transform:none;letter-spacing:.04em;color:var(--fg-muted);
+  margin:0 0 .6em;padding:0;font-weight:650}
+/* ⛔ 目录**不加 CSS 计数器编号**：正文标题自带编号（「0 目标与成功判据」），
+ *    若再叠一层 counter 会出现「01 0 目标…」这种双编号，且 lv3 项也会推进计数
+ *    导致 h2 编号跳号（实测：01,02,03,04,13,14…）。目录只复述标题原文。 */
+.rail ol{list-style:none;padding:0;margin:0}
+.rail li{margin:.3em 0}
+.rail a{display:block;padding:.22em 0;border:0;color:var(--fg-muted)}
+.rail a:hover{color:var(--link)}
+.rail li.lv3{padding-left:1.1em}
+.rail li.lv3 a{color:var(--fg-muted);opacity:.85}
+
+/* ============================ 页脚溯源 ============================ */
+.colophon{margin-top:3.5em;padding-top:1.2em;border-top:1px solid var(--rule);
+  font-size:var(--fs-caption);line-height:1.7;color:var(--fg-muted)}
+
+/* ============================ 窄屏 ============================ */
+@media (max-width:900px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  .rail{position:static;max-height:none;margin-bottom:1.5em;
+    border:1px solid var(--rule);border-radius:var(--radius);padding:.9em 1.1em;background:var(--bg-soft)}
+}
+@media (max-width:760px){
+  :root{--fs-h1:1.85rem;--fs-h2:1.6rem;--fs-h3:1.35rem;--fs-body:15px;--fs-table:.9em}
+  body{padding:20px 14px 48px}
+  th,td{padding:6px 8px}
+}
+
+/* ============================ 打印 ============================ */
+@media print{
+  :root{--fs-body:11pt;--fs-h1:20pt;--fs-h2:15pt;--fs-h3:13pt}
+  html,body{background:#fff;color:#000}
+  body{padding:0}
+  .shell{display:block;max-width:none}
+  .rail{display:none}
+  main{max-width:none}
+  a{color:#000;border:0}
+  a[href^="#"]{color:#000}
+  figure,table,pre,blockquote{break-inside:avoid}
+  h2,h3{break-after:avoid}
+  .colophon{color:#333}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+<nav class="rail" aria-label="本页目录">
+<div class="rail-h">本页目录</div>
+<ol>
+<li class="lv2"><a href="#1-背景与依据-本轮实测暴露了什么">1. 背景与依据：本轮实测暴露了什么</a></li><li class="lv3"><a href="#1-1-被推翻的三条旧结论-说明-结论存续性-需要例行检查">1.1 被推翻的三条旧结论（说明「结论存续性」需要例行检查）</a></li><li class="lv3"><a href="#1-2-本轮新增的量化缺口清单">1.2 本轮新增的量化缺口清单</a></li><li class="lv3"><a href="#1-3-本轮自身暴露的工程缺陷-最值得改的部分">1.3 本轮自身暴露的工程缺陷（最值得改的部分）</a></li><li class="lv2"><a href="#2-建议总览-优先级矩阵">2. 建议总览（优先级矩阵）</a></li><li class="lv2"><a href="#3-分域改进方向">3. 分域改进方向</a></li><li class="lv3"><a href="#3-1-域-a-dsh-装配层-分析对象的改进">3.1 域 A — DSH 装配层（分析对象的改进）</a></li><li class="lv3"><a href="#3-2-域-b-知识库工程-kb-自身的改进">3.2 域 B — 知识库工程（KB 自身的改进）</a></li><li class="lv3"><a href="#3-3-域-c-流程与协作-跨轮次改进">3.3 域 C — 流程与协作（跨轮次改进）</a></li><li class="lv2"><a href="#4-落地路线与验收判据">4. 落地路线与验收判据</a></li><li class="lv2"><a href="#5-不建议做的事-负向建议">5. 不建议做的事（负向建议）</a></li><li class="lv2"><a href="#证据来源">📚 证据来源</a></li>
+</ol>
+</nav>
+<main>
+<p class="crumb">任务留档 / 2026-10 / 1011-KB-v1.4-dsh装配与opencode追平 / 1013-v1.5-dsh装配二次追平</p>
+<h1>KB v1.5 改进方向建议报告 — 从「dsh 装配层二次追平」实测出发</h1>
+<blockquote><p>性质：建议报告（非 5 段任务留档；本文件与 <code>report-execution.md</code> 互补——后者记录「做了什么」，本文件回答「下一步该改什么」）。 依据：2026-10-13 完成的 KB v1.5 轮次（R1–R12 追平 + 三条旧结论重判 + 实验 15–18 本库自跑）。 原则：<strong>每条建议都必须挂在本轮实测到的证据上</strong>；无证据的「想当然改进」一律不进正文（见 §5 负向建议）。</p></blockquote>
+<hr>
+<section class="sec" id="1-背景与依据-本轮实测暴露了什么">
+<h2>1. 背景与依据：本轮实测暴露了什么</h2>
+<h3 id="1-1-被推翻的三条旧结论-说明-结论存续性-需要例行检查">1.1 被推翻的三条旧结论（说明「结论存续性」需要例行检查）</h3>
+<table><thead><tr><th>#</th><th>v1.4 旧结论</th><th>本轮实测</th><th>性质</th></tr></thead><tbody><tr><td>C1</td><td>本机无可用沙箱后端 → 一律 fail-closed</td><td>三档 <code>enforcement=full</code>、<code>argv0=bwrap</code>，真 spawn + 真写盘（实验 17）</td><td>环境事实反转</td></tr><tr><td>C2</td><td>R 环迁移断裂、最弱环 R = 3.0</td><td>候选↔正文段 <strong>14/14</strong> 成立，容量 <code>band=soft</code>（实验 16）</td><td>结论推翻</td></tr><tr><td>C3</td><td>子 Agent 无 bash ⇒ E 环只判增强</td><td>门控通道 <strong>57/57 + 23/23 + 10 变异体全判死</strong>（实验 15）</td><td>抑制项消解</td></tr></tbody></table>
+<p><strong>推论</strong>：知识库的「结论」有保质期，且<strong>过期是静默的</strong>。若只做「刷新 evidence」，错误结论会被原样继承。</p>
+<h3 id="1-2-本轮新增的量化缺口清单">1.2 本轮新增的量化缺口清单</h3>
+<table><thead><tr><th>缺口</th><th>实测读数</th><th>影响面</th></tr></thead><tbody><tr><td><strong>最弱环并列</strong></td><td>R 与 E <strong>并列 4.0</strong>（v1.4 为单一最弱环 R=3.0）</td><td>装配层能力结构</td></tr><tr><td><strong>E 环仍为领域级覆盖</strong></td><td>仅架构 / 需求<strong>两域</strong>有门控</td><td>评估面</td></tr><tr><td><strong>R 环为显式链非自动自省</strong></td><td>写入链＝候选→主 Agent 审阅→落库</td><td>反思闭环自动化度</td></tr><tr><td><strong>MCP 宿主 0 配置</strong></td><td>8 维 mcp <strong>3/3</strong>（opencode 侧为 4 个）</td><td>迁移相对损失</td></tr><tr><td><strong>一键部署不可移植</strong></td><td>persona 含本机绝对路径、<code>node_modules</code> 符号链接</td><td>8 维 deploy <strong>3/3</strong> 封顶</td></tr><tr><td><strong>preset 会话内模型行为未验收</strong></td><td>命令面板 / skill 自动加载 / 真实会话产出候选 <strong>未测</strong></td><td>行为验收面</td></tr><tr><td><strong>宿主 bundle 层死配置</strong></td><td>C3 note <strong>9 条</strong>（如 <code>tool-todo.allowParallelInProgress</code>、<code>workflow-ptc.provider</code>）</td><td>配置正确性</td></tr><tr><td><strong>persona 税</strong></td><td><strong>6524 字符 × 3 preset</strong>（ptc 下另有空指向，v1.4 实测未复测）</td><td>上下文预算</td></tr></tbody></table>
+<h3 id="1-3-本轮自身暴露的工程缺陷-最值得改的部分">1.3 本轮自身暴露的工程缺陷（最值得改的部分）</h3>
+<table><thead><tr><th>#</th><th>缺陷</th><th>实测证据</th><th>危害</th></tr></thead><tbody><tr><td>D1</td><td><strong>空集假绿</strong></td><td>README 复现命令漏 <code>--manifest</code> ⇒ coverage 层「<strong>检查项=0 却 PASS</strong>」</td><td>「全绿」失去意义</td></tr><tr><td>D2</td><td><strong>口径四套读数</strong></td><td>skill 计数 45 / 46 / 47 / 49 并存两轮</td><td>复评失去可比性</td></tr><tr><td>D3</td><td><strong>子 Agent 编造取证件名</strong></td><td><code>verify-bundle-20checks.out.txt</code> <strong>不存在</strong>（凭空推导）</td><td>公开库证据链污染</td></tr><tr><td>D4</td><td><strong>子 Agent 沿用过时读数</strong></td><td>gate-runner 单测写 56/56（r11 实测 <strong>57/57</strong>）</td><td>事实错误</td></tr><tr><td>D5</td><td><strong>非幂等补丁脚本</strong></td><td><code>fix_cyto.py</code> 再跑即 <code>assert</code> 失败</td><td>重生成断链</td></tr><tr><td>D6</td><td><strong>分析对象是动目标</strong></td><td>迁移线并发改写，<code>verify_migration_state.py</code> 10 分钟 +22 KB</td><td>证据数小时内失效</td></tr><tr><td>D7</td><td><strong>同名件跨线冲突</strong></td><td>迁移线与 0928 线<strong>各有一个 <code>ADR-011</code></strong></td><td>深链指错件</td></tr></tbody></table>
+<blockquote><p><strong>D1–D4 的共同点</strong>：都不是「写错了字」，而是<strong>判据与证据链的结构性缺陷</strong>。故本报告把改进重心放在「可机械化的拦截」上，而非「提醒大家仔细点」。</p></blockquote>
+<hr>
+</section>
+<section class="sec" id="2-建议总览-优先级矩阵">
+<h2>2. 建议总览（优先级矩阵）</h2>
+<table><thead><tr><th>#</th><th>建议</th><th>域</th><th>优先级</th><th>成本</th><th>可机械化</th></tr></thead><tbody><tr><td><strong>I-1</strong></td><td>给<strong>所有计数型判据</strong>加空集守卫（<code>checked==0 ⇒ FAIL</code>）</td><td>B</td><td><strong>P0</strong></td><td>低</td><td>✅ 完全</td></tr><tr><td><strong>I-2</strong></td><td>新增<strong>交付物引用存在性门控</strong>（扫 MD/HTML 中的路径引用逐个 <code>stat</code>）</td><td>B</td><td><strong>P0</strong></td><td>低</td><td>✅ 完全</td></tr><tr><td><strong>I-3</strong></td><td>把<strong>口径一致性</strong>做成机检（README / 画像 / 快照三处 skill 计数必须一致）</td><td>B</td><td><strong>P0</strong></td><td>中</td><td>✅ 完全</td></tr><tr><td><strong>I-4</strong></td><td>把<strong>陈旧数值扫描</strong>做成门控（<code>3.6→3.8</code> / <code>Δ+0.2</code> / 旧版本页脚等）</td><td>B</td><td>P1</td><td>低</td><td>✅ 完全</td></tr><tr><td><strong>I-5</strong></td><td>契约固化<strong>「静止点判定三步法」</strong>并写入例行节奏</td><td>C</td><td>P1</td><td>低</td><td>半</td></tr><tr><td><strong>I-6</strong></td><td>实验模板加 <strong>provenance 字段</strong>（本库自跑 / 他线引用 / 环境事实）</td><td>C</td><td>P1</td><td>低</td><td>✅ 完全</td></tr><tr><td><strong>I-7</strong></td><td>补做 <strong>preset 会话内模型行为验收</strong>（命令面板 / skill 加载 / 候选产出）</td><td>A</td><td>P1</td><td>低（需用户 2 条会话）</td><td>❌ 需人</td></tr><tr><td><strong>I-8</strong></td><td>清理或显式声明宿主 bundle 层 <strong>9 条死配置</strong></td><td>A</td><td>P2</td><td>低</td><td>半</td></tr><tr><td><strong>I-9</strong></td><td><strong>persona 按 presentation mode / preset 分支裁剪</strong>（治 ptc 空指向与 persona 税）</td><td>A</td><td>P2</td><td>中</td><td>❌</td></tr><tr><td><strong>I-10</strong></td><td><strong>bundle 可移植化</strong>（绝对路径抽配置 + 依赖走 npm）</td><td>A</td><td>P2</td><td>高</td><td>❌</td></tr><tr><td><strong>I-11</strong></td><td><strong>E 环覆盖域扩张</strong>（现仅架构 / 需求两域）</td><td>A</td><td>P2</td><td>中</td><td>❌</td></tr><tr><td><strong>I-12</strong></td><td>评估 <strong>R-B / R-C 升级触发条件</strong>（自动自省 / 结构化队列）</td><td>A</td><td>P3</td><td>高</td><td>❌</td></tr><tr><td><strong>I-13</strong></td><td><strong>MCP 按需接入</strong>（PDF / 出图已由 skill 替代，但工具面缺口真实）</td><td>A</td><td>P3</td><td>中</td><td>❌</td></tr><tr><td><strong>I-14</strong></td><td><strong>ADR 编号带域前缀</strong>（治跨线同名）</td><td>C</td><td>P3</td><td>低</td><td>半</td></tr></tbody></table>
+<hr>
+</section>
+<section class="sec" id="3-分域改进方向">
+<h2>3. 分域改进方向</h2>
+<h3 id="3-1-域-a-dsh-装配层-分析对象的改进">3.1 域 A — DSH 装配层（分析对象的改进）</h3>
+<p><strong>A-1（I-7）补完行为验收的最后一段</strong> — 现状：实验 15–18 已自跑证明<strong>机制真实行为</strong>（脚本 / 进程 / 文件级）；<strong>preset 会话内的模型行为</strong>仍空白（命令面板是否列出 <code>/arch</code> <code>/rd</code> <code>/reflection</code>、skill 是否被自动加载、<code>oc_reflection</code> 是否在真实会话中产出候选）。建议：由用户各开一条会话验收，判据＝「命令面板三条可见 + 该回合日志出现 <code>command/run</code> + 加载<strong>正确的那一件</strong> skill」。<strong>注意判读纪律</strong>：同会话内后一题未再加载 skill <strong>不算未命中</strong>。</p>
+<p><strong>A-2（I-8）治「死配置」</strong> — 现状：<code>verify_dsh_config.py</code> C3 报 <strong>9 条</strong> note（base 层设了键，赢家层 config 里没有 ⇒ 整块替换后不生效）。这类缺陷<strong>无报错、无告警</strong>，是配置层最危险的一类。建议：逐条裁决「删除 / 上移到赢家层 / 显式声明为有意为之」，并把这 9 条纳入下一轮的写面声明。</p>
+<p><strong>A-3（I-9）persona 的差异化与预算</strong> — 现状：<strong>6524 字符 × 3 preset</strong> 全量复制；ptc 模式下工具面坍缩为单 <code>run_code</code>，而 persona §二 仍写「本模式提供 <code>subagent</code>、<code>oc_explore</code>…」（v1.4 实测的空指向，本轮未复测）。建议：① 按 presentation mode 分支 persona 的委派段；② 把「只在某 preset 生效」的段落下沉到该 preset 的 section，而非三份复制。</p>
+<p><strong>A-4（I-10）可移植化</strong> — 现状：bundle 含本机绝对路径、<code>node_modules</code> 符号链接指向本机源码树 ⇒ 8 维「一键部署」永久封顶 3。建议：路径抽为配置项、依赖改走 npm 声明；<strong>验收判据</strong>＝在另一台机器上 <code>install_bundle</code> 后 <code>verify_bundle</code> 20 项全过。</p>
+<p><strong>A-5（I-11）E 环覆盖域扩张</strong> — 现状：E 环 Δ+2.0 已达反转阈值，但<strong>覆盖仅架构 / 需求两域</strong>（故未取 4.5+）。建议：按「领域任务是否高频」排序，逐域补门控脚本（判据须绑<strong>被消费字段</strong>而非整文件指纹——v1.4 假阳性的教训）。</p>
+<p><strong>A-6（I-12/I-13）R 环与 MCP 的下一档</strong> — R 环现为显式链（非自动自省）；MCP 宿主 0 配置。建议：① 为 R-B（结构化队列）/ R-C（会话边沿自动审阅）写明<strong>切换触发条件</strong>（ADR-012 已列为后置选项），避免「什么时候该升级」再次变成人记；② MCP 只在<strong>有真实工具面缺口</strong>时接入（PDF / 出图已由 skill 替代，不宜为凑分而接）。</p>
+<h3 id="3-2-域-b-知识库工程-kb-自身的改进">3.2 域 B — 知识库工程（KB 自身的改进）</h3>
+<p><strong>B-1（I-1）空集守卫：本报告最高优先级</strong> — 现状：coverage 层曾「检查项=0 却 PASS」。建议：给 <code>kb_gate.py</code> 全部<strong>计数型判据</strong>加统一守卫：<code>checked == 0 ⇒ FAIL</code>（附白名单机制，允许显式声明「本层本轮无对象」）。<strong>验收判据</strong>＝构造一个「对象集为空」的夹具，该层必须 FAIL。</p>
+<p><strong>B-2（I-2）交付物引用存在性门控</strong> — 现状：子 Agent <strong>编造</strong>了 <code>verify-bundle-20checks.out.txt</code> 并写进公开画像（主 Agent 复核才发现）。建议：新增一层（或并入 sources 层）<strong>扫描所有 MD/HTML 中的反引号路径与 <code>evidence/</code> 引用，逐个 <code>stat</code></strong>；不存在的路径 ⇒ FAIL。<strong>这条能把 D3 从「靠人复核」变成「机检拦截」</strong>，是本轮最有价值的结构性改进。</p>
+<p><strong>B-3（I-3）口径一致性机检</strong> — 现状：skill 计数四套读数并存两轮，本轮才写入契约。建议：在 <code>kb_gate.py</code> 增一条「口径一致」检查：<code>README</code> / 变体画像 / 快照 <code>inventory.json</code> 三处的 skill 计数必须一致（口径定义以契约 §2.6 为准）。<strong>判据锚点必须落在快照（唯一机械承载）</strong>，而非文档。</p>
+<p><strong>B-4（I-4）陈旧数值扫描门控</strong> — 现状：本轮手工跑了「<code>3.6→3.8</code> / <code>Δ+0.2</code> / 旧页脚」的残留扫描（结果 0）；v1.5 收尾时又靠<strong>读图</strong>才发现门户卡片残留旧值。建议：把该扫描固化为 <code>cascade</code> 层的一条规则（带历史块豁免），避免依赖「碰巧看见」。</p>
+<p><strong>B-5 视觉层的取证件标准化</strong> — 现状：L4 由主 Agent 读图，取证件落在 <code>07-checkpoint/l4-v1{N}/</code>。建议：固化命名与「哪几页必看」的清单（本轮为 compare / case / portal 三页），并把「读图结论」写成可归档文本，避免 L4 成为唯一无判据的门控层。</p>
+<h3 id="3-3-域-c-流程与协作-跨轮次改进">3.3 域 C — 流程与协作（跨轮次改进）</h3>
+<p><strong>C-1（I-5）静止点判定三步法</strong> — 现状：本轮因分析对象是动目标而中途暂停。建议写入契约并作为例行节奏：① 判据脚本两次读数一致；② 上游线进入收官轮；③ 本库无并发写入。三项通过才取证据，且<strong>所有读数带 <code>as_of</code></strong>。</p>
+<p><strong>C-2（I-6）实验 provenance 分列</strong> — 现状：实验 15–18 的自跑结果与「他线实跑取证引用」曾在同一节混列。建议：实验模板加 provenance 字段（<code>本库自跑</code> / <code>他线引用</code> / <code>环境事实</code>），并在报告里<strong>分列呈报</strong>——⛔ 不得以脚本级自跑冒充行为验收。</p>
+<p><strong>C-3 子 Agent 交付物复核清单（把 D3/D4 前置拦截）</strong> — 现状：本轮主 Agent 复核抓到 2 类缺陷。建议：委派时即给「返回契约附加项」——① 引用路径必须<strong>逐条 <code>stat</code> 过</strong>；② 数值必须注明<strong>来源文件与行号</strong>；③ 主 Agent 复核时优先抽查「新引入的路径」与「与上轮相同的数值」（这两处最易出错）。</p>
+<p><strong>C-4（I-14）跨线同名治理</strong> — 现状：两条线各有一个 <code>ADR-011</code>。建议：ADR 编号加域前缀（如 <code>ADR-MIG-011</code> / <code>ADR-FED-011</code>）或强制路径限定；后者本轮已立为引用纪律，但<strong>根因未除</strong>。</p>
+<hr>
+</section>
+<section class="sec" id="4-落地路线与验收判据">
+<h2>4. 落地路线与验收判据</h2>
+<table><thead><tr><th>阶段</th><th>内容</th><th>验收判据</th></tr></thead><tbody><tr><td><strong>第 1 步（可立即做，纯 KB 侧）</strong></td><td>I-1 空集守卫 + I-2 引用存在性门控 + I-3 口径一致性 + I-4 陈旧数值扫描</td><td>四项各配<strong>负向夹具</strong>（构造违规输入 ⇒ 必须 FAIL）；全库复跑仍 ALL PASS</td></tr><tr><td><strong>第 2 步（需你 2 条会话）</strong></td><td>I-7 preset 行为验收</td><td>命令面板三条可见 + 日志出现 <code>command/run</code> + 加载正确 skill</td></tr><tr><td><strong>第 3 步（装配层小改）</strong></td><td>I-8 死配置裁决 + I-9 persona 分支</td><td><code>verify_dsh_config.py</code> C3 note 归零或有书面裁决；ptc 空指向消失</td></tr><tr><td><strong>第 4 步（下一轮 v1.6 主题）</strong></td><td>I-11 E 环扩张 / I-10 可移植化 / I-12 R 环升级条件</td><td>按 §2 优先级逐项立项，各自带判据</td></tr></tbody></table>
+<blockquote><p><strong>通用验收纪律（承本轮教训）</strong>：任何新增判据<strong>必须先答两问</strong>——「它的真值来自哪里」「它在什么输入下会 FAIL」。答不出即视为<strong>恒真</strong>，⛔ 不得计入形式齐备证据。</p></blockquote>
+<hr>
+</section>
+<section class="sec" id="5-不建议做的事-负向建议">
+<h2>5. 不建议做的事（负向建议）</h2>
+<ol><li><strong>不要重设既有阈值</strong>（零和预算 / 生命周期五件 / 容量硬软限）——本轮 R-A 载体已「逐字承接」这些口径，重设＝制造第二套标准。</li><li><strong>不要为凑分接入能力</strong>（如为 MCP 维补分而接 MCP）——档位判的是「真实可扩展成本」，不是计数。</li><li><strong>不要把环境事实计入装配层收益</strong>（沙箱 <code>enforcement=full</code> 是环境变化，本轮已冻结分值）。</li><li><strong>不要以脚本级自跑冒充行为验收</strong>（preset 会话内的模型行为只能由人开会话测）。</li><li><strong>不要手工改生成物</strong>（本轮已把 <code>fix_cyto.py</code> 改为幂等，避免「改了生成物、忘了脚本」的复发）。</li><li><strong>不要新建第二真相源</strong>（口径的唯一承载是 <code>snapshot_dsh_custom.py</code>；ADR 正文留在迁移线，KB 只存指针）。</li><li><strong>不要靠「提醒仔细点」解决 D3/D4</strong> —— 编造引用与过时读数必须由机检拦截，否则每轮都会复发。</li></ol>
+<hr>
+</section>
+<section class="sec" id="证据来源">
+<h2>📚 证据来源</h2>
+<table><thead><tr><th>SRC</th><th>级别</th><th>信源</th><th>路径 / 依据</th><th>置信度</th></tr></thead><tbody><tr><td>SRC-001</td><td>S4</td><td>本库自跑实验（v1.5 实验 15–18）</td><td>门控通道 57/57 + 23/23 + 10 变异体全判死；R-A 链 14/14 + <code>band=soft</code>；沙箱三档 <code>enforcement=full</code> 真写盘；账本四查全过 + 15/15 负向</td><td>高</td></tr><tr><td>SRC-002</td><td>S4</td><td>本库门控结果与空集假绿记录</td><td><code>07-checkpoint/quality-gate-result-v1.5.txt</code>（L1–L7 全 PASS；coverage 层漏 <code>--manifest</code> 的发现与负向控制）</td><td>高</td></tr><tr><td>SRC-003</td><td>S4</td><td>本库评分单一数据源</td><td><code>09-src-data/dsh_custom_scores.py</code>（3.6 → 3.9；最弱环 R/E 并列 4.0；<code>HISTORY</code> 口径对账）</td><td>高</td></tr><tr><td>SRC-004</td><td>S4</td><td>本库画像与 diff</td><td><code>03-cases/dsh-custom.md</code>（§7.7 轮次表 / §7.8 外部指针）、<code>dsh-custom-diff.md</code>（五大发现含「文档 vs 实况冲突」）</td><td>高</td></tr><tr><td>SRC-005</td><td>S4</td><td>装配层实况取证件</td><td><code>~/.dsh/skills/opencode/dsh-config/{claims.yaml,conflicts.md}</code>（9 条 C3 死配置 note）、<code>07-checkpoint/dsh-custom-snapshot/</code></td><td>高</td></tr><tr><td>SRC-006</td><td>S4</td><td>决策依据指针（<code>proposed</code>）</td><td><code>…/1011-迁移适配-E环门控通道与R环纠正/arch/ADR-010.json</code>、<code>…/1011-全面适配性迁移分析/arch/{ADR-011.json,ADR-012.json}</code></td><td>中高</td></tr></tbody></table>
+</section>
+<div class="colophon">
+本页由 <code>build_report_html.py</code> 从 <code>IMPROVEMENT-REPORT.md</code> 派生
+（MD 是真相源，⛔ 禁手改本页）。<br>
+源 sha256：<code>6112a08d3c772626f5fffafead727ad4f78c0b70009d35d91d20fd12ea7fc882</code><br>
+样式承接 <code>fe-starter-kit/tokens/contract.json</code> 与 <code>M3-tokens.css</code>，⛔ 未另立令牌体系。
+</div>
+</main>
+</div>
+</body>
+</html>
