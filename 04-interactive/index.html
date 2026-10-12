@@ -21,7 +21,7 @@
 <div class="signal">
   <div class="signal-head">
     <span class="label">System Loop · 控制回路</span>
-    <span class="tag">v1.4 · 6 framework + 14 premium + 2 variants</span>
+    <span class="tag">v1.5 · 6 framework + 14 premium + 2 variants</span>
   </div>
   <svg viewBox="0 0 900 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="五环控制回路：目标 r 指令 → P 规划 → T 执行 → 世界/环境 → E 评估 → M 记忆 → R 反思，修正量回馈 P/T">
     <defs>
@@ -129,7 +129,7 @@
 </div>
 
 <h2><span class="idx">05</span>自改造变体专题（2 个）</h2>
-<p class="lead">两个宿主各有一个「官方内核 + 个人装配层」变体：opencode-custom 补强 E/R 弱环（10 agent / 45 skill 单根 / 6 MCP / 2 command，精装度 2.9→3.9）；dsh-custom 从 preset 层到宿主 profile 整体装配（3 preset / 45 skill（可见 42）/ 7 worker / permission 5 档，精装度 3.6→3.8）。两者均为个人变体、不参与 14 产品市售排名。</p>
+<p class="lead">两个宿主各有一个「官方内核 + 个人装配层」变体：opencode-custom 补强 E/R 弱环（10 agent / 45 skill 单根 / 6 MCP / 2 command，精装度 2.9→3.9）；dsh-custom 从 preset 层到宿主 profile 整体装配（3 preset / 主根 49 skill（可见 46）/ 7 worker / permission 5 档，精装度 3.6→3.9）。两者均为个人变体、不参与 14 产品市售排名。</p>
 <div class="grid cols-2">
   <a class="portal-card" href="case-opencode-custom.html" style="background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);padding:var(--space-4);text-decoration:none">
     <span class="num">VARIANT</span><h3 style="margin:0 0 6px">opencode-custom 控制论画像</h3><p style="margin:0">内核继承 + 装配层增强：10 agent（含 architect-worker）/ 45 skill 单根 / 6 MCP / 2 command；GATE/契约/专职 worker/Reflection，叠加架构判断三层栈与能力扩展 SOP，把前馈主导内核改造为跨会话自演化闭环</p>
@@ -138,17 +138,17 @@
     <span class="num">COMPARE</span><h3 style="margin:0 0 6px">官方 opencode vs 自改造对照</h3><p style="margin:0">五环雷达叠加 + 逐环 delta + 精装度 8 维对比，量化 2.9→3.9 的跃升来源；复评确认能力纵深未跨档位、维持 3.9</p>
   </a>
   <a class="portal-card" href="case-dsh-custom.html" style="background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);padding:var(--space-4);text-decoration:none">
-    <span class="num">VARIANT</span><h3 style="margin:0 0 6px">dsh-custom 控制论画像</h3><p style="margin:0">dsh-opencode-port 装配层：3 preset（standard/creator/ptc）/ 45 派生 skill（模型可见 42）/ 7 worker（含 oc_architect、oc_reflection）/ permission 5 档 / persona 15 节；把设定值固化进 preset 层，E 环由领域门控栈补强至 3.5，R 环因 dsh-reflection 插件移出而维持持平</p>
+    <span class="num">VARIANT</span><h3 style="margin:0 0 6px">dsh-custom 控制论画像</h3><p style="margin:0">dsh-opencode-port 装配层：3 preset（standard/creator/ptc）/ 主根 49 skill（可见 46）/ 7 worker（含 oc_architect、oc_reflection）/ permission 5 档 / persona 15 节；把设定值固化进 preset 层，E 环由领域门控栈 + run_gate 门控通道补强至 4.0（对官方 Δ+2.0，达反转阈值），R 环由 R-A 载体追平至 4.0</p>
   </a>
   <a class="portal-card" href="compare-dsh.html" style="background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);padding:var(--space-4);text-decoration:none">
-    <span class="num">COMPARE</span><h3 style="margin:0 0 6px">官方 dsh vs 装配层对照</h3><p style="margin:0">五环雷达叠加 + 逐环 delta + 精装度 8 维对比，量化 3.6→3.8（Δ+0.2，单维小步）的来源；含「单点分 2.5 vs 模型分 3.6 不可相减」的口径披露</p>
+    <span class="num">COMPARE</span><h3 style="margin:0 0 6px">官方 dsh vs 装配层对照</h3><p style="margin:0">五环雷达叠加 + 逐环 delta + 精装度 8 维对比，量化 3.6→3.9（Δ+0.3，单维小步）的来源；含「单点分 2.5 vs 模型分 3.6 不可相减」的口径披露</p>
   </a>
 </div>
 <p style="font-size:13px;color:var(--muted);margin-top:var(--space-3)">标准实验组：<a href="exp-opencode-custom.html">exp-opencode-custom</a>（Reflection 链路 / 架构三层栈 / 能力扩展 SOP / MEMORY 门禁旁路）· <a href="exp-dsh-custom.html">exp-dsh-custom</a>（preset 编队 / persona 税 / 迁移损失 / PTC 空指向）——两个变体的实验组与画像页同构，可交叉对照。</p>
 
 <div class="pager"><span></span><a class="next" href="framework.html">框架</a></div>
 <footer class="footer">
-<span>控制理论 ⊗ Agent 设计知识库 · v1.4 dsh 装配层 + opencode 月度追平版（6 框架 + 14 精装房 + opencode-custom + dsh-custom）</span>
+<span>控制理论 ⊗ Agent 设计知识库 · v1.5 dsh 装配层二次追平版（6 框架 + 14 精装房 + opencode-custom + dsh-custom）</span>
 <span class="fbrand">data: 09-src-data · contract: 00-contract</span>
 </footer>
 </div></div></div></body></html>

@@ -1,0 +1,13 @@
+{
+  "name": "dsh-opencode-port",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "opencode -> DSH 迁移：3 个自定义模式（opencode-standard / opencode-creator / opencode-ptc），承载化用后的行为纪律、45 个派生 skill 与 7 个具名 worker。",
+  "license": "MIT",
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

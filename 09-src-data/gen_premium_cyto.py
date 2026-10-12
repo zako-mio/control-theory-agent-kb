@@ -109,7 +109,7 @@ __SIDEBAR__
     <span><i style="background:#1F7A52"></i>开源成品化</span>
     <span><i style="background:#C77700"></i>二次封装</span>
   </div>
-  <footer class="footer"><span>控制理论 ⊗ Agent 设计知识库 · v1.4 dsh 装配层 + opencode 月度追平版（6 框架 + 14 精装房 + opencode-custom + dsh-custom）</span><span class="fbrand">data: 09-src-data · contract: 00-contract</span></footer>
+  <footer class="footer"><span>控制理论 ⊗ Agent 设计知识库 · v1.5 dsh 装配层二次追平版（6 框架 + 14 精装房 + opencode-custom + dsh-custom）</span><span class="fbrand">data: 09-src-data · contract: 00-contract</span></footer>
 </div>
 </div>
 <script src="vendor/cytoscape.min.js"></script>

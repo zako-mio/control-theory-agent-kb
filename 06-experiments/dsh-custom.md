@@ -3,7 +3,7 @@
 > 产品：`dsh-custom` = dsh 内核（DeepSeek Harness `dsh-v0.2.1-alpha.2`，源码树 `/home/zako-mio/dsh`）+ 用户级装配层（bundle `dsh-opencode-port`：`~/.dsh/presets/opencode/` 三 preset + `~/.dsh/skills/opencode/` 45 派生 skill + 宿主 profile patch：5 档 permission / `pnpmCommand` 环境修复）
 > 实验日期：2026-10-11（实验 11-14）　实验方式：**装配层取证型实验**——bundle 安装/卸载/重装真实执行 + 会话日志（`session.v4.jsonl.zstd` 多帧 zstd 解帧）取运行时装配结果 + bundle 自家门控新鲜复跑 + 源码级机制核对；**不使用交互式会话做注入**（注入类实验留待后续轮次）
 > 隔离区声明（契约 §7 红线）：**实验的写入面仅限 `/tmp` 隔离区**——`/tmp/opencode-b-review.md`、`/tmp/builtin-system.json`、`/tmp/sys-*.json`、`/tmp/bdiff*.py` 及 `/tmp/opencode` 下临时产物；本库侧不改动任何文件。取证与判据复算全部**只读**：`$BUNDLE`（`~/.dsh/presets/opencode/`）、`$PROFILE`（`~/.dsh/profiles/web/`）、`$DSH`（源码树）读取后 mtime 均早于取证动作，无文件被改动。实验14 的安装/卸载/重装是本轮唯一触碰宿主装配注册面的动作，走官方 `install_bundle` / `remove_bundle`，备份件 `~/.dsh-backups/opencode-port-20261011/` 全程在位，且已演练回滚至基线（**该动作不属本库红线范围，且不写入 `~/.dsh` 配置内容本体**）。⛔ **未修改任何记忆系统文件**（`~/.dsh/MEMORY.md`、reflection pending 队列均未触碰）、未做任何不可逆破坏、未改动源码树 `/home/zako-mio/dsh`。
-> 环境事实（影响本组全部实验，实测非推断）：本机**无可用沙箱后端**（bubblewrap / Landlock 均不可用）→ `read-only` / `workspace-write` 档下 `bash` 一律 **fail-closed**，跑门控脚本须 `danger-full-access`；web 服务 `PATH` 不含 nvm 的 `node`/`pnpm`（`plugin_manager` 曾因此完全不可用，已用 `~/.dsh/bin/pnpm` 包装脚本修复）。
+> 环境事实（**v1.5 更正**）：本机 **`bwrap` 已安装且 runner 链选中 bwrap**，`enforcement=full` → `read-only` / `workspace-write` 档在 **shell + fs 双侧真强制**（v1.4 所记「本机无可用沙箱后端 → 一律 fail-closed」**已证伪**，属环境事实更正，⛔ 不计入装配层收益）；web 服务 `PATH` 不含 nvm 的 `node`/`pnpm`（`plugin_manager` 曾因此完全不可用，已用 `~/.dsh/bin/pnpm` 包装脚本修复）。
 > 编号约定：本文件实验编号 **11-14**，延续 `06-experiments/opencode-custom.md` 的实验 1-10，避免与之冲突。
 
 ---
@@ -85,6 +85,21 @@
 
 ---
 
+## v1.5 新机制登记（实验面：他线实跑取证引用）
+
+> **口径与限制（先声明，避免误读）**：契约 §2.7② 要求「实验层只补新机制、不重跑既有实验」。本轮新增的四个机制**均由迁移线实跑取证**（本库只读引用），**本库未新增自跑行为实验**，原因是两条硬约束：① preset 会话**无法程序化创建**（CLI 只有 `profile` / `plugin` / `dump-config*` / `headless <task>`，无 preset 选择项）⇒ 行为类实验须由用户开新会话；② 本库红线要求对 `~/.dsh/**` **绝对只读**，故不复跑会写状态的门控脚本。以下每条均为**他线实跑结论 + 本库只读复算**的组合，并标注证据级别。
+
+| # | 新机制 | 机制内容 | 他线实跑取证 | 本库只读复算 | 环 |
+|:--:|---|---|---|---|:--:|
+| N1 | **`run_gate` 门控执行通道**（ADR-010） | 三 preset 各 +1 顶层 `gate-runner` 行（本地插件 `dsh-opencode-gate-runner`）：只收「脚本路径 + argv 数组」，⛔ 无内联代码 / shell 解析；roots 与扩展名白名单；超时 120s/600s；输出 16KB 封顶后 spill | 负向用例 **18 → 30 条**；`node --test` **57/57**（r11 实测；r09 为 56/56）；真实调用可归属（子会话 `86bdb014-…`）——`evidence/r09-e9-node-test.out.txt` | 快照 `bundle/cordis.patch.yml` 中 `gate-runner` 行 **×3**；`verify_bundle` check 14 已入 20 项判据 | E / T |
+| N2 | **R 环 R-A 载体**（ADR-012） | 候选 → 主 Agent 审阅 → 落库的显式链；零和预算 + 生命周期五件 + 容量口径 | ADR-012 门控 **6/6 PASS**；候选落 DSH 目录；`MEMORY.md` 正文落库——`evidence/r09-adr012-gate-rerun.out.txt`、`r09-memory-body-landed.out.txt` | `~/.dsh/reflection/` 存在（`candidates` **15** 份 / `archive` **1** 份）；`~/.dsh/MEMORY.md` **14 个 § 段 / 10815 B / 57 行 / 14 条 `[src:]`**；`dsh-reflection` skill 存在（快照 `reflection` 段） | R / M |
+| N3 | **沙箱真实强制**（环境事实更正） | 本机 `bwrap` 已装、链选中 bwrap、`enforcement=full` | v1.4 记「本机无可用后端」已证伪（bundle `README.md` §4.1 已改写；`verify_sandbox_enforcement.mts` / `sandbox_p0_probe.py` 为取证工具） | 宿主 patch 中 permission 5 档与 `defaultPreset: opencode-plan` 可复算 | T |
+| N4 | **`dsh-config` 声明账本门控**（ADR-011） | 本机分层实况索引（`claims.yaml` 声明账本 + `conflicts.md` 冲突台账）；判据 = `verify_dsh_config.py`（源指针 / 层归属 / 层间冲突 / 台账一致性） | ADR-011 门控 **6/6 PASS**；`verify_bundle` check 18 接入 | 新增 skill 目录 `dsh-config`（快照 `skills_list.dsh_native` 之一）；`verify_bundle` 判据 20 项中第 18 项 | E / SP |
+
+> ⚠️ **已知缺口（登记不掩盖）**：本轮**未做** N1–N4 的**本库自跑行为实验**。若后续需要「由本库自行复现」，最小启动条件是：① 用户开一条 `opencode-creator` 会话（命令注册与 `run_gate` 可见性验证）；② 用户开一条普通会话做 R-A 候选落库演练；③ 允许本库在 `/tmp` 隔离区复跑 `verify_dsh_config.py --check` 与 `verify_sandbox_enforcement.mts`。三项均需用户在场或显式放行。
+
+---
+
 ## 迁移损失登记（dsh 侧相对 opencode 侧）
 
 > 口径：仅登记**已取证**的损失，分「不可实现 / 行为落差 / 风险」三类；未取证项不登记。
@@ -95,7 +110,9 @@
 | ② | **reflection 链路断裂** | `pending.json` → reflection-worker → `/reflection` 人审 → 签名写 `MEMORY.md` 的完整异步 R 环 | `dsh-reflection` 插件已于 **2026-10-10 移出** → persona 的 MEMORY/reflection 段在 dsh 侧**不可用**（无 `reflection_add`/`reflection_mark`） | 不可实现 | 装配层的 R 环在 dsh 侧**只剩纪律文本、没有执行器**；宿主 `MEMORY.md` 仍在（`~/.dsh/MEMORY.md`，§-分段 + `[src:]` 签名），但**无入队通道** → 长期记忆闭环实际停摆 |
 | ③ | **宿主 0 MCP（对比 opencode 侧 4 个）** | 6 个 MCP 配置（2 连通 / 4 禁用） | 宿主 **0 MCP 配置**，MCP 维度装配增量 Δ0（沿用内核内置 MCP client + resources 三工具，无 marketplace） | 行为落差 | T 环外部执行器接口**未被装配层利用**；PDF 读取、draw.io 出图等外部能力在 dsh 侧无对应装配（能力可由 skill 部分替代，但**工具面缺口真实存在**） |
 
-> 补充说明（非损失，但属迁移语义变化）：opencode 侧的命令级入口 `/arch`、`/rd`、`/reflection` 在 dsh 侧**无命令注册**，降级为「点名 skill」；变体 Daily/Deep、TUI 键位、`[GATE]` 字面门控、`[COMPLEXITY]` 跨阶段继承等**整类删除**（dsh 无变体概念）。以上已在 `ADAPTATION-NOTES` 登记，本表不重复计损。
+> ✅ **v1.5 追平说明**：上表 ①（子 Agent 无 bash → 门控退化）已由 **N1 `run_gate` 窄通道**部分恢复（产出方可自跑门控脚本，但参数面受限、仍非自由 shell）；②（reflection 链路断裂）已由 **N2 R-A 载体**修复（载体从「插件工具面」换为「文件载体 + skill 方法论」，纪律强度不变）；③（宿主 0 MCP）**仍未变**。原条目保留不删，以维持「历史记录 vs 当前状态」的区分。
+
+> 补充说明（非损失，但属迁移语义变化）：opencode 侧的命令级入口 `/arch`、`/rd`、`/reflection` 在 dsh 侧**v1.4 时无命令注册**，降级为「点名 skill」；✅ **v1.5 已补齐**——新插件 `dsh-opencode-commands` 在三个 preset 注册这三条命令（判据 = `verify_bundle` check 20「命令注册插件（E10）」）。变体 Daily/Deep、TUI 键位、`[GATE]` 字面门控、`[COMPLEXITY]` 跨阶段继承等**整类删除**（dsh 无变体概念）。以上已在 `ADAPTATION-NOTES` 登记，本表不重复计损。
 
 ---
 
@@ -110,6 +127,9 @@
 | SRC-005 | S4 | 一手观察（技能目录运行时条目：42 = 45 − 3） | `…/1011-deepseek harness-提示词迁移工程-从opencode/evidence/skill-catalog-runtime.txt` | 高 |
 | SRC-006 | S1 | 官方源码（DSH 本体：persona 遮蔽机制、skill 根扫描顺序、`disable-model-invocation` 识别、沙箱 fail-closed 语义） | `/home/zako-mio/dsh/packages/preset/persona/src/index.ts`、`/home/zako-mio/dsh/packages/skill/skill-filesystem/src/index.ts`、`/home/zako-mio/dsh/packages/sandbox/sandbox/src/index.ts`（基线 tag `dsh-v0.2.1-alpha.2`） | 高 |
 | SRC-007 | S4 | 一手观察（装配层产物与门控脚本本体） | `/home/zako-mio/.dsh/presets/opencode/{cordis.patch.yml,persona.md,verify_bundle.py,build_provenance.py,README.md,ADAPTATION-NOTES.md}` | 高 |
-| SRC-008 | S4 | 一手观察（45 派生 skill 与对账脚本） | `/home/zako-mio/.dsh/skills/opencode/`（`install.py` / `reconcile.py` / `PROVENANCE`） | 高 |
+| SRC-008 | S4 | 一手观察（主根 49 skill = 派生 47 + DSH 原生 2，与对账脚本） | `/home/zako-mio/.dsh/skills/opencode/`（`install.py` / `reconcile.py` / `PROVENANCE`） | 高 |
 | SRC-009 | S4 | 一手观察（回滚备份件） | `/home/zako-mio/.dsh-backups/opencode-port-20261011/` | 高 |
-| SRC-010 | S4 | 一手观察（本库 dsh 变体评分单一数据源，口径披露：v1.3 首次回填 v2.0 模型、旧单点分 2.5 不同源） | `/home/zako-mio/opencode/archive/Mission-file/2026-09/0907-控制理论Agent设计知识库/09-src-data/dsh_custom_scores.py` | 高 |
+| SRC-010 | S4 | 一手观察（本库 dsh 变体评分单一数据源，口径披露：v1.4 首次回填 v2.0 模型、旧单点分 2.5 不同源） | `/home/zako-mio/opencode/archive/Mission-file/2026-09/0907-控制理论Agent设计知识库/09-src-data/dsh_custom_scores.py` | 高 |
+| SRC-011 | S4 | 一手只读复算（v1.5 新快照四取证面） | `07-checkpoint/dsh-custom-snapshot/inventory.json`（`skills_list` / `plugins` / `reflection` / `gate` 四段；`collected_at` = 2026-10-13T05:09:43+08:00） | 高 |
+| SRC-012 | S4 | 他线实跑取证（只读引用，非本库自跑） | `Mission-file/2026-10/1011-deepseek harness-提示词迁移工程-从opencode/1011-全面适配性迁移分析/evidence/{r09-e9-node-test.out.txt, r09-adr012-gate-rerun.out.txt, r09-memory-body-landed.out.txt, r11-final-gates.out.txt}` | 中高 |
+| SRC-013 | S4 | 决策依据指针（均 `proposed` 状态） | `Mission-file/2026-10/1011-迁移适配-E环门控通道与R环纠正/arch/ADR-010.json`；`Mission-file/2026-10/1011-deepseek harness-提示词迁移工程-从opencode/1011-全面适配性迁移分析/arch/{ADR-011.json, ADR-012.json}` + `迁移台账.yaml`（43 任务：done 36 / partial 2 / not_done 3 / deferred 1） | 中高 |

@@ -94,12 +94,14 @@
 
                 ## 八、环境事实（DSH 侧，勿套 opencode 环境）
 
-                1. 密钥在 `~/dsh/.env`（含 `DEEPSEEK_API_KEY` / `OPENCODE_GO_API_KEY` / `COMMANDCODE_FREE_API_KEY` / `OPENCODE_GO_TMP_API_KEY`）：不得打印、不得落盘、不得泄露，仅按需 source。
-                2. web 服务由 systemd 管理：`dsh-web.service`；排查用 `journalctl -u dsh-web.service -n 100`。
-                3. 源码树 `/home/zako-mio/dsh` 是 git 树（基线 tag `dsh-v0.2.1-alpha.2`）；build 用 `pnpm run build`，换版后必须**先 `pnpm run clean` 再 build**，否则旧 `lib` 残留会触发 `MISSING_EXPORT`。源码树禁止被本 profile 修改。
-                4. **联网真实行为（DSH 是 Node/undici）**：模型 API 调用链与 `web_fetch` **都不读代理环境变量**；境外被墙站点直连会超时，需要境外内容时改用 `curl -x http://172.29.0.1:7890 <url>`。`bash` 继承 shell env；git 已配定向代理，操作 GitHub 始终走代理。
-                5. **本机没有可用的沙箱后端**（bubblewrap 与 Landlock 均不可用）：`workspace-write` 档下 `bash` 会被 fail-closed 拒绝。要跑命令必须把会话权限档切到 `danger-full-access`。这是环境事实，不是配置错误。
-                6. 运行目录 `~/.dsh/`（profile / 会话 / 技能）；自装插件已于 2026-10-10 全部移出。
+                机器特定事实（**密钥位置 / systemd 服务 / 源码树 / 联网真实行为 / 沙箱后端 / 运行目录与插件现状**）的
+                **单一承载处** = `dsh-config` 技能（`~/.dsh/skills/opencode/dsh-config/local/host-env-facts.md`，
+                沙箱细节另见同目录 `sandbox.md`）——本节不再重复它们，避免同一事实两份各自漂移。
+
+                本节**只保留被门控直接提取**的那一条（`verify_cli_reachability.py` = `verify_bundle.py` check 17
+                从它**提取**引导串与四个 CLI 的版本；⛔ 不得搬走、不得复制第二份）：
+
+                7. **外部 CLI 不在会话 PATH 上（见 bundle `README.md` §3.3）**：`bash` 的 PATH 为 `/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/snap/bin:/mnt/c/Windows:…:/mnt/c/Windows/System32/OpenSSH`（末尾 5 个 Windows 目录由 `dsh-wsl-desktop-path` 插件追加）—— **不含 nvm 的 bin，也不含 `~/.local/bin`** ⇒ `node`、`openspec`(1.9.0) / `lark-cli`(1.0.88) / `agent-browser`(0.34.0)（shebang 依赖 `node`）与 `headroom`(0.35.0) **裸名一律不可用**；调用前先引导：`PATH="$HOME/.nvm/versions/node/v24.19.0/bin:$HOME/.local/bin:$PATH" <cmd>`（或用绝对路径兜底）。`gh`(`/usr/bin/gh`) 与 `dot`(`/usr/bin/dot`) 本就在 PATH 上。⛔ **没有配置层解法**（`dsh-shell-env` 只认 `DSH_*` 键）；由 `verify_cli_reachability.py`（check 17）实测把关。
 
                 ## 九、留档规范
 
@@ -112,53 +114,26 @@
 
                 ## 十、记忆纪律
 
-                - 全局记忆库 `~/.config/opencode/MEMORY.md`（`§` 分段 + `[src:]` 签名）**只读**：严禁 `edit`/`write`/脚本修改。
-                - **不常驻上下文**：它是 append-only 变化文件，常驻会让系统前缀反复变化、缓存失效；需要时按需 `read`。
-                - DSH 侧**不存在**反思写入链（提供 `reflection_add`/`reflection_mark` 的插件已于 2026-10-10 移出）：本模式下记忆只能读、不能写，**勿声称已写入**。
+                - **两套记忆体，各自独立、常态互不索引**：DSH 侧正文 `~/.dsh/MEMORY.md`（`§` 分段 + `[src:]` 签名）**仅主 Agent 可写**且须经审阅链——`oc_reflection` 只写候选到 `~/.dsh/reflection/candidates/`，主 Agent 按 `dsh-reflection` skill 的方法论（零和预算 + 生命周期五件 + 容量口径）逐条裁决后落库；opencode 侧 `~/.config/opencode/MEMORY.md` **只读**，本侧不写、不索引。
+                - ⛔ 候选不得写到 opencode 侧 `memory_pending/`；⛔ DSH 侧载体不得出现指向 opencode 反思队列的指针。本侧载体现为 ADR-012（门控 6/6 PASS）定的 **R-A 文件载体**：**纪律强度不变**（写入仍须经链），只换载体。
+                - **不常驻上下文**：两份正文都是 append-only 变化文件（常驻会反复改写系统前缀、令缓存失效）⇒ 按需 `read`。
 
                 ## 十一、搜索行为
 
-                凡结论依赖外部世界的事实、数据、状态、版本、价格、政策、时间或人物身份，回答前必须先搜索并打开来源验证，不得只凭模型记忆。
-
-                - 搜索结果页、搜索摘要和第三方转述只能用来**发现线索**，不算完成验证；应尽量打开原始页面，并核对来源链接、发布时间和数据日期。
-                - 重要、争议性或可能变化的结论，至少用两个**相互独立**的来源交叉验证；做不到时必须明确标注「单一来源」或「未验证」。
-                - 来源优先级：官方页面、原始数据、论文、源码 > 权威二手报道 > 社区讨论。社交平台内容只能证明「有人这样说」，不能单独证明事实本身。
-                - 输出时必须区分「已验证事实」「基于证据的推断」「尚不确定的信息」；引用放在对应结论附近，且链接必须直接支持该结论。
-                - 搜索或访问失败时直接说明限制，**不得补写看似合理但未经实证的结论**。
-                - 纯创作、改写、翻译以及只处理用户已提供材料的任务不强制联网；一旦补充外部事实，仍须遵守以上规则。
-                - **时效性**：模型先验只适用于稳定知识（定义/分类/历史）；实时信息（新闻/最新版本/当前动态）必须走外部搜索。判断信号：关键词特征（含年份/最新/当前/新闻等）+ 知识截止日期对比。
+                - **触发**：外部事实核查、多源交叉验证、实体消歧、时效性信息、证据包构建。
+                - **命中 ⇒ 必须先加载 `search-methodology` skill 再作答**：⛔ 不得凭模型记忆或原生检索工具直接作答（检索纪律/来源信用地图/证据包契约的真相源在该 skill）。
 
                 ## 十二、架构行为（触发规则）
 
-                命中「架构类任务」后，先答完**规模三问**并在答复或计划中留痕：
-
-                | # | 判定问 | 触发条件 |
-                |---|---|---|
-                | Q1 | 是否改变**模块/服务边界或对外接口**（签名、契约、依赖方向）？ | 改 → 触发 |
-                | Q2 | 变更是否**跨模块传播**（连带改到 ≥2 个模块/包）？ | 是 → 触发 |
-                | Q3 | 反转成本是否**高于「改回配置/删文件」量级**（涉数据迁移、外部依赖更换、多文件重构）？ | 高于 → 触发 |
-
-                - **三问全不触发 → 咨询级**：不加载 skill、不委派、不产 ADR、不过门控；直接给结论与理由，末尾标 `[架构分档: 咨询级 · 三问全不触发 · 未走门控]`。
-                - **命中 ≥1 问** → 按 `architecture-judgment` skill 的 `routing.md` §9 定档（门控级 / 产出级 / 按需级）。
-                - **门控级三步不得跳过**：① 加载 `architecture-judgment` skill；② 委派 `oc_architect`；③ 方案设计与选型类须过 `_private/gate_architecture.py` 门控方可交付，未过不得声称完成。
-                - 用户**点名** `architecture-judgment`（如「用 architecture-judgment 做架构评审」）时，一律按门控级执行。
-                - **知识分层（刚性）**：方法论层 `MTH-*` 与本质层 `ESS-*` 重召回；技术实践层 `TEC-*` 仅作选型标尺佐证，只可写入 ADR 的 `standards_refs`，**不得**出现在 `decision`/`rationale` 等推荐位。
-                - 架构图不由本流程产出：主 Agent 加载 `diagram-lite` skill 按档位出图（默认 T2）。
-                - 涉及 openspec `design` 工件时：先加载 `architecture-judgment`（按其 `integrations/openspec-design.md`），委派 `oc_architect` 产 ADR + 权衡矩阵，`gate_architecture.py --kind adr --input <adr.json>` PASS 前不得定稿 `design.md`（FAIL 回传修正最多 2 轮，不得降级为口头通过）。⛔ 不修改 openspec 包，也不改其生成的 `openspec-*` skill（会被 `openspec update` 无条件覆写）。
-                - 门控脚本由**主 Agent 串行执行**（子 Agent 不授予 bash）；本机跑它需要 `danger-full-access` 档。
+                - **触发**：架构决策/选型/评审、模块与服务边界、质量属性权衡、技术债与演进治理、openspec `design` 定稿。
+                - **规模三问**（① 改边界或对外契约 ② 跨 ≥2 模块 ③ 反转成本高于「改回配置/删文件」）任一命中 ⇒ **加载 `architecture-judgment` skill** 并按 `routing.md §9` 定档；**门控级三步不得跳过**：① 加载该 skill ② 委派 `oc_architect` ③ `gate_architecture.py` **PASS 前不得交付**（≤2 轮修正，⛔ 不得降级为口头通过）；用户**点名**该 skill ⇒ 一律门控级。
+                - 三问全不触发 ⇒ **咨询级**：不加载/不委派/不产 ADR，末尾标 `[架构分档: 咨询级 · 三问全不触发 · 未走门控]`。`TEC-*` 只可进 `standards_refs`；图用 `diagram-lite` 出。
 
                 ## 十三、需求发现行为（触发规则）
 
-                1. **定档前置（机械，不以「看难度」裁量）**：命中需求发现类表述后先跑
-                   `python3 /home/zako-mio/opencode/archive/Mission-file/2026-09/0916-产品设计方法论/tools/check_tier_conditions.py --enter "<需求原文>"`
-                   （该绑定同时记录在 `requirement-discovery/_private/local-bindings.json` 的 `TIER_TOOL`）。
-                   - **简单档** ⇒ 不加载 skill、不委派、不产工件；走三步（意图一句 → 做第一个可跑产物 → 拿反馈即停），末尾标 `[需求分档: 简单档]`。
-                   - **复杂档** ⇒ 加载 `requirement-discovery` skill 按其 `workflow.md` 阶段 0–5 执行；涉真实需求时委派 `oc_requirement`。
-                   - ⚠ 工具不可用 ⇒ 显式标 `FAIL`，**不得凭感觉选档**。
-                2. **边界（防抢词）**：不产 ADR / 选型矩阵 / 质量属性权衡（→ `architecture-judgment`）；不产 proposal/specs/tasks（→ `openspec-propose`，仅显式交接）；不写代码、不做 TDD。
-                3. **外部事实与访谈**：需要外部事实时**调用** `search-methodology` skill，不自建检索/验证；访谈**消费** `grill-me` 协议，不另造访谈引擎。
-                4. **验证优先**：门控全绿 / 产物被验收 / 流程走完**一律不得**当作「已达成」；达成 = **消费证据**（真实触发实例 + 每次落产物，经门控 ledger）。阈值不得由规模直觉推导；引用外部理论须显式标注人群与情境边界。
-                5. **显式入口**：用户点名 `requirement-discovery` 时，一律按**复杂档**执行。
+                - **触发**：需求表述模糊、含多种互斥走法、可行性未知；或用户**点名** `requirement-discovery`（点名 ⇒ 一律复杂档）。
+                - **定档前置（机械）**：命中后先跑该 skill 的 `TIER_TOOL`（绑定见 `_private/local-bindings.json`）。**简单档** ⇒ 不加载/不委派/不产工件，走三步（意图一句 → 可跑产物 → 拿反馈即停），标 `[需求分档: 简单档]`；**复杂档** ⇒ 加载该 skill 按 `workflow.md` 阶段 0–5 并委派 `oc_requirement`；⚠ 工具不可用 ⇒ 标 `FAIL`。
+                - 边界与证据纪律见该 skill 正文（⛔ 门控全绿 ≠ 已达成）。
 
                 ## 十四、视觉与出图归位
 
@@ -168,15 +143,7 @@
 
                 ## 十五、迁移适配注记（第 3 层）
 
-                本模式的纪律是 opencode 行为层的**化用**而非照搬。以下类别的 opencode 机制**未迁移**，不要再按它们行事：
-
-                - 推理档/变体切换与成本对比、强制门控字面输出格式、跨阶段复杂度标记继承 → 删除（DSH 无变体概念，模型与推理档由 profile route 声明）。
-                - opencode 的截断阈值（工具结果 3000 字符 / 文件 2000 行 / grep 命中 50 条）→ 删除（DSH 用 `tool-result-pruner` 与 spill，阈值不同，照抄会误导）。
-                - opencode 侧「读代理环境变量」的联网结论 → 已替换为第八节的 DSH 版。
-                - 角色检索脚本、反思写入链、会话记忆压缩模板、浏览器标签页通道、命令级权限白名单 → 删除或标注不保真。
-                - 委派/发问/待办/联网/计划退出等工具名 → 已改写为本模式的具名 worker 与 DSH 对应工具。
-
-                逐条理由与来源指纹见 bundle 内 `ADAPTATION-NOTES.md`；权限近似与损失清单见 `README.md`。
+                本模式纪律是 opencode 行为层的**化用**：未迁移机制清单与逐条理由见 `ADAPTATION-NOTES.md`，权限近似与损失清单见 `README.md` §4。**两点最易踩**：① 门控执行通道＝窄工具 `run_gate`（只收「脚本路径 + argv 数组」，⛔ 非 shell）；② worker 名/工具名一律用本模式具名 worker（`subagent`/`oc_*`）与 DSH 工具名。
           - id: agent-instructions
             name: '@deepseek-ai/dsh-agent-instructions'
             config:
@@ -267,6 +234,8 @@
                   toolName: 'subagent'
                   persona: 'General-purpose agent for researching complex questions and executing multi-step tasks. Inherits parent session model.'
                   modelSelectionSettings: true
+                  agentOptions:
+                    maxTokens: 32768
                   toolFilter:
                     deny:
                       - 'todo_write'
@@ -290,6 +259,8 @@
                   provider: 'spawn'
                   toolName: 'oc_explore'
                   persona: 'Fast agent specialized for exploring codebases. Inherits parent session model.'
+                  agentOptions:
+                    maxTokens: 32768
                   toolFilter:
                     allow:
                       - 'read'
@@ -311,6 +282,8 @@
                   provider: 'spawn'
                   toolName: 'oc_architect'
                   persona: '架构判断与设计裁决专家。技术选型/架构风格/模块与服务边界/架构评审/质量属性权衡/技术债治理时委派。产出 ADR 与多维权衡矩阵，并经 gate_architecture.py 门控。'
+                  agentOptions:
+                    maxTokens: 32768
                   toolFilter:
                     deny:
                       - 'todo_write'
@@ -330,6 +303,8 @@
                   provider: 'spawn'
                   toolName: 'oc_requirement'
                   persona: '需求发现与澄清专家（需求层·内部意图固化）。需求表述模糊、含互斥走法、可行性未知或需按产品设计复杂度走一遍时委派。产出 POV／HMW／product outcome／appetite／最小交接契约，并经 gate_requirement_discovery.py 门控。'
+                  agentOptions:
+                    maxTokens: 32768
                   toolFilter:
                     deny:
                       - 'todo_write'
@@ -349,6 +324,8 @@
                   provider: 'spawn'
                   toolName: 'oc_search'
                   persona: '搜索管线执行 Agent。只做搜索管线(发现+获取+交叉验证)，输出结构化证据包。Use for any task requiring external search, query disambiguation, multi-source fact-checking, or evidence-pack construction.'
+                  agentOptions:
+                    maxTokens: 32768
                   toolFilter:
                     allow:
                       - 'read'
@@ -371,7 +348,9 @@
                 config:
                   provider: 'spawn'
                   toolName: 'oc_reflection'
-                  persona: 'Reflection specialist for the self-evolution system. Analyzes Plan+Build cycles and generates Memory/Skill entries. Use ONLY for asynchronous post-cycle reflection tasks.'
+                  persona: 'Reflection specialist for the DSH-side self-evolution ring (R-A, ADR-012). Produces ONLY candidate memory entries under ~/.dsh/reflection/candidates/, in the intake format of the `dsh-reflection` skill; never writes any memory body (`~/.dsh/MEMORY.md` is main-agent-only), never writes to the opencode side. Use ONLY for asynchronous post-cycle reflection tasks.'
+                  agentOptions:
+                    maxTokens: 32768
                   toolFilter:
                     deny:
                       - 'ask_user_question'
@@ -390,6 +369,8 @@
                   provider: 'spawn'
                   toolName: 'oc_pdf'
                   persona: 'PDF reader, OCR, and document analysis specialist. Use for any task involving PDF files.'
+                  agentOptions:
+                    maxTokens: 32768
                   toolFilter:
                     deny:
                       - 'todo_write'
@@ -420,6 +401,25 @@
                   provider: 'spawn'
               - id: tool-workflow
                 name: '@deepseek-ai/dsh-tool-workflow'
+          - id: gate-runner
+            name: 'dsh-opencode-gate-runner'
+            config:
+              roots:
+                - 'workspace'
+                - '/home/zako-mio/.dsh/presets/opencode'
+                - '/home/zako-mio/.dsh/skills/opencode'
+              extensions:
+                - '.py'
+                - '.js'
+                - '.mjs'
+                - '.sh'
+              defaultTimeoutMs: 120000
+              maxTimeoutMs: 600000
+              outputCapBytes: 16384
+              maxArgs: 32
+              maxArgChars: 2048
+          - id: opencode-commands
+            name: 'dsh-opencode-commands'
           - id: tool-ask-user
             name: '@deepseek-ai/dsh-tool-ask-user'
           - id: tool-todo
@@ -524,12 +524,14 @@
 
                 ## 八、环境事实（DSH 侧，勿套 opencode 环境）
 
-                1. 密钥在 `~/dsh/.env`（含 `DEEPSEEK_API_KEY` / `OPENCODE_GO_API_KEY` / `COMMANDCODE_FREE_API_KEY` / `OPENCODE_GO_TMP_API_KEY`）：不得打印、不得落盘、不得泄露，仅按需 source。
-                2. web 服务由 systemd 管理：`dsh-web.service`；排查用 `journalctl -u dsh-web.service -n 100`。
-                3. 源码树 `/home/zako-mio/dsh` 是 git 树（基线 tag `dsh-v0.2.1-alpha.2`）；build 用 `pnpm run build`，换版后必须**先 `pnpm run clean` 再 build**，否则旧 `lib` 残留会触发 `MISSING_EXPORT`。源码树禁止被本 profile 修改。
-                4. **联网真实行为（DSH 是 Node/undici）**：模型 API 调用链与 `web_fetch` **都不读代理环境变量**；境外被墙站点直连会超时，需要境外内容时改用 `curl -x http://172.29.0.1:7890 <url>`。`bash` 继承 shell env；git 已配定向代理，操作 GitHub 始终走代理。
-                5. **本机没有可用的沙箱后端**（bubblewrap 与 Landlock 均不可用）：`workspace-write` 档下 `bash` 会被 fail-closed 拒绝。要跑命令必须把会话权限档切到 `danger-full-access`。这是环境事实，不是配置错误。
-                6. 运行目录 `~/.dsh/`（profile / 会话 / 技能）；自装插件已于 2026-10-10 全部移出。
+                机器特定事实（**密钥位置 / systemd 服务 / 源码树 / 联网真实行为 / 沙箱后端 / 运行目录与插件现状**）的
+                **单一承载处** = `dsh-config` 技能（`~/.dsh/skills/opencode/dsh-config/local/host-env-facts.md`，
+                沙箱细节另见同目录 `sandbox.md`）——本节不再重复它们，避免同一事实两份各自漂移。
+
+                本节**只保留被门控直接提取**的那一条（`verify_cli_reachability.py` = `verify_bundle.py` check 17
+                从它**提取**引导串与四个 CLI 的版本；⛔ 不得搬走、不得复制第二份）：
+
+                7. **外部 CLI 不在会话 PATH 上（见 bundle `README.md` §3.3）**：`bash` 的 PATH 为 `/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/snap/bin:/mnt/c/Windows:…:/mnt/c/Windows/System32/OpenSSH`（末尾 5 个 Windows 目录由 `dsh-wsl-desktop-path` 插件追加）—— **不含 nvm 的 bin，也不含 `~/.local/bin`** ⇒ `node`、`openspec`(1.9.0) / `lark-cli`(1.0.88) / `agent-browser`(0.34.0)（shebang 依赖 `node`）与 `headroom`(0.35.0) **裸名一律不可用**；调用前先引导：`PATH="$HOME/.nvm/versions/node/v24.19.0/bin:$HOME/.local/bin:$PATH" <cmd>`（或用绝对路径兜底）。`gh`(`/usr/bin/gh`) 与 `dot`(`/usr/bin/dot`) 本就在 PATH 上。⛔ **没有配置层解法**（`dsh-shell-env` 只认 `DSH_*` 键）；由 `verify_cli_reachability.py`（check 17）实测把关。
 
                 ## 九、留档规范
 
@@ -542,53 +544,26 @@
 
                 ## 十、记忆纪律
 
-                - 全局记忆库 `~/.config/opencode/MEMORY.md`（`§` 分段 + `[src:]` 签名）**只读**：严禁 `edit`/`write`/脚本修改。
-                - **不常驻上下文**：它是 append-only 变化文件，常驻会让系统前缀反复变化、缓存失效；需要时按需 `read`。
-                - DSH 侧**不存在**反思写入链（提供 `reflection_add`/`reflection_mark` 的插件已于 2026-10-10 移出）：本模式下记忆只能读、不能写，**勿声称已写入**。
+                - **两套记忆体，各自独立、常态互不索引**：DSH 侧正文 `~/.dsh/MEMORY.md`（`§` 分段 + `[src:]` 签名）**仅主 Agent 可写**且须经审阅链——`oc_reflection` 只写候选到 `~/.dsh/reflection/candidates/`，主 Agent 按 `dsh-reflection` skill 的方法论（零和预算 + 生命周期五件 + 容量口径）逐条裁决后落库；opencode 侧 `~/.config/opencode/MEMORY.md` **只读**，本侧不写、不索引。
+                - ⛔ 候选不得写到 opencode 侧 `memory_pending/`；⛔ DSH 侧载体不得出现指向 opencode 反思队列的指针。本侧载体现为 ADR-012（门控 6/6 PASS）定的 **R-A 文件载体**：**纪律强度不变**（写入仍须经链），只换载体。
+                - **不常驻上下文**：两份正文都是 append-only 变化文件（常驻会反复改写系统前缀、令缓存失效）⇒ 按需 `read`。
 
                 ## 十一、搜索行为
 
-                凡结论依赖外部世界的事实、数据、状态、版本、价格、政策、时间或人物身份，回答前必须先搜索并打开来源验证，不得只凭模型记忆。
-
-                - 搜索结果页、搜索摘要和第三方转述只能用来**发现线索**，不算完成验证；应尽量打开原始页面，并核对来源链接、发布时间和数据日期。
-                - 重要、争议性或可能变化的结论，至少用两个**相互独立**的来源交叉验证；做不到时必须明确标注「单一来源」或「未验证」。
-                - 来源优先级：官方页面、原始数据、论文、源码 > 权威二手报道 > 社区讨论。社交平台内容只能证明「有人这样说」，不能单独证明事实本身。
-                - 输出时必须区分「已验证事实」「基于证据的推断」「尚不确定的信息」；引用放在对应结论附近，且链接必须直接支持该结论。
-                - 搜索或访问失败时直接说明限制，**不得补写看似合理但未经实证的结论**。
-                - 纯创作、改写、翻译以及只处理用户已提供材料的任务不强制联网；一旦补充外部事实，仍须遵守以上规则。
-                - **时效性**：模型先验只适用于稳定知识（定义/分类/历史）；实时信息（新闻/最新版本/当前动态）必须走外部搜索。判断信号：关键词特征（含年份/最新/当前/新闻等）+ 知识截止日期对比。
+                - **触发**：外部事实核查、多源交叉验证、实体消歧、时效性信息、证据包构建。
+                - **命中 ⇒ 必须先加载 `search-methodology` skill 再作答**：⛔ 不得凭模型记忆或原生检索工具直接作答（检索纪律/来源信用地图/证据包契约的真相源在该 skill）。
 
                 ## 十二、架构行为（触发规则）
 
-                命中「架构类任务」后，先答完**规模三问**并在答复或计划中留痕：
-
-                | # | 判定问 | 触发条件 |
-                |---|---|---|
-                | Q1 | 是否改变**模块/服务边界或对外接口**（签名、契约、依赖方向）？ | 改 → 触发 |
-                | Q2 | 变更是否**跨模块传播**（连带改到 ≥2 个模块/包）？ | 是 → 触发 |
-                | Q3 | 反转成本是否**高于「改回配置/删文件」量级**（涉数据迁移、外部依赖更换、多文件重构）？ | 高于 → 触发 |
-
-                - **三问全不触发 → 咨询级**：不加载 skill、不委派、不产 ADR、不过门控；直接给结论与理由，末尾标 `[架构分档: 咨询级 · 三问全不触发 · 未走门控]`。
-                - **命中 ≥1 问** → 按 `architecture-judgment` skill 的 `routing.md` §9 定档（门控级 / 产出级 / 按需级）。
-                - **门控级三步不得跳过**：① 加载 `architecture-judgment` skill；② 委派 `oc_architect`；③ 方案设计与选型类须过 `_private/gate_architecture.py` 门控方可交付，未过不得声称完成。
-                - 用户**点名** `architecture-judgment`（如「用 architecture-judgment 做架构评审」）时，一律按门控级执行。
-                - **知识分层（刚性）**：方法论层 `MTH-*` 与本质层 `ESS-*` 重召回；技术实践层 `TEC-*` 仅作选型标尺佐证，只可写入 ADR 的 `standards_refs`，**不得**出现在 `decision`/`rationale` 等推荐位。
-                - 架构图不由本流程产出：主 Agent 加载 `diagram-lite` skill 按档位出图（默认 T2）。
-                - 涉及 openspec `design` 工件时：先加载 `architecture-judgment`（按其 `integrations/openspec-design.md`），委派 `oc_architect` 产 ADR + 权衡矩阵，`gate_architecture.py --kind adr --input <adr.json>` PASS 前不得定稿 `design.md`（FAIL 回传修正最多 2 轮，不得降级为口头通过）。⛔ 不修改 openspec 包，也不改其生成的 `openspec-*` skill（会被 `openspec update` 无条件覆写）。
-                - 门控脚本由**主 Agent 串行执行**（子 Agent 不授予 bash）；本机跑它需要 `danger-full-access` 档。
+                - **触发**：架构决策/选型/评审、模块与服务边界、质量属性权衡、技术债与演进治理、openspec `design` 定稿。
+                - **规模三问**（① 改边界或对外契约 ② 跨 ≥2 模块 ③ 反转成本高于「改回配置/删文件」）任一命中 ⇒ **加载 `architecture-judgment` skill** 并按 `routing.md §9` 定档；**门控级三步不得跳过**：① 加载该 skill ② 委派 `oc_architect` ③ `gate_architecture.py` **PASS 前不得交付**（≤2 轮修正，⛔ 不得降级为口头通过）；用户**点名**该 skill ⇒ 一律门控级。
+                - 三问全不触发 ⇒ **咨询级**：不加载/不委派/不产 ADR，末尾标 `[架构分档: 咨询级 · 三问全不触发 · 未走门控]`。`TEC-*` 只可进 `standards_refs`；图用 `diagram-lite` 出。
 
                 ## 十三、需求发现行为（触发规则）
 
-                1. **定档前置（机械，不以「看难度」裁量）**：命中需求发现类表述后先跑
-                   `python3 /home/zako-mio/opencode/archive/Mission-file/2026-09/0916-产品设计方法论/tools/check_tier_conditions.py --enter "<需求原文>"`
-                   （该绑定同时记录在 `requirement-discovery/_private/local-bindings.json` 的 `TIER_TOOL`）。
-                   - **简单档** ⇒ 不加载 skill、不委派、不产工件；走三步（意图一句 → 做第一个可跑产物 → 拿反馈即停），末尾标 `[需求分档: 简单档]`。
-                   - **复杂档** ⇒ 加载 `requirement-discovery` skill 按其 `workflow.md` 阶段 0–5 执行；涉真实需求时委派 `oc_requirement`。
-                   - ⚠ 工具不可用 ⇒ 显式标 `FAIL`，**不得凭感觉选档**。
-                2. **边界（防抢词）**：不产 ADR / 选型矩阵 / 质量属性权衡（→ `architecture-judgment`）；不产 proposal/specs/tasks（→ `openspec-propose`，仅显式交接）；不写代码、不做 TDD。
-                3. **外部事实与访谈**：需要外部事实时**调用** `search-methodology` skill，不自建检索/验证；访谈**消费** `grill-me` 协议，不另造访谈引擎。
-                4. **验证优先**：门控全绿 / 产物被验收 / 流程走完**一律不得**当作「已达成」；达成 = **消费证据**（真实触发实例 + 每次落产物，经门控 ledger）。阈值不得由规模直觉推导；引用外部理论须显式标注人群与情境边界。
-                5. **显式入口**：用户点名 `requirement-discovery` 时，一律按**复杂档**执行。
+                - **触发**：需求表述模糊、含多种互斥走法、可行性未知；或用户**点名** `requirement-discovery`（点名 ⇒ 一律复杂档）。
+                - **定档前置（机械）**：命中后先跑该 skill 的 `TIER_TOOL`（绑定见 `_private/local-bindings.json`）。**简单档** ⇒ 不加载/不委派/不产工件，走三步（意图一句 → 可跑产物 → 拿反馈即停），标 `[需求分档: 简单档]`；**复杂档** ⇒ 加载该 skill 按 `workflow.md` 阶段 0–5 并委派 `oc_requirement`；⚠ 工具不可用 ⇒ 标 `FAIL`。
+                - 边界与证据纪律见该 skill 正文（⛔ 门控全绿 ≠ 已达成）。
 
                 ## 十四、视觉与出图归位
 
@@ -598,15 +573,7 @@
 
                 ## 十五、迁移适配注记（第 3 层）
 
-                本模式的纪律是 opencode 行为层的**化用**而非照搬。以下类别的 opencode 机制**未迁移**，不要再按它们行事：
-
-                - 推理档/变体切换与成本对比、强制门控字面输出格式、跨阶段复杂度标记继承 → 删除（DSH 无变体概念，模型与推理档由 profile route 声明）。
-                - opencode 的截断阈值（工具结果 3000 字符 / 文件 2000 行 / grep 命中 50 条）→ 删除（DSH 用 `tool-result-pruner` 与 spill，阈值不同，照抄会误导）。
-                - opencode 侧「读代理环境变量」的联网结论 → 已替换为第八节的 DSH 版。
-                - 角色检索脚本、反思写入链、会话记忆压缩模板、浏览器标签页通道、命令级权限白名单 → 删除或标注不保真。
-                - 委派/发问/待办/联网/计划退出等工具名 → 已改写为本模式的具名 worker 与 DSH 对应工具。
-
-                逐条理由与来源指纹见 bundle 内 `ADAPTATION-NOTES.md`；权限近似与损失清单见 `README.md`。
+                本模式纪律是 opencode 行为层的**化用**：未迁移机制清单与逐条理由见 `ADAPTATION-NOTES.md`，权限近似与损失清单见 `README.md` §4。**两点最易踩**：① 门控执行通道＝窄工具 `run_gate`（只收「脚本路径 + argv 数组」，⛔ 非 shell）；② worker 名/工具名一律用本模式具名 worker（`subagent`/`oc_*`）与 DSH 工具名。
           - id: agent-instructions
             name: '@deepseek-ai/dsh-agent-instructions'
             config:
@@ -696,6 +663,8 @@
                   toolName: 'subagent'
                   persona: 'General-purpose agent for researching complex questions and executing multi-step tasks. Inherits parent session model.'
                   modelSelectionSettings: true
+                  agentOptions:
+                    maxTokens: 32768
                   toolFilter:
                     deny:
                       - 'todo_write'
@@ -719,6 +688,8 @@
                   provider: 'spawn'
                   toolName: 'oc_explore'
                   persona: 'Fast agent specialized for exploring codebases. Inherits parent session model.'
+                  agentOptions:
+                    maxTokens: 32768
                   toolFilter:
                     allow:
                       - 'read'
@@ -740,6 +711,8 @@
                   provider: 'spawn'
                   toolName: 'oc_architect'
                   persona: '架构判断与设计裁决专家。技术选型/架构风格/模块与服务边界/架构评审/质量属性权衡/技术债治理时委派。产出 ADR 与多维权衡矩阵，并经 gate_architecture.py 门控。'
+                  agentOptions:
+                    maxTokens: 32768
                   toolFilter:
                     deny:
                       - 'todo_write'
@@ -759,6 +732,8 @@
                   provider: 'spawn'
                   toolName: 'oc_requirement'
                   persona: '需求发现与澄清专家（需求层·内部意图固化）。需求表述模糊、含互斥走法、可行性未知或需按产品设计复杂度走一遍时委派。产出 POV／HMW／product outcome／appetite／最小交接契约，并经 gate_requirement_discovery.py 门控。'
+                  agentOptions:
+                    maxTokens: 32768
                   toolFilter:
                     deny:
                       - 'todo_write'
@@ -778,6 +753,8 @@
                   provider: 'spawn'
                   toolName: 'oc_search'
                   persona: '搜索管线执行 Agent。只做搜索管线(发现+获取+交叉验证)，输出结构化证据包。Use for any task requiring external search, query disambiguation, multi-source fact-checking, or evidence-pack construction.'
+                  agentOptions:
+                    maxTokens: 32768
                   toolFilter:
                     allow:
                       - 'read'
@@ -800,7 +777,9 @@
                 config:
                   provider: 'spawn'
                   toolName: 'oc_reflection'
-                  persona: 'Reflection specialist for the self-evolution system. Analyzes Plan+Build cycles and generates Memory/Skill entries. Use ONLY for asynchronous post-cycle reflection tasks.'
+                  persona: 'Reflection specialist for the DSH-side self-evolution ring (R-A, ADR-012). Produces ONLY candidate memory entries under ~/.dsh/reflection/candidates/, in the intake format of the `dsh-reflection` skill; never writes any memory body (`~/.dsh/MEMORY.md` is main-agent-only), never writes to the opencode side. Use ONLY for asynchronous post-cycle reflection tasks.'
+                  agentOptions:
+                    maxTokens: 32768
                   toolFilter:
                     deny:
                       - 'ask_user_question'
@@ -819,6 +798,8 @@
                   provider: 'spawn'
                   toolName: 'oc_pdf'
                   persona: 'PDF reader, OCR, and document analysis specialist. Use for any task involving PDF files.'
+                  agentOptions:
+                    maxTokens: 32768
                   toolFilter:
                     deny:
                       - 'todo_write'
@@ -849,6 +830,25 @@
                   provider: 'spawn'
               - id: tool-workflow
                 name: '@deepseek-ai/dsh-tool-workflow'
+          - id: gate-runner
+            name: 'dsh-opencode-gate-runner'
+            config:
+              roots:
+                - 'workspace'
+                - '/home/zako-mio/.dsh/presets/opencode'
+                - '/home/zako-mio/.dsh/skills/opencode'
+              extensions:
+                - '.py'
+                - '.js'
+                - '.mjs'
+                - '.sh'
+              defaultTimeoutMs: 120000
+              maxTimeoutMs: 600000
+              outputCapBytes: 16384
+              maxArgs: 32
+              maxArgChars: 2048
+          - id: opencode-commands
+            name: 'dsh-opencode-commands'
           - id: tool-ask-user
             name: '@deepseek-ai/dsh-tool-ask-user'
           - id: tool-todo
@@ -955,12 +955,14 @@
 
                 ## 八、环境事实（DSH 侧，勿套 opencode 环境）
 
-                1. 密钥在 `~/dsh/.env`（含 `DEEPSEEK_API_KEY` / `OPENCODE_GO_API_KEY` / `COMMANDCODE_FREE_API_KEY` / `OPENCODE_GO_TMP_API_KEY`）：不得打印、不得落盘、不得泄露，仅按需 source。
-                2. web 服务由 systemd 管理：`dsh-web.service`；排查用 `journalctl -u dsh-web.service -n 100`。
-                3. 源码树 `/home/zako-mio/dsh` 是 git 树（基线 tag `dsh-v0.2.1-alpha.2`）；build 用 `pnpm run build`，换版后必须**先 `pnpm run clean` 再 build**，否则旧 `lib` 残留会触发 `MISSING_EXPORT`。源码树禁止被本 profile 修改。
-                4. **联网真实行为（DSH 是 Node/undici）**：模型 API 调用链与 `web_fetch` **都不读代理环境变量**；境外被墙站点直连会超时，需要境外内容时改用 `curl -x http://172.29.0.1:7890 <url>`。`bash` 继承 shell env；git 已配定向代理，操作 GitHub 始终走代理。
-                5. **本机没有可用的沙箱后端**（bubblewrap 与 Landlock 均不可用）：`workspace-write` 档下 `bash` 会被 fail-closed 拒绝。要跑命令必须把会话权限档切到 `danger-full-access`。这是环境事实，不是配置错误。
-                6. 运行目录 `~/.dsh/`（profile / 会话 / 技能）；自装插件已于 2026-10-10 全部移出。
+                机器特定事实（**密钥位置 / systemd 服务 / 源码树 / 联网真实行为 / 沙箱后端 / 运行目录与插件现状**）的
+                **单一承载处** = `dsh-config` 技能（`~/.dsh/skills/opencode/dsh-config/local/host-env-facts.md`，
+                沙箱细节另见同目录 `sandbox.md`）——本节不再重复它们，避免同一事实两份各自漂移。
+
+                本节**只保留被门控直接提取**的那一条（`verify_cli_reachability.py` = `verify_bundle.py` check 17
+                从它**提取**引导串与四个 CLI 的版本；⛔ 不得搬走、不得复制第二份）：
+
+                7. **外部 CLI 不在会话 PATH 上（见 bundle `README.md` §3.3）**：`bash` 的 PATH 为 `/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/snap/bin:/mnt/c/Windows:…:/mnt/c/Windows/System32/OpenSSH`（末尾 5 个 Windows 目录由 `dsh-wsl-desktop-path` 插件追加）—— **不含 nvm 的 bin，也不含 `~/.local/bin`** ⇒ `node`、`openspec`(1.9.0) / `lark-cli`(1.0.88) / `agent-browser`(0.34.0)（shebang 依赖 `node`）与 `headroom`(0.35.0) **裸名一律不可用**；调用前先引导：`PATH="$HOME/.nvm/versions/node/v24.19.0/bin:$HOME/.local/bin:$PATH" <cmd>`（或用绝对路径兜底）。`gh`(`/usr/bin/gh`) 与 `dot`(`/usr/bin/dot`) 本就在 PATH 上。⛔ **没有配置层解法**（`dsh-shell-env` 只认 `DSH_*` 键）；由 `verify_cli_reachability.py`（check 17）实测把关。
 
                 ## 九、留档规范
 
@@ -973,53 +975,26 @@
 
                 ## 十、记忆纪律
 
-                - 全局记忆库 `~/.config/opencode/MEMORY.md`（`§` 分段 + `[src:]` 签名）**只读**：严禁 `edit`/`write`/脚本修改。
-                - **不常驻上下文**：它是 append-only 变化文件，常驻会让系统前缀反复变化、缓存失效；需要时按需 `read`。
-                - DSH 侧**不存在**反思写入链（提供 `reflection_add`/`reflection_mark` 的插件已于 2026-10-10 移出）：本模式下记忆只能读、不能写，**勿声称已写入**。
+                - **两套记忆体，各自独立、常态互不索引**：DSH 侧正文 `~/.dsh/MEMORY.md`（`§` 分段 + `[src:]` 签名）**仅主 Agent 可写**且须经审阅链——`oc_reflection` 只写候选到 `~/.dsh/reflection/candidates/`，主 Agent 按 `dsh-reflection` skill 的方法论（零和预算 + 生命周期五件 + 容量口径）逐条裁决后落库；opencode 侧 `~/.config/opencode/MEMORY.md` **只读**，本侧不写、不索引。
+                - ⛔ 候选不得写到 opencode 侧 `memory_pending/`；⛔ DSH 侧载体不得出现指向 opencode 反思队列的指针。本侧载体现为 ADR-012（门控 6/6 PASS）定的 **R-A 文件载体**：**纪律强度不变**（写入仍须经链），只换载体。
+                - **不常驻上下文**：两份正文都是 append-only 变化文件（常驻会反复改写系统前缀、令缓存失效）⇒ 按需 `read`。
 
                 ## 十一、搜索行为
 
-                凡结论依赖外部世界的事实、数据、状态、版本、价格、政策、时间或人物身份，回答前必须先搜索并打开来源验证，不得只凭模型记忆。
-
-                - 搜索结果页、搜索摘要和第三方转述只能用来**发现线索**，不算完成验证；应尽量打开原始页面，并核对来源链接、发布时间和数据日期。
-                - 重要、争议性或可能变化的结论，至少用两个**相互独立**的来源交叉验证；做不到时必须明确标注「单一来源」或「未验证」。
-                - 来源优先级：官方页面、原始数据、论文、源码 > 权威二手报道 > 社区讨论。社交平台内容只能证明「有人这样说」，不能单独证明事实本身。
-                - 输出时必须区分「已验证事实」「基于证据的推断」「尚不确定的信息」；引用放在对应结论附近，且链接必须直接支持该结论。
-                - 搜索或访问失败时直接说明限制，**不得补写看似合理但未经实证的结论**。
-                - 纯创作、改写、翻译以及只处理用户已提供材料的任务不强制联网；一旦补充外部事实，仍须遵守以上规则。
-                - **时效性**：模型先验只适用于稳定知识（定义/分类/历史）；实时信息（新闻/最新版本/当前动态）必须走外部搜索。判断信号：关键词特征（含年份/最新/当前/新闻等）+ 知识截止日期对比。
+                - **触发**：外部事实核查、多源交叉验证、实体消歧、时效性信息、证据包构建。
+                - **命中 ⇒ 必须先加载 `search-methodology` skill 再作答**：⛔ 不得凭模型记忆或原生检索工具直接作答（检索纪律/来源信用地图/证据包契约的真相源在该 skill）。
 
                 ## 十二、架构行为（触发规则）
 
-                命中「架构类任务」后，先答完**规模三问**并在答复或计划中留痕：
-
-                | # | 判定问 | 触发条件 |
-                |---|---|---|
-                | Q1 | 是否改变**模块/服务边界或对外接口**（签名、契约、依赖方向）？ | 改 → 触发 |
-                | Q2 | 变更是否**跨模块传播**（连带改到 ≥2 个模块/包）？ | 是 → 触发 |
-                | Q3 | 反转成本是否**高于「改回配置/删文件」量级**（涉数据迁移、外部依赖更换、多文件重构）？ | 高于 → 触发 |
-
-                - **三问全不触发 → 咨询级**：不加载 skill、不委派、不产 ADR、不过门控；直接给结论与理由，末尾标 `[架构分档: 咨询级 · 三问全不触发 · 未走门控]`。
-                - **命中 ≥1 问** → 按 `architecture-judgment` skill 的 `routing.md` §9 定档（门控级 / 产出级 / 按需级）。
-                - **门控级三步不得跳过**：① 加载 `architecture-judgment` skill；② 委派 `oc_architect`；③ 方案设计与选型类须过 `_private/gate_architecture.py` 门控方可交付，未过不得声称完成。
-                - 用户**点名** `architecture-judgment`（如「用 architecture-judgment 做架构评审」）时，一律按门控级执行。
-                - **知识分层（刚性）**：方法论层 `MTH-*` 与本质层 `ESS-*` 重召回；技术实践层 `TEC-*` 仅作选型标尺佐证，只可写入 ADR 的 `standards_refs`，**不得**出现在 `decision`/`rationale` 等推荐位。
-                - 架构图不由本流程产出：主 Agent 加载 `diagram-lite` skill 按档位出图（默认 T2）。
-                - 涉及 openspec `design` 工件时：先加载 `architecture-judgment`（按其 `integrations/openspec-design.md`），委派 `oc_architect` 产 ADR + 权衡矩阵，`gate_architecture.py --kind adr --input <adr.json>` PASS 前不得定稿 `design.md`（FAIL 回传修正最多 2 轮，不得降级为口头通过）。⛔ 不修改 openspec 包，也不改其生成的 `openspec-*` skill（会被 `openspec update` 无条件覆写）。
-                - 门控脚本由**主 Agent 串行执行**（子 Agent 不授予 bash）；本机跑它需要 `danger-full-access` 档。
+                - **触发**：架构决策/选型/评审、模块与服务边界、质量属性权衡、技术债与演进治理、openspec `design` 定稿。
+                - **规模三问**（① 改边界或对外契约 ② 跨 ≥2 模块 ③ 反转成本高于「改回配置/删文件」）任一命中 ⇒ **加载 `architecture-judgment` skill** 并按 `routing.md §9` 定档；**门控级三步不得跳过**：① 加载该 skill ② 委派 `oc_architect` ③ `gate_architecture.py` **PASS 前不得交付**（≤2 轮修正，⛔ 不得降级为口头通过）；用户**点名**该 skill ⇒ 一律门控级。
+                - 三问全不触发 ⇒ **咨询级**：不加载/不委派/不产 ADR，末尾标 `[架构分档: 咨询级 · 三问全不触发 · 未走门控]`。`TEC-*` 只可进 `standards_refs`；图用 `diagram-lite` 出。
 
                 ## 十三、需求发现行为（触发规则）
 
-                1. **定档前置（机械，不以「看难度」裁量）**：命中需求发现类表述后先跑
-                   `python3 /home/zako-mio/opencode/archive/Mission-file/2026-09/0916-产品设计方法论/tools/check_tier_conditions.py --enter "<需求原文>"`
-                   （该绑定同时记录在 `requirement-discovery/_private/local-bindings.json` 的 `TIER_TOOL`）。
-                   - **简单档** ⇒ 不加载 skill、不委派、不产工件；走三步（意图一句 → 做第一个可跑产物 → 拿反馈即停），末尾标 `[需求分档: 简单档]`。
-                   - **复杂档** ⇒ 加载 `requirement-discovery` skill 按其 `workflow.md` 阶段 0–5 执行；涉真实需求时委派 `oc_requirement`。
-                   - ⚠ 工具不可用 ⇒ 显式标 `FAIL`，**不得凭感觉选档**。
-                2. **边界（防抢词）**：不产 ADR / 选型矩阵 / 质量属性权衡（→ `architecture-judgment`）；不产 proposal/specs/tasks（→ `openspec-propose`，仅显式交接）；不写代码、不做 TDD。
-                3. **外部事实与访谈**：需要外部事实时**调用** `search-methodology` skill，不自建检索/验证；访谈**消费** `grill-me` 协议，不另造访谈引擎。
-                4. **验证优先**：门控全绿 / 产物被验收 / 流程走完**一律不得**当作「已达成」；达成 = **消费证据**（真实触发实例 + 每次落产物，经门控 ledger）。阈值不得由规模直觉推导；引用外部理论须显式标注人群与情境边界。
-                5. **显式入口**：用户点名 `requirement-discovery` 时，一律按**复杂档**执行。
+                - **触发**：需求表述模糊、含多种互斥走法、可行性未知；或用户**点名** `requirement-discovery`（点名 ⇒ 一律复杂档）。
+                - **定档前置（机械）**：命中后先跑该 skill 的 `TIER_TOOL`（绑定见 `_private/local-bindings.json`）。**简单档** ⇒ 不加载/不委派/不产工件，走三步（意图一句 → 可跑产物 → 拿反馈即停），标 `[需求分档: 简单档]`；**复杂档** ⇒ 加载该 skill 按 `workflow.md` 阶段 0–5 并委派 `oc_requirement`；⚠ 工具不可用 ⇒ 标 `FAIL`。
+                - 边界与证据纪律见该 skill 正文（⛔ 门控全绿 ≠ 已达成）。
 
                 ## 十四、视觉与出图归位
 
@@ -1029,15 +1004,7 @@
 
                 ## 十五、迁移适配注记（第 3 层）
 
-                本模式的纪律是 opencode 行为层的**化用**而非照搬。以下类别的 opencode 机制**未迁移**，不要再按它们行事：
-
-                - 推理档/变体切换与成本对比、强制门控字面输出格式、跨阶段复杂度标记继承 → 删除（DSH 无变体概念，模型与推理档由 profile route 声明）。
-                - opencode 的截断阈值（工具结果 3000 字符 / 文件 2000 行 / grep 命中 50 条）→ 删除（DSH 用 `tool-result-pruner` 与 spill，阈值不同，照抄会误导）。
-                - opencode 侧「读代理环境变量」的联网结论 → 已替换为第八节的 DSH 版。
-                - 角色检索脚本、反思写入链、会话记忆压缩模板、浏览器标签页通道、命令级权限白名单 → 删除或标注不保真。
-                - 委派/发问/待办/联网/计划退出等工具名 → 已改写为本模式的具名 worker 与 DSH 对应工具。
-
-                逐条理由与来源指纹见 bundle 内 `ADAPTATION-NOTES.md`；权限近似与损失清单见 `README.md`。
+                本模式纪律是 opencode 行为层的**化用**：未迁移机制清单与逐条理由见 `ADAPTATION-NOTES.md`，权限近似与损失清单见 `README.md` §4。**两点最易踩**：① 门控执行通道＝窄工具 `run_gate`（只收「脚本路径 + argv 数组」，⛔ 非 shell）；② worker 名/工具名一律用本模式具名 worker（`subagent`/`oc_*`）与 DSH 工具名。
           - id: agent-instructions
             name: '@deepseek-ai/dsh-agent-instructions'
             config:
@@ -1128,6 +1095,8 @@
                   toolName: 'subagent'
                   persona: 'General-purpose agent for researching complex questions and executing multi-step tasks. Inherits parent session model.'
                   modelSelectionSettings: true
+                  agentOptions:
+                    maxTokens: 32768
                   toolFilter:
                     deny:
                       - 'todo_write'
@@ -1151,6 +1120,8 @@
                   provider: 'spawn'
                   toolName: 'oc_explore'
                   persona: 'Fast agent specialized for exploring codebases. Inherits parent session model.'
+                  agentOptions:
+                    maxTokens: 32768
                   toolFilter:
                     allow:
                       - 'read'
@@ -1172,6 +1143,8 @@
                   provider: 'spawn'
                   toolName: 'oc_architect'
                   persona: '架构判断与设计裁决专家。技术选型/架构风格/模块与服务边界/架构评审/质量属性权衡/技术债治理时委派。产出 ADR 与多维权衡矩阵，并经 gate_architecture.py 门控。'
+                  agentOptions:
+                    maxTokens: 32768
                   toolFilter:
                     deny:
                       - 'todo_write'
@@ -1191,6 +1164,8 @@
                   provider: 'spawn'
                   toolName: 'oc_requirement'
                   persona: '需求发现与澄清专家（需求层·内部意图固化）。需求表述模糊、含互斥走法、可行性未知或需按产品设计复杂度走一遍时委派。产出 POV／HMW／product outcome／appetite／最小交接契约，并经 gate_requirement_discovery.py 门控。'
+                  agentOptions:
+                    maxTokens: 32768
                   toolFilter:
                     deny:
                       - 'todo_write'
@@ -1210,6 +1185,8 @@
                   provider: 'spawn'
                   toolName: 'oc_search'
                   persona: '搜索管线执行 Agent。只做搜索管线(发现+获取+交叉验证)，输出结构化证据包。Use for any task requiring external search, query disambiguation, multi-source fact-checking, or evidence-pack construction.'
+                  agentOptions:
+                    maxTokens: 32768
                   toolFilter:
                     allow:
                       - 'read'
@@ -1232,7 +1209,9 @@
                 config:
                   provider: 'spawn'
                   toolName: 'oc_reflection'
-                  persona: 'Reflection specialist for the self-evolution system. Analyzes Plan+Build cycles and generates Memory/Skill entries. Use ONLY for asynchronous post-cycle reflection tasks.'
+                  persona: 'Reflection specialist for the DSH-side self-evolution ring (R-A, ADR-012). Produces ONLY candidate memory entries under ~/.dsh/reflection/candidates/, in the intake format of the `dsh-reflection` skill; never writes any memory body (`~/.dsh/MEMORY.md` is main-agent-only), never writes to the opencode side. Use ONLY for asynchronous post-cycle reflection tasks.'
+                  agentOptions:
+                    maxTokens: 32768
                   toolFilter:
                     deny:
                       - 'ask_user_question'
@@ -1251,6 +1230,8 @@
                   provider: 'spawn'
                   toolName: 'oc_pdf'
                   persona: 'PDF reader, OCR, and document analysis specialist. Use for any task involving PDF files.'
+                  agentOptions:
+                    maxTokens: 32768
                   toolFilter:
                     deny:
                       - 'todo_write'
@@ -1283,6 +1264,25 @@
               - id: tool-workflow
                 name: '@deepseek-ai/dsh-tool-workflow'
                 disabled: true
+          - id: gate-runner
+            name: 'dsh-opencode-gate-runner'
+            config:
+              roots:
+                - 'workspace'
+                - '/home/zako-mio/.dsh/presets/opencode'
+                - '/home/zako-mio/.dsh/skills/opencode'
+              extensions:
+                - '.py'
+                - '.js'
+                - '.mjs'
+                - '.sh'
+              defaultTimeoutMs: 120000
+              maxTimeoutMs: 600000
+              outputCapBytes: 16384
+              maxArgs: 32
+              maxArgChars: 2048
+          - id: opencode-commands
+            name: 'dsh-opencode-commands'
           - id: tool-ask-user
             name: '@deepseek-ai/dsh-tool-ask-user'
           - id: tool-todo

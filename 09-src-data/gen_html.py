@@ -178,7 +178,7 @@ def page(title, crumb, body, active_file, prev=None, nxt=None):
 {body}
 <div class="pager">{p}{n}</div>
 <footer class="footer">
-<span>控制理论 ⊗ Agent 设计知识库 · v1.4 dsh 装配层 + opencode 月度追平版（6 框架 + 14 精装房 + opencode-custom + dsh-custom）</span>
+<span>控制理论 ⊗ Agent 设计知识库 · v1.5 dsh 装配层二次追平版（6 框架 + 14 精装房 + opencode-custom + dsh-custom）</span>
 <span class="fbrand">data: 09-src-data · contract: 00-contract</span>
 </footer>
 </div></div></div></body></html>"""
@@ -229,7 +229,7 @@ def gen_overview():
 <div class="signal">
   <div class="signal-head">
     <span class="label">System Loop · 控制回路</span>
-    <span class="tag">v1.4 · 6 framework + 14 premium + 2 variants</span>
+    <span class="tag">v1.5 · 6 framework + 14 premium + 2 variants</span>
   </div>
   <svg viewBox="0 0 900 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="五环控制回路：目标 r 指令 → P 规划 → T 执行 → 世界/环境 → E 评估 → M 记忆 → R 反思，修正量回馈 P/T">
     <defs>
@@ -337,7 +337,7 @@ def gen_overview():
 </div>
 
 <h2><span class="idx">05</span>自改造变体专题（2 个）</h2>
-<p class="lead">两个宿主各有一个「官方内核 + 个人装配层」变体：opencode-custom 补强 E/R 弱环（10 agent / 45 skill 单根 / 6 MCP / 2 command，精装度 2.9→3.9）；dsh-custom 从 preset 层到宿主 profile 整体装配（3 preset / 45 skill（可见 42）/ 7 worker / permission 5 档，精装度 3.6→3.8）。两者均为个人变体、不参与 14 产品市售排名。</p>
+<p class="lead">两个宿主各有一个「官方内核 + 个人装配层」变体：opencode-custom 补强 E/R 弱环（10 agent / 45 skill 单根 / 6 MCP / 2 command，精装度 2.9→3.9）；dsh-custom 从 preset 层到宿主 profile 整体装配（3 preset / 主根 49 skill（可见 46）/ 7 worker / permission 5 档，精装度 3.6→3.9）。两者均为个人变体、不参与 14 产品市售排名。</p>
 <div class="grid cols-2">
   <a class="portal-card" href="case-opencode-custom.html" style="background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);padding:var(--space-4);text-decoration:none">
     <span class="num">VARIANT</span><h3 style="margin:0 0 6px">opencode-custom 控制论画像</h3><p style="margin:0">内核继承 + 装配层增强：10 agent（含 architect-worker）/ 45 skill 单根 / 6 MCP / 2 command；GATE/契约/专职 worker/Reflection，叠加架构判断三层栈与能力扩展 SOP，把前馈主导内核改造为跨会话自演化闭环</p>
@@ -346,10 +346,10 @@ def gen_overview():
     <span class="num">COMPARE</span><h3 style="margin:0 0 6px">官方 opencode vs 自改造对照</h3><p style="margin:0">五环雷达叠加 + 逐环 delta + 精装度 8 维对比，量化 2.9→3.9 的跃升来源；复评确认能力纵深未跨档位、维持 3.9</p>
   </a>
   <a class="portal-card" href="case-dsh-custom.html" style="background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);padding:var(--space-4);text-decoration:none">
-    <span class="num">VARIANT</span><h3 style="margin:0 0 6px">dsh-custom 控制论画像</h3><p style="margin:0">dsh-opencode-port 装配层：3 preset（standard/creator/ptc）/ 45 派生 skill（模型可见 42）/ 7 worker（含 oc_architect、oc_reflection）/ permission 5 档 / persona 15 节；把设定值固化进 preset 层，E 环由领域门控栈补强至 3.5，R 环因 dsh-reflection 插件移出而维持持平</p>
+    <span class="num">VARIANT</span><h3 style="margin:0 0 6px">dsh-custom 控制论画像</h3><p style="margin:0">dsh-opencode-port 装配层：3 preset（standard/creator/ptc）/ 主根 49 skill（可见 46）/ 7 worker（含 oc_architect、oc_reflection）/ permission 5 档 / persona 15 节；把设定值固化进 preset 层，E 环由领域门控栈 + run_gate 门控通道补强至 4.0（对官方 Δ+2.0，达反转阈值），R 环由 R-A 载体追平至 4.0</p>
   </a>
   <a class="portal-card" href="compare-dsh.html" style="background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);padding:var(--space-4);text-decoration:none">
-    <span class="num">COMPARE</span><h3 style="margin:0 0 6px">官方 dsh vs 装配层对照</h3><p style="margin:0">五环雷达叠加 + 逐环 delta + 精装度 8 维对比，量化 3.6→3.8（Δ+0.2，单维小步）的来源；含「单点分 2.5 vs 模型分 3.6 不可相减」的口径披露</p>
+    <span class="num">COMPARE</span><h3 style="margin:0 0 6px">官方 dsh vs 装配层对照</h3><p style="margin:0">五环雷达叠加 + 逐环 delta + 精装度 8 维对比，量化 3.6→3.9（Δ+0.3，单维小步）的来源；含「单点分 2.5 vs 模型分 3.6 不可相减」的口径披露</p>
   </a>
 </div>
 <p style="font-size:13px;color:var(--muted);margin-top:var(--space-3)">标准实验组：<a href="exp-opencode-custom.html">exp-opencode-custom</a>（Reflection 链路 / 架构三层栈 / 能力扩展 SOP / MEMORY 门禁旁路）· <a href="exp-dsh-custom.html">exp-dsh-custom</a>（preset 编队 / persona 税 / 迁移损失 / PTC 空指向）——两个变体的实验组与画像页同构，可交叉对照。</p>
@@ -796,28 +796,36 @@ def gen_compare_dsh():
     # 10 类改造清单（来自 03-cases/dsh-custom-diff.md §2）
     changes = [
         ("preset 编队层", "新增 3 preset：opencode-standard(order 11) / opencode-creator(12) / opencode-ptc(13)；顶层插件行 21/22/22、递归展开子行 34/35/35", "SP 主 + P", "SP：三档设定值固化；P：模式即编队"),
-        ("persona 层", "15 节 / 8018 字符（≈3084 tokens）persona 逐字符进三 preset 的 dsh-persona 行；遮蔽宿主 system-prompt.personaPrefix（2790 字符 / 8 小节 → 变死配置）", "SP + E", "SP：行为纪律随模式走；E：判据可复算"),
-        ("skill 库", "45 派生目录单根（~/.dsh/skills/opencode/）；模型可见 42 = 45 − 3 件 disable-model-invocation；_overlay 6 件 openspec 系叠加", "T + E", "T：能力密度提升；E：门控 0 问题"),
+        ("persona 层", "15 节 / 6524 字符（v1.5 收敛后；v1.4 为 8018）persona 逐字符进三 preset 的 dsh-persona 行；遮蔽宿主 system-prompt.personaPrefix（2790 字符 / 8 小节 → 变死配置）；v1.5 把机器特定事实外迁至 dsh-config 技能的 local/host-env-facts.md", "SP + E", "SP：行为纪律随模式走；E：判据可复算"),
+        ("skill 库", "主根 49 = 派生 47 + DSH 原生 2（dsh-config / dsh-reflection）；模型可见 46 = 49 − 3 件 disable-model-invocation；_overlay 6 件 openspec 系叠加", "T + E", "T：能力密度提升；E：门控 0 问题"),
         ("委派编队", "7 worker（general/explore/architect/requirement-discovery/search/reflection/pdf）→ 别名 subagent/oc_explore/oc_architect/oc_requirement/oc_search/oc_reflection/oc_pdf；delegation 组 12 子行；worker 均省略 maxDepth，靠 toolFilter.deny 阻止再委派", "P 主 + T", "P：主 Agent 编排 + 专职执行；T：工具面按 worker 隔离"),
-        ("权限层", "宿主 presets 由 3 档 → 5 档（+opencode-plan / opencode-build），defaultPreset: read-only 未变", "T（安全）", "T：审批档增加，非隔离档增加"),
+        ("权限层", "宿主 presets 由 3 档 → 5 档（+opencode-plan / opencode-build）；v1.5 defaultPreset 由 read-only 改为 opencode-plan", "T（安全）", "T：审批档增加，非隔离档增加"),
         ("模型接入层", "宿主 4 provider（zai / opencode-go / commandcode / opencode-go-tmp）+ deepseek 直连；含 inputModalities 视觉声明", "T（基建）", "T：模型接入面扩大，支撑视觉降级路径"),
         ("plan-mode 层", "plan:policy section 由内置 2358 → 2515 字符，追加 3 行中文逐题访谈指引（指向 grill-me）", "SP + P", "SP：计划门附访谈约束"),
         ("工具面分层", "内置 standard 31 / opencode-standard 37（含 6 个 oc_*）/ opencode-creator 40（+cordis_inspect_*、plugin_manager）/ opencode-ptc 1（仅 run_code，workflow 双禁）", "T", "T：同一内核派生 4 种执行面"),
         ("插件收口", "plugin_manager 计数 188 → 191（+3 行 preset）；standard/ptc 硬禁、creator 条件启用", "T（治理）", "T：自省面按模式收口，防越权自改"),
         ("领域门控栈", "architecture-judgment（gate_architecture.py ADR schema 门控）+ requirement-discovery（分层定档）+ search-methodology（信源分级）+ criterion-design-validation", "E 主 + P", "E：首个领域级自动评估门；P：领域任务路由固化"),
+        ("门控执行通道（v1.5）", "三 preset 各 +1 顶层 gate-runner 行（本地插件 dsh-opencode-gate-runner）：脚本路径 + argv 数组、roots / 扩展名白名单、超时 120s/600s、输出 16KB 封顶后 spill；负向用例 18→30 条，node --test 56/56", "E 主 + T", "E：产出方恢复门控执行能力 ⇒ Δ 达反转阈值；T：工具面新增受限执行通道"),
+        ("dsh-config 能力包（v1.5）", "本机分层实况索引：SKILL.md + ref/ 8 + local/ 11 + ops/ 4 + troubleshooting/ 1 + claims.yaml（声明账本）+ conflicts.md；与官方自带面（settings seam / config-editor / plugin_manager / cordis_inspect_query）分工不重叠", "E + SP", "E：判据锚点与层归属可机检；SP：口径唯一化"),
+        ("R 环 R-A 载体（v1.5）", "~/.dsh/MEMORY.md（14 个 § 段 / 10815 B / 14 条 [src:] 签名）+ reflection/candidates 15 份 + archive 1 份 + dsh-reflection skill（零和预算 / 生命周期五件 / 容量口径）；写入链＝候选→主 Agent 审阅→落库", "R 主 + M", "R：闭环接通（迁移损失追平）；M：跨会话记忆载体落地"),
+        ("命令注册插件（v1.5）", "dsh-opencode-commands 注册 /arch、/rd、/reflection 三条命令（命令级工作流入口）", "SP + P", "SP：显式设定值入口；P：领域任务路由"),
+        ("模型路由治理（v1.5）", "reasoningEfforts 三档（low/high/max，刻意不声明 off）+ maxTokens 8192→32768（撤销「方案 D」止损）+ deepseek-v4-flash 16384→32768", "T（基建）", "T：输出上限与思考档可治理"),
+        ("门控判据扩面（v1.5）", "verify_bundle 判据 13 → 20 项：新增 14 门控执行通道 / 15 真实挂载审计 / 16 工具 output.schema 子集 / 17 会话 PATH 引导 / 18 dsh-config 账本漂移 / 19 迁移状态 / 20 命令注册插件", "E", "E：判据面覆盖「插件能否真实挂载」与「迁移是否落地」"),
     ]
     ch_rows = "".join(f'<tr><td><b>{a}</b></td><td>{b}</td><td class="mono">{c}</td><td>{d}</td></tr>'
                       for a, b, c, d in changes)
 
     findings = [
-        ("发现一 · 迁移有损", "同一装配层跨平台迁移存在「能力损失」——E 环只判增强、不判反转。",
-         "opencode 侧的 architect-worker 可自跑门控脚本（有 bash）；dsh 侧子 Agent 无 bash（仅 read/write/edit/glob/grep）→ gate_architecture.py 无法在子 Agent 内自跑。同一套「skill + worker + 门控脚本」装配，换了宿主就从「产出方与验证方天然分离且可自动执行」退化为「验证动作须由父层代跑」。故 E 环官方 2.0 → 装配层 3.5，Δ+1.5 只记「增强」不记「反转」（阈值 Δ≥2.0）。"),
-        ("发现二 · 反思断裂", "R 环迁移断裂，闭环未接通（Δ0）。",
-         "提供 reflection_add / reflection_mark 的 dsh-reflection 插件已于 2026-10-10 随批次移出 → persona 中的 MEMORY / reflection 段在 dsh 侧不可用。装配层照搬了 opencode 侧的反思纪律文本，却没有承载它的工具面：纪律是死的，链路是断的。这是「提示词可迁移、运行时能力不可迁移」的典型样本，R 环维持 3.0（标注「持平·迁移损失」）。"),
+        ("发现一 · 迁移损失已追平", "v1.4 判「R 环迁移断裂（Δ0）」——v1.5 已推翻。",
+         "R-A 文件载体落地（ADR-012，门控 6/6）：~/.dsh/MEMORY.md 存在（14 个 § 段 / 10815 B / 14 条 [src:] 签名）+ reflection/candidates 15 份 + archive 1 份 + dsh-reflection skill 承载零和预算 / 生命周期五件 / 容量口径。写入链＝候选→主 Agent 审阅→落库。⇒ R 环 3.0 → 4.0（Δ+1.0，增强），「最弱环＝R」的结论随之作废。"),
+        ("发现二 · E 环达反转阈值", "v1.4 的抑制项「门控脚本依赖 bash 而子 Agent 无 bash」——v1.5 已消解。",
+         "run_gate 窄通道（ADR-010）实机生效：三 preset 各 +1 顶层 gate-runner 行（本地插件 dsh-opencode-gate-runner），参数面受限（脚本路径 + argv 数组、roots / 扩展名白名单、超时 120s/600s、输出 16KB 封顶后 spill），负向用例 18→30 条。产出方恢复门控执行能力 ⇒ E 环 3.5 → 4.0，对官方 2.0 为 Δ+2.0，达反转阈值（v1.4 因该抑制项只记「增强」）。仍为领域级覆盖（架构 / 需求两域）故不取 4.5+。"),
         ("发现三 · 门控判据", "bundle 自家门控曾假阳性 FAIL——判据应绑「被消费字段」而非「整文件指纹」。",
          "原判据对「活文件」取整文件 sha256，脆性极高：GUI 写回一个 ui-theme.fontSize 即导致指纹漂移 → 门控 FAIL，而 bundle 实际消费的字段一个都没变。已改为 scoped_digest，只判 bundle 实际消费字段。教训具跨域普适性：门控判据的对象须与被消费的真实形态对齐；对「既存且会被他方合法改写」的文件取整文件指纹，同时制造假 FAIL 与覆盖错觉。"),
         ("发现四 · 结构性代价", "persona 税与 PTC 空指向——装配层的两处结构性代价。",
-         "其一，persona 税：每请求 +8018 字符（≈3084 tokens），而内置 standard 的对应 section 仅 54 字符——约 150 倍开销，且三 preset 各自完整复制一份。其二，PTC 空指向：PTC 模式下工具面坍缩为单 run_code（系统提示 13658 → 53826 字符），但 persona §二 仍写「本模式提供 subagent、oc_explore…」→ 指向了不存在的工具，模型据文本会尝试调用被禁能力。系统提示膨胀 4 倍、有效工具仅 1 个，是本装配层最尖锐的自相矛盾。"),
+         "其一，persona 税：每请求 +6524 字符（v1.5 收敛后；v1.4 为 8018），而内置 standard 的对应 section 仅 54 字符（v1.4 实测值，v1.5 未复测）——约百倍开销，且三 preset 各自完整复制一份。其二，PTC 空指向：PTC 模式下工具面坍缩为单 run_code，但 persona §二 仍写「本模式提供 subagent、oc_explore…」→ 指向了不存在的工具（v1.4 实测，v1.5 未复测）。"),
+        ("发现五 · 口径漂移是复评的主要风险", "同一事实出现多套口径，且两条线存在同名件——比数值本身更容易致错。",
+         "① skill 计数四套并存（v1.4 时点 45 / README 46 / reconcile 47 / 实测主根 49），v1.5 已把口径唯一化写入契约 §2.6；② 沙箱：v1.4 记「本机无可用后端」，v1.5 实测 bwrap enforcement=full ⇒ 属环境事实更正，⛔ 不得当作装配层收益；③ 迁移线与 0928 线各有一个 ADR-011（不同域）⇒ 引用必须带路径限定。"),
     ]
     find_cards = "".join(f'<div class="card"><span class="num">{t.split(" · ")[0]}</span>'
                          f'<h3 style="margin:0 0 6px">{t.split(" · ", 1)[1]}</h3>'
@@ -831,12 +839,12 @@ def gen_compare_dsh():
     <span class="tag">dsh {ps.fmt(dcs.final(OFF))} → {ps.fmt(dcs.final(CUS))}</span></div>
   <span class="kicker" style="font-family:var(--font-mono);letter-spacing:.12em;color:#7E8CA5;font-size:11px">COMPARE</span>
   <h1 style="font-size:26px;margin:8px 0 10px;color:#fff;letter-spacing:-.02em">官方 dsh ⊗ dsh-custom</h1>
-  <p style="color:#CBD4E2;max-width:760px;line-height:1.7;font-size:15px;margin:0 0 14px">核心命题三线：<b>首次回填模型分</b>（本轮首次把 dsh 纳入精装度 v2.0：官方 {ps.fmt(dcs.final(OFF))} / 装配层 {ps.fmt(dcs.final(CUS))}，旧单点分 2.5 属历史口径、不可相减）· <b>单维小步跃升 {ps.fmt(dcs.final(OFF))}→{ps.fmt(dcs.final(CUS))}</b>（8 维中仅 Skill 库 +1）· <b>迁移有损</b>（E 环只判增强不判反转，R 环因 dsh-reflection 插件移出而持平）。</p>
+  <p style="color:#CBD4E2;max-width:760px;line-height:1.7;font-size:15px;margin:0 0 14px">核心命题三线：<b>首次回填模型分</b>（v1.4 首次把 dsh 纳入精装度 v2.0：官方 {ps.fmt(dcs.final(OFF))} / 装配层 {ps.fmt(dcs.final(CUS))}，旧单点分 2.5 属历史口径、不可相减）· <b>单维小步跃升 {ps.fmt(dcs.final(OFF))}→{ps.fmt(dcs.final(CUS))}</b>（v1.5 的 8 维变动仅 memory +1）· <b>迁移损失已追平</b>（R 环由 R-A 载体接通，E 环因 run_gate 门控通道达 Δ+2.0 反转阈值）。</p>
   <div class="signal-legend">
     <span><i style="background:#5A6B85"></i>官方内核</span>
     <span><i style="background:#C77700"></i>装配层综合</span>
     <span><i style="width:22px;height:0;border-radius:0;border-top:2px solid #C77700"></i>增强环</span>
-    <span><i style="width:22px;height:0;border-radius:0;border-top:2px dashed #94A3B8"></i>持平环（迁移损失）</span>
+    <span><i style="width:22px;height:0;border-radius:0;border-top:2px dashed #94A3B8"></i>持平环</span>
   </div>
 </div>"""
 
@@ -847,7 +855,8 @@ def gen_compare_dsh():
 ② <b>新口径</b>（本轮首次）：首次把 dsh 纳入精装度 v2.0 模型（硬门槛 + 8 维加权 + 一票否决），得官方 <b>{ps.fmt(dcs.final(OFF))}</b> / 装配层 <b>{ps.fmt(dcs.final(CUS))}</b>。
 ③ <b>不可相减</b>：{ps.fmt(dcs.final(OFF))} 与 2.5 <b>不同源</b>，故「2.5 → {ps.fmt(dcs.final(OFF))}」在数学上不成立，本页拒绝给出该数字；旧单点分作为历史口径保留并标注。
 ④ <b>同步校正</b>：本轮把 <code>FRAMEWORK_DATA</code> 里 opencode 的 3.0 校正为模型口径 2.9（原值属口径漂移，一并归位）。
-⑤ <b>排名隔离</b>：<code>dsh_custom_scores.py</code> 独立于 <code>premium_scores.PRODUCTS</code>，不参与 14 产品市售排名；官方 dsh 与 dsh-custom 构成同源对照对，只回答「装配层带来多少增量」。</div>
+⑤ <b>排名隔离</b>：<code>dsh_custom_scores.py</code> 独立于 <code>premium_scores.PRODUCTS</code>，不参与 14 产品市售排名；官方 dsh 与 dsh-custom 构成同源对照对，只回答「装配层带来多少增量」。
+⑥ <b>v1.5 两条新披露</b>：<b>(a) 沙箱证据文本更正</b>——v1.4 记「本机无可用后端（bubblewrap/Landlock 均不可用）→ 实际 fail-closed」，v1.5 实测 <code>bwrap</code> 已装、<code>enforcement=full</code>，该断言<b>已证伪</b>；此为<b>环境事实更正</b>，沙箱维分值<b>未变（4）</b>，⛔ 不得呈现为装配层收益。<b>(b) skill 计数口径唯一化</b>——主根 <b>49</b> = 派生 <b>47</b> + DSH 原生 <b>2</b>；模型可见 <b>46</b> = 49 − 3；<code>_overlay</code> 6（详见契约 §2.6）。</div>
 
 <h2><span class="idx">01</span>六环雷达 · 官方内核 vs 装配层综合</h2>
 <div class="ring-section" style="padding:var(--space-4)">
@@ -860,7 +869,7 @@ def gen_compare_dsh():
         {''.join(f'<tr><td><span class="ring-tag" style="background:{dcs.RING_META[r]["color"]}">{r}</span> {dcs.RING_META[r]["label"]}</td><td class="mono">{dcs.RING_SCORES[OFF][r]}</td><td class="mono" style="font-weight:700;color:{dcs.RING_META[r]["color"]}">{dcs.RING_SCORES[CUS][r]}</td><td class="mono">{dcs.ring_delta(r)[2]:+.1f}</td><td>{dcs.ring_delta(r)[3]}</td></tr>' for r in order)}
         </tbody>
       </table>
-      <p style="font-size:12.5px;color:var(--muted);margin:0">分值 0–5，取自 <code>09-src-data/dsh_custom_scores.py</code>（RING_SCORES）。判据：Δ≥2.0 记「反转」，Δ&gt;0 记「增强」，Δ=0 记「持平」。SP 环按 RING_ORDER 单列，不计入五环但为五环提供目标参考序列；本轮无环达反转阈值，E 环 Δ+1.5 为最强增强。</p>
+      <p style="font-size:12.5px;color:var(--muted);margin:0">分值 0–5，取自 <code>09-src-data/dsh_custom_scores.py</code>（RING_SCORES）。判据：Δ≥2.0 记「反转」，Δ&gt;0 记「增强」，Δ=0 记「持平」。SP 环按 RING_ORDER 单列，不计入五环但为五环提供目标参考序列；v1.5 下 <b>E 环 Δ+2.0 达反转阈值</b>（run_gate 消解抑制项），R 环 Δ+1.0、M 环 Δ+0.5；最弱环为 <b>R 与 E 并列 4.0</b>。</p>
     </div>
   </div>
 </div>
@@ -873,7 +882,7 @@ def gen_compare_dsh():
   <thead><tr><th>维度</th><th>权重</th><th>官方</th><th>装配层</th><th>Δ</th><th>依据</th></tr></thead>
   <tbody>{''.join(dim_rows)}</tbody>
 </table>
-<p style="font-size:12.5px;color:var(--muted)">数值唯一来源：<code>dsh_custom_scores.py</code> 的 <code>SCORES</code> / <code>WEIGHTS</code>（与 <code>premium_scores.WEIGHTS</code> 同源）；官方加权 {dcs.weighted(OFF):.2f}→{ps.fmt(dcs.final(OFF))}，装配层加权 {dcs.weighted(CUS):.2f}→{ps.fmt(dcs.final(CUS))}，均过端到端硬门槛、无一票否决。Δ+0.2 的全部来源 = Skill 维度 +1 × 权重 12% = +0.12，叠加四舍五入后的显示差——这是一次「单维小步」而非「全面跃升」；二者同落 <code>tier()</code> 的「成品化受限」档（≥3.5 且 &lt;4.5），均未跨档。</p>
+<p style="font-size:12.5px;color:var(--muted)">数值唯一来源：<code>dsh_custom_scores.py</code> 的 <code>SCORES</code> / <code>WEIGHTS</code>（与 <code>premium_scores.WEIGHTS</code> 同源）；官方加权 {dcs.weighted(OFF):.2f}→{ps.fmt(dcs.final(OFF))}，装配层加权 {dcs.weighted(CUS):.2f}→{ps.fmt(dcs.final(CUS))}，均过端到端硬门槛、无一票否决。v1.5 的 Δ+0.3 来源 = <b>memory 维度 +1 × 权重 10% = +0.10</b>，叠加四舍五入后的显示差——这是一次「单维小步」而非「全面跃升」；二者同落 <code>tier()</code> 的「成品化受限」档（≥3.5 且 &lt;4.5），均未跨档。</p>
 
 <h2><span class="idx">04</span>10 类改造清单</h2>
 <table>

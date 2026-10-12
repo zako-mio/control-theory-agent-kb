@@ -118,20 +118,20 @@
       "segment": "八、环境事实",
       "source": "/home/zako-mio/.dsh/profiles/web/cordis.patch.yml",
       "transform": "rewritten",
-      "note": "沿用 profile 既有 DSH 版七段纪律中的环境事实段，并补「无沙箱后端」",
+      "note": "**2026-10-12 起**：机器特定事实已外迁至 `dsh-config` 技能的 `local/host-env-facts.md`（单一承载处）；本节只留「唯一指针 + 被判据直接提取的第 7 条」。第 7 条（外部 CLI 不在会话 PATH 上）的引导串是 check 17 的判据来源，⛔ 不得搬走或复制",
       "fingerprint": {
         "path": "/home/zako-mio/.dsh/profiles/web/cordis.patch.yml",
         "exists": true,
-        "sha256": "9c00a1a14339c24c187c8865f25a0c01121ee1fcee8d3852f41f4d50df970c7b",
-        "bytes": 16203,
-        "lines": 269,
+        "sha256": "70d7abf72773c31b57131a7b863bbcf39c5721ba30c0093b13c987d500f3e419",
+        "bytes": 25704,
+        "lines": 373,
         "firstLine": "# dsh profile patch — web 行为纪律 persona + 模型供应商（基线 0.2.1-alpha.2，2026-10-10 更新）",
         "scoped": {
           "fields": [
             "system-prompt.personaPrefix"
           ],
-          "sha256": "ab5059e793a5382e891b56c2b3f9cd4b6ce0c009db1ecd7e980e7d3560c5524c",
-          "bytes": 4903
+          "sha256": "50a65ed2d30f1ca3c2d841621cf61eac4dfeab7aa7cee36f1aa7b3287e1854ba",
+          "bytes": 5396
         }
       }
     },
@@ -153,7 +153,7 @@
       "segment": "十、记忆纪律",
       "source": "/home/zako-mio/.config/opencode/instructions/auto-mode.md",
       "transform": "rewritten",
-      "note": "保留 MEMORY.md 只读纪律；删除反思写入链；补「不常驻上下文」理由",
+      "note": "保留 MEMORY.md 只读纪律；队列工具链缺失按实测收窄登记（候选产出通道仍在）；补「不常驻上下文」理由",
       "fingerprint": {
         "path": "/home/zako-mio/.config/opencode/instructions/auto-mode.md",
         "exists": true,
@@ -181,7 +181,7 @@
       "segment": "十二、架构行为",
       "source": "/home/zako-mio/.config/opencode/instructions/architecture-behavior.md",
       "transform": "rewritten",
-      "note": "保留规模三问 / 知识分层 / 产出契约；/arch 与 architect-worker 改写；门控执行方按 D3",
+      "note": "保留规模三问 / 知识分层 / 产出契约；/arch 与 architect-worker 改写；门控执行方由窄通道 run_gate 承担（ADR-010）",
       "fingerprint": {
         "path": "/home/zako-mio/.config/opencode/instructions/architecture-behavior.md",
         "exists": true,

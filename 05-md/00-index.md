@@ -1,7 +1,7 @@
 # AI 索引 — 控制理论 ⊗ Agent 设计知识库 (00-index.md)
 
 > **AI 友好镜像**，检索优先走本目录（`05-md/`）。人类可读版在 `04-interactive/` + `03-cases/`。
-> 版本：v1.4.0（6 框架 + 14 精装房全景 + 装配层变体 opencode-custom / dsh-custom）　创建：2026-09-07　v1.1 扩展：2026-09-08　v1.2 扩展：2026-09-09（自改造 opencode 变体专题）　v1.3 扩展：2026-09-11（自改造 opencode 变体复评）　v1.4 扩展：2026-10-11（dsh 装配层变体专题 + opencode 月度追平）
+> 版本：v1.5.0（6 框架 + 14 精装房全景 + 装配层变体 opencode-custom / dsh-custom）　创建：2026-09-07　v1.1 扩展：2026-09-08　v1.2 扩展：2026-09-09（自改造 opencode 变体专题）　v1.3 扩展：2026-09-11（自改造 opencode 变体复评）　v1.4 扩展：2026-10-11（dsh 装配层变体专题 + opencode 月度追平）　v1.5 扩展：2026-10-13（dsh 装配层二次追平）
 
 ## 知识库定位
 
@@ -101,18 +101,20 @@
 2. **T 环（执行器）是 6 框架共同「最强环」**——看门狗/限幅/沙箱是 Agent 工程最成熟环节（无一例外）。
 3. **各产品最弱环分化**——opencode/dsh/PRIME/claude-code = E，hermes/codex = P。
 4. **M 环普遍缺置信度（P 协方差）**——记忆多记事实不记"我有多确定"（PRIME 带版本/hermes 带离散标记相对最好）。
-5. **装配层可定向补齐内核弱环**——官方 opencode E/R 弱，经自改造（reflection/grill-me/search-worker/门控）E/R 反转，精装度 2.9→3.9（+1.0）；官方 dsh 内核已强（T 5.0 / M 4.0），装配层（`dsh-opencode-port`）只补 SP/P 编队与 E 环领域门控，精装度 3.6→3.8（+0.2）——**「弱内核 + 强装配层」（opencode-custom）与「强内核 + 薄装配层」（dsh-custom）互补**。
+5. **装配层可定向补齐内核弱环**——官方 opencode E/R 弱，经自改造（reflection/grill-me/search-worker/门控）E/R 反转，精装度 2.9→3.9（+1.0）；官方 dsh 内核已强（T 5.0 / M 4.0），装配层（`dsh-opencode-port`）只补 SP/P 编队与 E 环领域门控，v1.5 追平后精装度 3.6→3.9（+0.3，档位未跨）——**「弱内核 + 强装配层」（opencode-custom）与「强内核 + 薄装配层」（dsh-custom）互补**。
 
-## 装配层变体专题（v1.4）
+## 装配层变体专题（v1.5）
 
-> 版本：v1.4（2026-10-11）。两线：① 新增 **`dsh-custom`**（dsh 官方 `v0.2.1-alpha.2` + `dsh-opencode-port` bundle）；② **`opencode-custom` 月度追平**（补账轮，一次性补入 2026-09-11 → 2026-10-11 backlog，见契约 §2.7⑤）。**两个变体均为个人装配层，不参与 14 产品市售排名**（见契约 §2.6 / §2.7①）。
+> 版本：v1.5（2026-10-13）。**本轮只动 dsh 侧**：把 `dsh-custom` 从 v1.4 快照点（2026-10-11 17:09）追平到 v1.5 冻结点（2026-10-13 05:04），覆盖 **R1–R12** 十二轮装配层变更（契约 §2.7⑥）。`opencode-custom` 侧本轮**未复评**，其 v1.4 口径（2.9 / 3.9）继续有效。**两个变体均为个人装配层，不参与 14 产品市售排名**（见契约 §2.6 / §2.7①）。
 
-### A. `dsh-custom`（v1.4 新增）
+### A. `dsh-custom`（v1.5 二次追平）
 
-- **口径**：dsh 官方 **`v0.2.1-alpha.2`**（2026-10-09，commit `d743267`，跨 **21 个预发布 tag**）+ bundle `dsh-opencode-port`（落点 `~/.dsh/presets/opencode/` 3 preset / `~/.dsh/skills/opencode/` **45 派生 skill**，模型可见 **42** / **7 worker** / permission **5 档** / persona **15 节 8018 字符** / 插件 **188→191**）。
-- **评分**：官方 **3.6** → `dsh-custom` **3.8**（**Δ+0.2**）；五环双层 SP 4.5→5.0、M 4.0→4.0、P 4.5→5.0、R 3.0→3.0、T 5.0→5.0、E 2.0→3.5。
-- ⚠️ **口径披露（重要）**：dsh 旧口径仅为「技术框架对照」**单点分 2.5**（**非** 8 维模型输出）；v1.4 首次回填 v2.0 模型得 **3.6**——**两者不同源、不可相减**，旧单点分作为历史口径保留（契约 §2.7⑤）。
-- **权威文件**：画像 `03-cases/dsh-custom.md`、diff `03-cases/dsh-custom-diff.md`、实验 `06-experiments/dsh-custom.md`（实验 11-14）、评分源 `09-src-data/dsh_custom_scores.py`、快照 `07-checkpoint/dsh-custom-snapshot/`。
+- **口径**：dsh 官方 **`v0.2.1-alpha.2`**（2026-10-09，commit `d743267`，跨 **21 个预发布 tag**）——**v1.4 → v1.5 内核未变**；装配层为 bundle `dsh-opencode-port`（落点 `~/.dsh/presets/opencode/` 3 preset / `~/.dsh/skills/opencode/` **主根 49** = 派生 47 + DSH 原生 2，模型可见 **46** / **7 worker** / permission **5 档**（`defaultPreset` → `opencode-plan`）/ persona **15 节 6524 字符** / `verify_bundle` 判据 **20 项**）。
+- **评分**：官方 **3.6**（未变）→ `dsh-custom` **3.9**（**Δ+0.3**，raw 3.85）；五环双层 SP 4.5→5.0、**M 4.0→4.5**、P 4.5→5.0、**R 3.0→4.0**、T 5.0→5.0、**E 2.0→4.0（Δ+2.0，反转）**。8 维唯一变动 = `memory` **4→5**。档位仍「成品化受限」，**未跨档**。
+- **三条旧结论被推翻 / 更正**：① **R 环迁移损失已追平**（R-A 载体 ADR-012）；② **E 环达反转阈值**（`run_gate` 窄通道 ADR-010 消解「子 Agent 无 bash」抑制项）；③ **沙箱「本机无可用后端」已证伪**（bwrap `enforcement=full`）——属**环境事实更正**，⛔ 不计入分值。**最弱环由「R」改为「R 与 E 并列 4.0」**。
+- ⚠️ **口径披露（重要）**：dsh 旧口径仅为「技术框架对照」**单点分 2.5**（**非** 8 维模型输出）；v1.4 首次回填 v2.0 模型得 **3.6**——**两者不同源、不可相减**，旧单点分作为历史口径保留（契约 §2.7⑤）；v1.4 的 3.8 与 v1.5 的 3.9 亦属**不同时点读数**。
+- **skill 计数口径唯一化**：主根 49 = 派生 47 + DSH 原生 2（`dsh-config` / `dsh-reflection`）；模型可见 46 = 49 − 3；`_overlay` 6（契约 §2.6）。
+- **权威文件**：画像 `03-cases/dsh-custom.md`（含 R1–R12 轮次表）、diff `03-cases/dsh-custom-diff.md`、实验 `06-experiments/dsh-custom.md`（实验 11-14，本轮只补新机制）、评分源 `09-src-data/dsh_custom_scores.py`（含 `HISTORY` 机读历史值）、快照 `07-checkpoint/dsh-custom-snapshot/`（v1.5；v1.4 旧快照归档于 `archive/1011-KB-v1.4-dsh装配与opencode追平/dsh-custom-snapshot-v1.4/`）。
 
 ### B. `opencode-custom`（v1.4 月度追平 · 补账轮）
 

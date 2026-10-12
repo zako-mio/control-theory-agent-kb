@@ -1,0 +1,88 @@
+================================================================================
+控制理论 ⊗ Agent 设计知识库 — v1.5 分层门控结果
+================================================================================
+版本     : v1.5.0（2026-10-13 dsh 装配层二次追平）
+执行日期 : 2026-10-13
+执行者   : 主Agent（唯一具备 bash 的执行侧；画像正文由子 Agent 起草、主 Agent 逐项复核）
+门控脚本 : 07-checkpoint/quality-gate.py            (L2 全量审计)
+           07-checkpoint/kb_gate.py                 (L3-L7 结构/断链/导航/级联/覆盖/信源/渲染)
+           07-checkpoint/gen_coverage_manifest.py   (L6 期望清单派生)
+           07-checkpoint/check_premium_consistency.py (14 产品一致性)
+           09-src-data/dsh_custom_scores.py         (dsh 变体评分复算)
+           09-src-data/opencode_custom_scores.py    (opencode 变体评分复算，未复评、仅复算)
+根目录   : /home/zako-mio/opencode/archive/Mission-file/2026-09/0907-控制理论Agent设计知识库
+冻结点   : 2026-10-13T05:04:50+08:00（as_of；装配层最后写入 03:38，服务重启 05:02）
+
+================================================================================
+一、门控层结果总览（L1-L7 全开）
+================================================================================
+L1 生成自验证   PASS      py_compile 09-src-data/*.py + 07-checkpoint/*.py → exit 0
+                          生成幂等：gen_html + gen_premium_cyto + fix_cyto 重跑两轮，
+                          04-interactive/*.html 汇总 sha256 逐字节一致（d1399d38da41e56f）
+L2 全量审计     PASS      quality-gate.py → issues=0, warnings=1
+                          （01-theory/README.md KT 数口径，历史遗留，与 v1.4 同）
+L3 结构层       PASS      kb_gate structure → checked=183, issues=0, warn=1（.nojekyll 0 字节，预期）
+L4 视觉层       PASS      主 Agent 直接读图（本轮模型具备视觉，未委派、未交人看）：
+                          07-checkpoint/l4-v15/{compare-dsh,case-dsh-custom,portal}.png 三页均渲染正确
+                          （六环雷达 / 逐环 delta 卡 / 8 维表 / 门户 v1.5 卡片 / 页脚 v1.5）
+L5 渲染层       PASS      kb_gate render → checked=43, issues=0, warn=0
+L6 覆盖度层     PASS      kb_gate coverage --manifest 07-checkpoint/coverage-manifest.txt
+                          → checked=112, issues=0
+L7 信源层       PASS      kb_gate sources → checked=24, issues=0, warn=0
+（L3 配套）links PASS      kb_gate links → checked=2081, issues=0
+（L3 配套）nav   PASS      kb_gate nav → 页面=43 / 期望条目=42, issues=0, warn=1（报告页自带目录，豁免）
+（级联层）cascade PASS     kb_gate cascade → checked=6, issues=0, warn=1
+                          ⚠ 页脚版本号不统一（主导 v1.5）: v1.1(1页), v1.0.0(1页) —— 均为历史报告页，与 v1.4 同
+
+================================================================================
+二、★ 本轮发现并修复的一处「空集假绿」（判据可信度）
+================================================================================
+问题：README §复现命令 记载的 kb_gate 调用**漏了 `--manifest`** ⇒ coverage 层报
+      「[PASS](warn) coverage 检查项=0 … 未提供 --manifest/--require，coverage 层跳过比对」。
+      即：**检查项为 0 却判 PASS**，属空集假绿（计数型判据为 0 即应 FAIL 的纪律被绕过）。
+处置：补 `--manifest 07-checkpoint/coverage-manifest.txt` 复跑 → checked=112, issues=0（真 PASS）。
+负向控制（证明该判据能 FAIL）：以含不存在件的清单 /tmp/manifest-neg.txt 复跑 →
+      `[FAIL] coverage 检查项=2 问题=1 … ❌ 交付物缺失 1/2: 04-interactive/DOES-NOT-EXIST.html`
+      ⇒ 判据**能判假**，非恒真。
+附带修复：`fix_cyto.py` 原为一次性补丁（已注入后再跑会 assert 失败）→ 改为**幂等 + 页脚版本同步**，
+      使 `index_cyto.html`（不在 gen_html 生成面内）的页脚版本可随脚本同步。
+
+================================================================================
+三、评分复算（单一数据源，⛔ 数值禁手改）
+================================================================================
+09-src-data/dsh_custom_scores.py     → 官方 dsh  raw 3.63 → 3.6（未变）
+                                       dsh-custom raw 3.85 → 3.9（v1.4 为 3.75 → 3.8）
+                                       五环：SP +0.5 / M +0.5 / P +0.5 / R +1.0 / T 0 / E +2.0（反转）
+                                       最弱环：R 与 E 并列 4.0
+                                       口径变更对账：dim memory 4→5；ring M 4.0→4.5 / R 3.0→4.0 / E 3.5→4.0
+09-src-data/opencode_custom_scores.py → 官方 2.9 / 自改造 3.9（本轮未复评，仅复算确认未漂移）
+check_premium_consistency.py         → PASS（14 产品 × 6 处口径全部一致）
+
+================================================================================
+四、版本标识残留
+================================================================================
+生成物（04-interactive/*.html + index.html）旧版页脚 `v1.4 dsh 装配层 + opencode 月度追平版`：**0 处**
+陈旧数值扫描（`3.6→3.8` / `Δ+0.2` / `45 skill（可见 42）` / `45 派生 skill`，排除历史块语境）：**0 处**
+历史记录（按契约 §2.7 保留、不计残留）：`archive/1011-KB-v1.4-dsh装配与opencode追平/**`、
+  各画像/契约/README 的 `<details>` 历史块、`07-checkpoint/quality-gate-result-v1.4.txt`
+
+================================================================================
+五、交付物规模
+================================================================================
+04-interactive 页面 42 + 门户 index.html = 43 渲染面；覆盖率期望清单 112 项；
+信源层分母 24 份画像；nav 期望条目 42；L4 取证件 3 张（07-checkpoint/l4-v15/）。
+
+================================================================================
+六、口径诚实性声明
+================================================================================
+1. **内核未变**：dsh v0.2.1-alpha.2 / commit d743267 全程未动，全部增量在装配层。
+2. **未跨档**：dsh-custom 3.8 → 3.9（Δ+0.3），仍落「成品化受限」档（≥3.5 且 <4.5）。
+3. **不同源不可相减**：旧单点分 2.5 ≠ 8 维模型分 3.6；v1.4 的 3.8 ≠ v1.5 的 3.9（不同时点）。
+4. **环境事实更正不计收益**：沙箱「本机无可用后端」已证伪（bwrap enforcement=full），
+   但沙箱维**分值未变（4/4）**，⛔ 不得呈现为装配层收益。
+5. **他线实跑取证 vs 本库自跑**：实验层 v1.5 新机制登记为「他线实跑取证引用」，
+   本库**未新增自跑行为实验**（原因与最小启动条件见 `06-experiments/dsh-custom.md` 已登记缺口）。
+6. **子 Agent 交付物已由主 Agent 复核**：两份画像由子 Agent 起草，主 Agent 逐项核对并修正
+   一处**编造取证件名**（`verify-bundle-20checks.out.txt` 不存在 → 改为真实件
+   `r11-final-gates.out.txt`）与一处**过时读数**（gate-runner 单测 56/56 → r11 实测 57/57）。
+================================================================================

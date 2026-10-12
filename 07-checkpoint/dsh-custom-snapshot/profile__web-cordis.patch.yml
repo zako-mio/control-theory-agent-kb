@@ -34,11 +34,14 @@
       ## 环境事实（0.2.1-alpha.2，勿套旧环境） 1. 密钥在 ~/dsh/.env（含 DEEPSEEK_API_KEY /
       OPENCODE_GO_API_KEY / COMMANDCODE_FREE_API_KEY /
       OPENCODE_GO_TMP_API_KEY）；不得打印、不得落盘、 不得泄露，仅按需 source。 2. web 服务由 systemd
-      管理：dsh-web.service；排查用 journalctl -u dsh-web.service -n 100。 3. 自装插件已于
-      2026-10-10 全部移出（备份于 ~/.dsh-backups/plugins-removed-20261010/），本 patch
-      不再挂载任何 file:// 插件。 4. 源码树 /home/zako-mio/dsh 为 git 树（基线 tag
-      dsh-v0.2.1-alpha.2）；build 用 `pnpm run build`， 换版后必须先 `pnpm run clean` 再
-      build，否则旧版 lib 残留会触发 MISSING_EXPORT 构建失败。 5. 源码树禁止被本 profile 修改（web 只改
+      管理：dsh-web.service；排查用 journalctl -u dsh-web.service -n 100。 3. 8 个自装插件已于
+      2026-10-10 全部移出（备份于 ~/.dsh-backups/plugins-removed-20261010/）；2026-10-11 因
+      systemd 启动的宿主进程 PATH 不含 /mnt/c/Windows（appendWindowsPath 只作用于 WSL 会话），
+      explorer.exe 解析 ENOENT、「显示文件位置」失效，故重新挂载唯一一个零依赖插件
+      dsh-wsl-desktop-path（file:///home/zako-mio/.dsh/plugins/dsh-wsl-desktop-path/index.js），
+      它只把 Windows 系统目录追加进宿主 PATH，不注册工具/服务。 4. 源码树 /home/zako-mio/dsh 为 git 树（基线
+      tag dsh-v0.2.1-alpha.2）；build 用 `pnpm run build`， 换版后必须先 `pnpm run clean`
+      再 build，否则旧版 lib 残留会触发 MISSING_EXPORT 构建失败。 5. 源码树禁止被本 profile 修改（web 只改
       ~/.dsh/ 运行目录与归档目录）。
 
       ## 留档规范 面向用户的任务交付完成后，输出 5 段报告：当时情况 → 制定计划 → 执行情况 → 完成情况 → 反思建议。询问用户是否写入
@@ -46,13 +49,13 @@
       Mission 报告必须双版本留档：report.md（AI 友好镜像）+ report.html（人类可读版），同目录保存。report.html
       留档前必须通过质量门控：UTF-8 无替换字符 / div 开闭平衡 / 5 段完整 / HTML 结构齐全，任一项不通过则修复重跑。
 
-      ## MEMORY 硬门禁（reflection 链） ~/.dsh/MEMORY.md 是全局反思记忆库（§-分段 + [src:]
-      签名）。严禁直接修改该文件（edit/write/脚本均禁止）。记忆条目写入必须经完整链：① reflection_add 入队（pending）→
-      ② reflection_mark 裁决（reviewed，经 reflection-worker 处理）→ ③ 仅 reviewed 条目可带
-      [src: <reflection-id>] 签名落库 / 经 /reflection 写入。无签名禁止写入，主 Agent 负责入队与裁决，子
-      Agent 只产出 memory_pending 供审阅。 （2026-10-10 事实更新：提供 reflection_add /
-      reflection_mark 的 dsh-reflection 插件已随插件批次移出， 该链路在 dsh 侧当前不可用；本条纪律保留仅供
-      opencode 侧沿用，勿据此声称已在 dsh 内写入记忆。）
+      ## MEMORY 审阅链（DSH 侧 R-A 形态） ~/.dsh/MEMORY.md 是 DSH 侧全局反思记忆库（§-分段 + [src:] 签名），
+      仅主 Agent 可写，且必须经审阅链：① oc_reflection 只把候选写到 ~/.dsh/reflection/candidates/（提案，不落库）→
+      ② 主 Agent 按 dsh-reflection skill 的审阅方法论（零和预算 + 生命周期五件 + 容量口径）逐条裁决 →
+      ③ 落库时由落库侧回写候选的 landed_sha256，字节级链路由 verify_landed_chain.py 独立复算。⛔ 严禁绕过链路直改正文；
+      ⛔ 不重建插件队列；⛔ 两侧记忆体常态互不索引（不得写 opencode 侧，也不得留他侧指针）。
+      （2026-10-13 事实更新：旧文所述 reflection_add / reflection_mark 工具链在 DSH 侧已不存在；目录、方法论与机检脚本
+      均在 ~/.dsh/reflection/ 与 ~/.dsh/skills/opencode/dsh-reflection/ 内，形态裁决为 ADR-012。）
 
       ## 联网代理纪律（WSL2 环境） 本机代理网关：宿主机 XQNetwork 监听 0.0.0.0:7890，WSL2 内经网关
       172.29.0.1:7890 访问（HTTP+SOCKS5 混合端口）。默认直连，不依赖代理。 1. 模型 API 调用链（Node
@@ -77,6 +80,11 @@
   config:
     provider: opencode-go-tmp
     model: deepseek-v4.1-flash
+    # ── 2026-10-12：max → high ────────────────────────────────────────────────
+    # max 档实测 reasoning 占 completion 的 93.7%（正文 0 字符）；high 档 69.2%（见下 L257 段取证）。
+    # 该 max 档原是为「对抗截断」而临时选用的，方向相反：思考与正文共享同一 max_tokens 预算，
+    #   抬档只会让正文更早撞帽。对抗截断的正确手段是抬高 maxTokens（已回调 32768），不是抬 effort。
+    reasoningEffort: high
 - id: llm-pi-ai
   name: "@deepseek-ai/dsh-llm-pi-ai"
   config:
@@ -96,14 +104,44 @@
         compat:
           thinkingFormat: deepseek
         models:
+          # ── 思考等级声明（2026-10-11 追加）────────────────────────────────
+          # 未声明 reasoningEfforts 时 DSH 把模型判为非推理模型（llm-pi-ai/src/catalog.ts:724-731：
+          #   `reasoning: base?.reasoning ?? false`，手写 provider 无安装目录 base → false），
+          #   于是 GUI 只显示「no advertised reasoning efforts」，且带 reasoning_effort 的请求被
+          #   UNSUPPORTED_REASONING_EFFORT 硬拒。档位值取自 models.dev（opencode 自身用的同一份上游）。
+          # ⚠ 长期 key 当前返回 403（An active OpenCode Go subscription is required），故本节档位的
+          #   wire 实测待订阅恢复后补做；届时用下面这条探针逐档核对（200=接受，400=不支持）：
+          #   curl -s -o /dev/null -w '%{http_code}\n' -X POST https://opencode.ai/zen/go/v1/chat/completions \
+          #     -H "Authorization: Bearer $OPENCODE_GO_API_KEY" -H 'Content-Type: application/json' \
+          #     -H 'x-opencode-session: ses_<32hex>' \
+          #     -d '{"model":"<id>","max_tokens":16,"messages":[{"role":"user","content":"hi"}],"reasoning_effort":"<level>"}'
           - id: deepseek-v4-flash
             name: DeepSeek-V4-Flash (Go)
             contextWindow: 1000000
-            maxTokens: 16384
+            # 2026-10-12：16384 → 32768（对齐本文件既有「保守请求默认值 32768」惯例）。
+            # 上游 models.dev opencode-go/deepseek-v4-flash 输出上限 384000；本组其余条目
+            #   （glm-5.2 65536 / kimi-k2.7-code 65536 / qwen3.7-plus 32768）均不低于 32768，
+            #   16384 是本组唯一无解释的窄帽条目。窄帽 = 长输出必被 max_tokens 截断，与
+            #   opencode-go-tmp/deepseek-v4.1-flash 的 8192 属同一类缺陷，故一并拉平。
+            maxTokens: 32768
+            # models.dev opencode-go/deepseek-v4-flash：effort low|high|max
+            reasoningEfforts:
+              low: low
+              high: high
+              max: max
           - id: glm-5.2
             name: GLM-5.2 (Go)
             contextWindow: 1000000
             maxTokens: 65536
+            # models.dev opencode-go/glm-5.2：effort 仅 high|max（无 low，故不声明 low）
+            reasoningEfforts:
+              high: high
+              max: max
+          # kimi-k2.7-code / qwen3.7-plus 暂不声明 reasoningEfforts（2026-10-11）：
+          #   models.dev 对 kimi-k2.7-code 的 reasoning_options 为空 → 上游认定非推理模型；
+          #   对 qwen3.7-plus 声明的是 toggle + budget_tokens（262144），DSH 的 reasoningEfforts
+          #   只能表达「档位 → wire 字符串」，无法表达 toggle/预算型，且长期 key 403 无法探针，
+          #   故保持现状（等价于非推理模型，不发思考参数）。
           - id: kimi-k2.7-code
             name: Kimi-K2.7-Code (Go)
             contextWindow: 262144
@@ -218,14 +256,32 @@
           - id: deepseek-v4.1-flash
             name: DeepSeek-V4.1-Flash (Go·临时·至10-15)
             contextWindow: 1000000
-            # ⚠ 2026-10-11 止损（方案 D）：32768 → 8192。
-            # 依据：2026-10-10 会话 session-d33061a6 出现推理通道退化（"Let me go." 单行重复
-            #   19892 次 / 7 条消息共 966197 字符退化推理），2 个 turn 以 max-tokens 收尾。
-            #   单轮损害量被 maxTokens 直接封顶，故下调即线性降低单次失控的烧 token 上界。
-            #   根因见留档 Mission-file/2026-10/1011-dsh插件生态调研/report.md 第二部分 §4.3。
-            # 回滚：恢复 32768 即可（备份 cordis.patch.yml.bak-maxTokens-20261011-162505）。
-            # 何时该调回：需要单次长输出（如一次性生成长文件）时临时调高。
-            maxTokens: 8192
+            # ── 2026-10-12 回调：8192 → 32768（撤销 2026-10-11「方案 D」）────────────
+            # 2026-10-11 曾以「止损」名义把 32768 下调到 8192，意图压低单次失控推理的烧 token 上界。
+            #   经 2026-10-12 实测判定为**失算**：maxTokens 不是「损害上界旋钮」，而是**每请求硬上限**。
+            #   本值一旦被 profile 命名，就被 pi-ai 当作 deployment 选择，逐请求发送 max_tokens
+            #   （依据 packages/llm/llm-pi-ai/src/catalog.ts:938-940 注释：'Only a value the profile
+            #   named is a deployment choice; the catalog's is the model's capability and stays out of
+            #   request defaults'）；不命名则**根本不发该字段**，退到 catalog 能力值 384000。
+            #   ⇒ 下调只饿死了正常长输出，退化推理照旧发生，且截断后无从恢复。
+            #   量化取证（269 个会话日志全量重放 + 同网关 wire 探针，2026-10-12）：
+            #     · 撞帽率：8192 档 19/183 轮 = 10.4%；32768 档 4/176 轮 = 2.3%。今日两主会话 2/2 轮 100% 撞帽。
+            #     · wire 探针（max_tokens=8192，reasoning_effort 分档）：reasoning 占 completion
+            #       low 51.5% / high 69.2% / max 93.7% —— 思考与正文**共享**同一 max_tokens 预算；
+            #       max_tokens=32 时 finish_reason=length 且 content 为空、reasoning_tokens=32。
+            #     · 对照 opencode 侧同模型（其 models.json 声明 output=384000）：单条回复最高 17357 tokens，
+            #       4405 条中 30 条 >8192 —— 这些在 8192 帽下会全部被截断。
+            #   选 32768（而非 384000）的理由：实测退化推理单次可烧 106k~108k 字符（≈27k tokens），
+            #   32768 仍能在其附近截住；再往上会线性放大单次失控的损害上界。
+            # ⚠ 真因（推理通道退化重复）应另立手段治理——建议插件在 agent/turn-stopping 钩子检测
+            #   退化重复并中止流，不得再由输出帽承担。DSH 无自动续写：撞帽即整轮以 max-tokens 结束
+            #   （packages/core/agent-loop/src/agent.ts:547）。
+            # 回滚：改回 8192（前态备份 cordis.patch.yml.bak-maxTokens-20261011-162505 为 32768 前的值）。
+            # 取证留档：Mission-file/2026-10/1012-dsh长输出截断根因诊断/。
+            # 原始止损依据（保留供追溯）：2026-10-10 会话 session-d33061a6 推理通道退化
+            #   （"Let me go." 单行重复 19892 次 / 7 条消息共 966197 字符），2 个 turn 以 max-tokens 收尾；
+            #   根因见 Mission-file/2026-10/1011-dsh插件生态调研/report.md 第二部分 §4.3。
+            maxTokens: 32768
             # 视觉能力声明：pi-ai 适配器读的是 **input**（不是 inputModalities），
             # 见 packages/llm/llm-pi-ai/src/adapter.ts:295 `inputModalities: [...model.input]`。
             # DSH 据此判定能否读图（packages/fs/tool-fs/src/read-image.ts:129）；
@@ -233,16 +289,32 @@
             # 上游实测 2026-10-11：发 image content block → HTTP 200，
             # prompt_tokens 1016（文本-only 约 50），模型正确描述图像内容。
             input: [ text, image ]
+            # ── 思考等级声明（2026-10-11 追加，实测通过）──────────────────────
+            # 档位值取自 models.dev opencode-go/deepseek-v4.1-flash（effort low|high|max）。
+            # wire 实测（本机 curl 直连 zen 网关，2026-10-11）：
+            #   reasoning_effort=low/medium/high/max → 200；=bogus → 400（网关校验枚举）；
+            #   thinking:{type:enabled|disabled} → 200（旧注释「禁传 thinking」已过时）。
+            # 只声明 low/high/max：medium 网关接受但上游未声明，不作为档位对外暴露。
+            # 不声明 off：pi-ai 把缺失档位置为 null，未选档位时不发 thinking 参数 → 保留服务端
+            #   默认（默认开思考）；若写 `off:`（空值），未选档位时会发 thinking:{type:"disabled"}，
+            #   等于把思考默认关掉（pi-ai getSupportedThinkingLevels / openai-completions.js 实测）。
+            reasoningEfforts:
+              low: low
+              high: high
+              max: max
           - id: glm-5.3-flash
             name: GLM-5.3-Flash (Go·临时·至10-15)
             contextWindow: 1000000
             maxTokens: 32768
+            # models.dev opencode-go/glm-5.3-flash：effort low|high|max
+            # wire 实测：reasoning_effort=high → 200；thinking:{enabled|disabled} → 200。
+            reasoningEfforts:
+              low: low
+              high: high
+              max: max
 - id: permission
   name: "@deepseek-ai/dsh-permission-presets"
   config:
-    # 整表重述：bundle patch 会整体替换 config，故必须把全部档位写全。
-    # 2026-10-11 新增 opencode-plan / opencode-build 两档（opencode 迁移工程），
-    # 原有三档与 defaultPreset 逐字保留，行为不变。
     presets:
       read-only:
         sandbox: read-only
@@ -261,7 +333,7 @@
       danger-full-access:
         sandbox: danger-full-access
         approval: never
-    defaultPreset: read-only
+    defaultPreset: opencode-plan
 
 - id: plugin-manager
   config:
@@ -273,10 +345,28 @@
     # 只覆盖本键，其余键走 Config schema 默认值（与 base 未配置该行时逐字一致）。
     pnpmCommand: /home/zako-mio/.dsh/bin/pnpm
 
-# ── 插件挂载：已移除（2026-10-10）────────────────────────────────────────────
+# ── 插件挂载 ────────────────────────────────────────────────────────────────
 # 8 个自装插件（list-directory / agent-role / vision-proxy / reflection / whitelist /
-#   preset-subagent / auto-approval / vision-fallback）已整体从 ~/.dsh/plugins 移出，
-#   备份于 ~/.dsh-backups/plugins-removed-20261010/（含当时的 plugins/node_modules）。
-# 本层不再有 insert 块。如需恢复：先把插件目录移回，再按
+#   preset-subagent / auto-approval / vision-fallback）已于 2026-10-10 整体从 ~/.dsh/plugins
+#   移出，备份于 ~/.dsh-backups/plugins-removed-20261010/（含当时的 plugins/node_modules）。
+# 2026-10-11 重新挂载**唯一一个**插件（属新增例外，不是上述批次恢复）：
+#   dsh-wsl-desktop-path —— systemd 启动的宿主进程 PATH 不含 /mnt/c/Windows（appendWindowsPath
+#   只作用于 WSL 会话，不作用于 systemd 单元），@deepseek-ai/dsh-native-command 调
+#   explorer.exe 时 spawn ENOENT，GUI「显示文件位置」报 revealError。该插件只把 Windows
+#   系统目录**追加**进 process.env.PATH（child_process 在 spawn 时读当前 env，故即时生效），
+#   不注册任何工具/服务/remote。根因取证与 COM 级验证见
+#   Mission-file/2026-10/1011-WSL2环境下dsh无法通过查看文件所在位置打开文件位置问题修复/。
+# 回滚：删除 ~/.dsh/plugins/dsh-wsl-desktop-path/，并恢复本文件为
+#   cordis.patch.yml.bak-wslpath-20261011-194630。
+# 如需恢复上述 8 插件批次：先把插件目录移回，再按
 #   ~/.dsh-backups/plugin-patch-20260914/{web,headless}.cordis.patch.yml 的 insert 段落回填，
 #   并先做符号级兼容审计（上游明示 Public APIs are pre-stable，跨 rc/minor 有静默移除先例）。
+
+- insert:
+    - id: dsh-wsl-desktop-path
+      name: file:///home/zako-mio/.dsh/plugins/dsh-wsl-desktop-path/index.js
+- id: agent-preset-registry
+  name: "@deepseek-ai/dsh-agent-preset-registry"
+  config:
+    default: standard
+    selectedDefault: opencode-standard

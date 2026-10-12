@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-source-sha256="c90164934d8533f8fb0a04a4568055f5eccb5a3b7f3e583446333f33df6477ae">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KB v1.5「dsh 装配层二次追平」— 任务执行报告</title>
+<style>
+/* report.css · 留档报告统一令牌与结构层
+ * ============================================================================
+ * 来源与承接关系（⛔ 本文件不是新令牌体系）：
+ *   值真相源：~/opencode/projects/fe-starter-kit/tokens/contract.json
+ *             （roles / palettes.content / usage_tiers；authority.threshold_source
+ *              → 0916-前端技术栈基线/adr/ADR-004.json 第 6/7/8 条）
+ *   排版令牌：fe-starter-kit/templates/content-a-static/assets/M3-tokens.css
+ *             （--measure:42em / 几何级数字号阶梯 / --lh-body:1.8）
+ *   本文件只做两件事：① 原样承接上述令牌值；② 追加「报告体裁」结构规则。
+ *   ⛔ 不新增色值、不发明阈值、不改上游令牌名。
+ *
+ * 报告体裁的可机检目标（对应门控 E13）：
+ *   正文 16px · 行高 1.8（≥1.6）· 行宽 42em（≤42em）· 正文对比度 ≥4.5:1
+ *
+ * 预览安全约束（对应门控 E4，由 DSH 侧栏 HTML 预览的清洗器反推）：
+ *   ⛔ 无 script 元素 · 无 SMIL · 无 img 元素 · 无加载类外链
+ *   ⇒ 深色模式**纯 CSS**：light-dark() + color-scheme，不依赖任何 JS 开关。
+ *   ⇒ 图**一律内联 SVG**，靠 viewBox 自适应，不用 img 元素。
+ *   ★ 注：本注释刻意**不写字面标签**——本文件会被内联进交付物，若注释里出现
+ *     script / img 的字面开标签，会把「按原文扫描」的门控判成假 FAIL（自指陷阱，
+ *     同 0918 字形门控的「交付物描述不安全字形须用码位」）。
+ * ========================================================================== */
+
+:root{
+  color-scheme: light dark;
+
+  /* ---------- 尺度令牌（承接 M3-tokens.css） ---------- */
+  --measure:42em;
+  --fs-body:16px;
+  --fs-h4:1.25rem;
+  --fs-h3:1.5rem;
+  --fs-h2:1.875rem;
+  --fs-h1:2.25rem;
+  --lh-body:1.8;
+  --lh-head:1.35;
+  --space-block:1.15em;
+  --radius:6px;
+  --fs-table:.94em;
+  --fs-code:.9em;
+  --fs-pre:.88em;
+  --fs-caption:.875rem;
+
+  /* ---------- 色彩令牌（★ 派生区：由 scripts/contract_tokens.py 从上游契约生成） ----------
+   * 真相源：`fe-starter-kit/tokens/contract.json` 的 `palettes.content.values`
+   *   （7 个内容族角色）。改色请改**上游契约**，再跑：
+   *     python3 scripts/contract_tokens.py            # 重新派生本区
+   *     python3 scripts/contract_tokens.py --check    # 只读对账（漂移 → rc 1）
+   * marker 区内**一行都不许手改**；区外的手写令牌见下方「报告体裁追加令牌」。
+   * 每色两行：先浅色字面值作**旧浏览器回退**，再用 light-dark() 覆盖为双值；
+   *   不支持 light-dark() 的引擎会丢弃第二条声明 ⇒ 退回浅色，不会出现无样式。
+   *   ★ 门控 E13/E16 的 token_light() 优先取 light-dark() 的浅色分量，故顺序不可颠倒。 */
+  /* >>> GENERATED:contract (由 scripts/contract_tokens.py 从 tokens/contract.json 生成；⛔ 勿手改) */
+  --bg:#ffffff;
+  --bg: light-dark(#ffffff, #14171a);
+  --bg-soft:#f6f8fa;
+  --bg-soft: light-dark(#f6f8fa, #1b2026);
+  --bg-stripe:#fbfcfd;
+  --bg-stripe: light-dark(#fbfcfd, #181d22);
+  --fg:#16191d;
+  --fg: light-dark(#16191d, #e3e6ea);
+  --fg-muted:#4a5058;
+  --fg-muted: light-dark(#4a5058, #a9b3bd);
+  --link:#0b57d0;
+  --link: light-dark(#0b57d0, #8ab4f8);
+  --rule:#d8dde3;
+  --rule: light-dark(#d8dde3, #2f363d);
+  /* <<< GENERATED:contract */
+
+  /* ---------- 报告体裁追加令牌（⛔ 非色值；仅尺度） ----------
+   * ★ 每个令牌都必须能说出它要达成什么效果（r1 缺陷 D2/D3/D4/D5 的教训：
+   *   图件原先没有任何令牌，「图该多宽 / 字最小多少 / 深色下怎么办」三问在令牌层无解，
+   *   只能落到实现里，于是产生了 6.7px 的字与 1.30:1 的对比度）。 */
+  /* 【why】外壳须容得下「目录栏 + 图件上限」：240(rail)+40(gap)+1080(fig) ≈ 1360px = 85rem。
+   *   原 60rem 会让 main 只剩 680px，即使 1440px 视口下图件也要横向滚动（实测）。 */
+  --shell:85rem;
+  --toc-w:15rem;          /* 目录栏宽 */
+  /* 【why】图的信息密度天然高于正文：一张 1000px 宽的画布压进 42em(672px) 正文栏，
+   *   10px 的图内标签会被缩到 6.7px。故图件**脱出正文行宽**，另给一个更宽的容器上限。 */
+  --fig-measure:min(92vw, 1080px);
+  /* 【why】图内标签的最小**实际显示**字号。取 11px：低于此值在 100% 缩放下即不可读；
+   *   它也是图表标签的通用下限（≈ 正文 16px 的 0.7 倍，与 --fs-caption 同档）。 */
+  --fig-fs-floor:11px;
+  /* 【why】图件底色与页面主题**解耦**。确定性布局引擎产出的是浅色线框（深色文字），
+   *   若让它继承页面 --bg-soft，深色模式下会变成「深字落深底」= 1.30:1 完全不可读。
+   *   故图件固定为「纸面」底色，在明暗两态下都保持高对比。 */
+  --fig-bg:#fdfdfc;
+  --fig-rule:#dcdcdc;     /* 图件外框，让「纸面」在深色页面上有边界感 */
+
+  /* ---------- 字体 ---------- */
+  --font-body:-apple-system,"Segoe UI","Noto Sans CJK SC","Source Han Sans SC","Microsoft YaHei",sans-serif;
+  --font-mono:ui-monospace,SFMono-Regular,Consolas,"Noto Sans Mono CJK SC",monospace;
+}
+
+/* ============================ 基础 ============================ */
+html{background:var(--bg);-webkit-text-size-adjust:100%}
+body{
+  margin:0;padding:32px 20px 64px;
+  font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);
+  letter-spacing:.008em;color:var(--fg);background:var(--bg);
+  overflow-wrap:anywhere;
+}
+.shell{max-width:var(--shell);margin:0 auto;display:grid;grid-template-columns:var(--toc-w) minmax(0,1fr);gap:2.5rem;align-items:start}
+/* 【why】main 取**图件**宽度，正文元素各自退回 --measure。
+ *   若 main 仍是 42em，图件无论怎么写都展不开（r1 缺陷 D4/D5：半屏下右侧空置而图不展宽）。 */
+main{max-width:var(--fig-measure);min-width:0}
+/* 【why】正文行宽是**排版**约束（中文长文 35–45 字/行），只该作用在文本块上，⛔ 不该外溢到图件。 */
+/* 【why】正文块在放宽后的 main 里**居中**，否则右侧会留下约 400px 空档、版面失衡。
+ *   图件同样居中且更宽 ⇒ 「居中文字列 + 更宽的居中图件」是稳定版式。 */
+main :is(p,ul,ol,blockquote,h1,h2,h3,h4,h5,h6,table,pre,.colophon,.crumb){max-width:var(--measure);margin-inline:auto}
+
+h1,h2,h3,h4{line-height:var(--lh-head);font-weight:650;letter-spacing:.01em}
+h1{font-size:var(--fs-h1);margin:0 0 .7em;padding-bottom:.35em;border-bottom:2px solid var(--rule)}
+h2{font-size:var(--fs-h2);margin:1.9em 0 .6em;padding-bottom:.28em;border-bottom:1px solid var(--rule)}
+h3{font-size:var(--fs-h3);margin:1.55em 0 .5em}
+h4{font-size:var(--fs-h4);margin:1.3em 0 .45em;color:var(--fg-muted)}
+p{margin:var(--space-block) 0}
+a{color:var(--link);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--link) 35%,transparent)}
+a:hover{border-bottom-color:var(--link)}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--link);outline-offset:2px;border-radius:3px}
+strong{font-weight:680}
+hr{border:0;border-top:1px solid var(--rule);margin:2.2em 0}
+ul,ol{padding-left:1.5em;margin:var(--space-block) 0}
+li{margin:.34em 0}
+li>ul,li>ol{margin:.3em 0}
+
+/* ============================ 表格 ============================ */
+table{border-collapse:collapse;width:100%;margin:1.2em 0;font-size:var(--fs-table);line-height:1.65}
+th,td{border:1px solid var(--rule);padding:8px 11px;text-align:left;vertical-align:top;
+  overflow-wrap:anywhere;word-break:normal}
+th{background:var(--bg-soft);font-weight:650}
+tbody tr:nth-child(even) td{background:var(--bg-stripe)}
+
+/* ============================ 代码 ============================ */
+code{background:var(--bg-soft);padding:.14em .38em;border-radius:4px;
+  font-family:var(--font-mono);font-size:var(--fs-code);overflow-wrap:anywhere}
+pre{background:var(--bg-soft);border:1px solid var(--rule);border-radius:var(--radius);
+  padding:13px 15px;overflow-x:auto;line-height:1.62;margin:1.2em 0}
+pre code{background:none;padding:0;font-size:var(--fs-pre);overflow-wrap:normal;white-space:pre}
+
+/* ============================ 引用 / 提示块 ============================ */
+blockquote{border-left:3px solid var(--link);background:var(--bg-soft);
+  margin:1.2em 0;padding:.7em 1em;color:var(--fg-muted);border-radius:0 var(--radius) var(--radius) 0}
+blockquote p{margin:.4em 0}
+blockquote p:first-child{margin-top:0}
+blockquote p:last-child{margin-bottom:0}
+
+/* ============================ 图（内联 SVG） ============================ */
+/* 【why】figure 取 --fig-measure（可宽于正文行宽）；svg 由 viewBox 自适应。
+ *   min-width 由渲染器按「画布宽 × 字号下限 ÷ 图内最小字号」算出并写进 style，
+ *   保证**任何视口下**图内字号都不低于 --fig-fs-floor（窄屏则横向滚动，⛔ 不缩到不可读）。 */
+figure{margin:1.6em auto;padding:0;max-width:var(--fig-measure)}
+figure svg{display:block;width:100%;height:auto;
+  background:var(--fig-bg);border:1px solid var(--fig-rule);border-radius:var(--radius)}
+figcaption{margin-top:.6em;font-size:var(--fs-caption);line-height:1.6;color:var(--fg-muted);max-width:var(--measure)}
+figcaption b{color:var(--fg);font-weight:650}
+/* 【why】图件在窄屏允许横向滚动，而不是继续缩小到不可读。 */
+.fig-scroll{overflow-x:auto;max-width:100%}
+
+/* ============================ 目录栏 ============================ */
+.rail{position:sticky;top:32px;font-size:var(--fs-caption);line-height:1.5;max-height:calc(100vh - 64px);overflow:auto}
+/* ⛔ 目录栏标题**不用 h2**：正文 h2 集合须与 MD 严格对齐（门控 E8），
+ *    目录若占用 h2 会被判为「HTML 多出标题」。故用 div.rail-h。 */
+.rail .rail-h{font-size:var(--fs-caption);text-transform:none;letter-spacing:.04em;color:var(--fg-muted);
+  margin:0 0 .6em;padding:0;font-weight:650}
+/* ⛔ 目录**不加 CSS 计数器编号**：正文标题自带编号（「0 目标与成功判据」），
+ *    若再叠一层 counter 会出现「01 0 目标…」这种双编号，且 lv3 项也会推进计数
+ *    导致 h2 编号跳号（实测：01,02,03,04,13,14…）。目录只复述标题原文。 */
+.rail ol{list-style:none;padding:0;margin:0}
+.rail li{margin:.3em 0}
+.rail a{display:block;padding:.22em 0;border:0;color:var(--fg-muted)}
+.rail a:hover{color:var(--link)}
+.rail li.lv3{padding-left:1.1em}
+.rail li.lv3 a{color:var(--fg-muted);opacity:.85}
+
+/* ============================ 页脚溯源 ============================ */
+.colophon{margin-top:3.5em;padding-top:1.2em;border-top:1px solid var(--rule);
+  font-size:var(--fs-caption);line-height:1.7;color:var(--fg-muted)}
+
+/* ============================ 窄屏 ============================ */
+@media (max-width:900px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  .rail{position:static;max-height:none;margin-bottom:1.5em;
+    border:1px solid var(--rule);border-radius:var(--radius);padding:.9em 1.1em;background:var(--bg-soft)}
+}
+@media (max-width:760px){
+  :root{--fs-h1:1.85rem;--fs-h2:1.6rem;--fs-h3:1.35rem;--fs-body:15px;--fs-table:.9em}
+  body{padding:20px 14px 48px}
+  th,td{padding:6px 8px}
+}
+
+/* ============================ 打印 ============================ */
+@media print{
+  :root{--fs-body:11pt;--fs-h1:20pt;--fs-h2:15pt;--fs-h3:13pt}
+  html,body{background:#fff;color:#000}
+  body{padding:0}
+  .shell{display:block;max-width:none}
+  .rail{display:none}
+  main{max-width:none}
+  a{color:#000;border:0}
+  a[href^="#"]{color:#000}
+  figure,table,pre,blockquote{break-inside:avoid}
+  h2,h3{break-after:avoid}
+  .colophon{color:#333}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+<nav class="rail" aria-label="本页目录">
+<div class="rail-h">本页目录</div>
+<ol>
+<li class="lv2"><a href="#1-当时情况">1. 当时情况</a></li><li class="lv3"><a href="#1-1-需求与起点">1.1 需求与起点</a></li><li class="lv3"><a href="#1-2-摸底发现-不是-刷新-是-复评">1.2 摸底发现：不是「刷新」，是「复评」</a></li><li class="lv3"><a href="#1-3-环境障碍-关键">1.3 环境障碍（关键）</a></li><li class="lv2"><a href="#2-制定计划">2. 制定计划</a></li><li class="lv3"><a href="#2-1-三项用户裁定">2.1 三项用户裁定</a></li><li class="lv3"><a href="#2-2-计划形态-p0-p7">2.2 计划形态（P0–P7）</a></li><li class="lv3"><a href="#2-3-红线">2.3 红线</a></li><li class="lv2"><a href="#3-执行情况">3. 执行情况</a></li><li class="lv3"><a href="#3-1-p0-前置门">3.1 P0 前置门</a></li><li class="lv3"><a href="#3-2-p1-契约刷新">3.2 P1 契约刷新</a></li><li class="lv3"><a href="#3-3-p2-证据层">3.3 P2 证据层</a></li><li class="lv3"><a href="#3-4-p3-评分层">3.4 P3 评分层</a></li><li class="lv3"><a href="#3-5-p4-差量分析">3.5 P4 差量分析</a></li><li class="lv3"><a href="#3-6-p5-交付层">3.6 P5 交付层</a></li><li class="lv3"><a href="#3-7-p6-门控">3.7 P6 门控</a></li><li class="lv3"><a href="#3-8-遇到的问题及应对">3.8 遇到的问题及应对</a></li><li class="lv2"><a href="#4-完成情况">4. 完成情况</a></li><li class="lv3"><a href="#4-1-交付物清单-知识库侧">4.1 交付物清单（知识库侧）</a></li><li class="lv3"><a href="#4-2-核心结论">4.2 核心结论</a></li><li class="lv3"><a href="#4-3-验证结果">4.3 验证结果</a></li><li class="lv3"><a href="#4-4-改动明细与红线遵守">4.4 改动明细与红线遵守</a></li><li class="lv2"><a href="#5-反思-分析-建议">5. 反思 / 分析 / 建议</a></li><li class="lv3"><a href="#5-1-过程反思">5.1 过程反思</a></li><li class="lv3"><a href="#5-2-收获认知">5.2 收获认知</a></li><li class="lv3"><a href="#5-3-建议">5.3 建议</a></li><li class="lv3"><a href="#5-4-契约遵守确认">5.4 契约遵守确认</a></li><li class="lv2"><a href="#证据来源">📚 证据来源</a></li>
+</ol>
+</nav>
+<main>
+<p class="crumb">任务留档 / 2026-10 / 1011-KB-v1.4-dsh装配与opencode追平 / 1013-v1.5-dsh装配二次追平</p>
+<h1>KB v1.5「dsh 装配层二次追平」— 任务执行报告</h1>
+<blockquote><p>性质：任务执行留档报告本体（AI 友好版；人类可读版见同目录 <code>report-execution.html</code>，由 <code>report-renderer</code> 派生，禁手改）。 任务：控制理论 ⊗ Agent 设计知识库 <strong>v1.4.0 → v1.5.0</strong>（dsh 装配层二次追平）。 日期：2026-10-13　负责人：主 Agent 复杂度自评 <strong>16/20</strong>（影响范围 4 · 逻辑深度 4 · 操作数量 5 · 风险精度 3）→ 高复杂度。 架构分档 <strong>门控级</strong>（规模三问 Q2 跨多模块、Q3 公开仓反转成本命中）。 冻结点 <code>2026-10-13T05:04:50+08:00</code>（as_of）。</p></blockquote>
+<hr>
+<section class="sec" id="1-当时情况">
+<h2>1. 当时情况</h2>
+<h3 id="1-1-需求与起点">1.1 需求与起点</h3>
+<p>用户以起点式需求发起：「这是一个我的 github 项目的一个分析，现在我们的 dsh 又经历了几轮的能力装配迁徙的调整优化，所以需要将这些部分重新分析，支持后续的调整优化计划，你先了解情况，然后制定计划。」随后追加口径：<strong>留档并执行</strong>，留档目录沿用上次 dsh 重分析任务留档目录并建子目录区分；迁移线收尾前<strong>保持暂停</strong>。</p>
+<p>起点识别结果：目标项目为 <code>zako-mio/control-theory-agent-kb</code>（本地 <code>Mission-file/2026-09/0907-控制理论Agent设计知识库/</code>），当前 v1.4.0，其中 dsh 相关资产 <strong>27 项</strong>。</p>
+<h3 id="1-2-摸底发现-不是-刷新-是-复评">1.2 摸底发现：不是「刷新」，是「复评」</h3>
+<p>以 v1.4 快照点 <code>2026-10-11T17:09:09</code> 为基准，按磁盘时间戳重建出 <strong>R1–R12 共十二轮</strong>装配层变更，其中三条 v1.4 结论<strong>已被现实推翻或需重判</strong>：</p>
+<table><thead><tr><th>#</th><th>v1.4 旧结论</th><th>现实</th></tr></thead><tbody><tr><td>C1</td><td>「本机无可用沙箱后端（bwrap / Landlock 均不可用）」</td><td>已证伪：<code>bwrap</code> 已装、链选中 bwrap、<code>enforcement=full</code></td></tr><tr><td>C2</td><td>「R 环迁移断裂、最弱环 R = 3.0」</td><td>R-A 文件载体已落地（ADR-012，门控 6/6）</td></tr><tr><td>C3</td><td>「子 Agent 无 bash ⇒ 门控脚本无法自跑，E 环只判增强」</td><td><code>run_gate</code> 窄通道已实机生效（ADR-010）</td></tr></tbody></table>
+<h3 id="1-3-环境障碍-关键">1.3 环境障碍（关键）</h3>
+<p>摸底期间发现<strong>分析对象是动目标</strong>：迁移线 R11 仍在改写装配层，<code>verify_migration_state.py</code> 在 02:38→02:56 之间从 45470 增长到 67146 字节。经与用户确认冻结点策略后暂停，待迁移线收尾再开工。恢复时三项检查全部通过（判据脚本停止增长 / 迁移线进入收官轮 R12 / KB 无并发写入），但读数已变（<code>verify_bundle</code> 判据 <strong>19 → 20 项</strong>、新增 <code>dsh-opencode-commands</code> 插件），故冻结点重取为 <code>2026-10-13T05:04:50</code>。</p>
+<hr>
+</section>
+<section class="sec" id="2-制定计划">
+<h2>2. 制定计划</h2>
+<h3 id="2-1-三项用户裁定">2.1 三项用户裁定</h3>
+<table><thead><tr><th>#</th><th>决策</th><th>取值</th></tr></thead><tbody><tr><td>D1</td><td>目标项目</td><td><code>zako-mio/control-theory-agent-kb</code></td></tr><tr><td>D2</td><td>范围</td><td><strong>全量 v1.5</strong>：证据层重算 + 评分重算 + 画像/diff/页面/实验/级联/门控</td></tr><tr><td>D3</td><td>冻结点</td><td>等迁移线第 10 轮落地后再取快照（实际执行见 §1.3）</td></tr></tbody></table>
+<h3 id="2-2-计划形态-p0-p7">2.2 计划形态（P0–P7）</h3>
+<table><thead><tr><th>Phase</th><th>内容</th><th>完成判据</th></tr></thead><tbody><tr><td>P0</td><td>前置门：口径统一 / 静止点登记 / 外部证据指针确认</td><td>三项均有书面结论</td></tr><tr><td>P1</td><td>契约刷新：§2.6 口径唯一化 + §2.7⑥ 追平轮登记</td><td>无静默跳过</td></tr><tr><td>P2</td><td>证据层全量重算 + 补三个取证面</td><td>快照落静止点、脱敏 0 违例</td></tr><tr><td>P3</td><td>评分层重算（8 维 + 硬门槛 + 五环双层）</td><td>数值由脚本涌现</td></tr><tr><td>P4</td><td>差量分析：三份画像</td><td>结论与证据强制一致</td></tr><tr><td>P5</td><td>交付层全量重生成 + 实验只补新机制</td><td>生成物 100% 由脚本产出</td></tr><tr><td>P6</td><td>门控 + 级联 + 判据锚点复核</td><td>ALL PASS、版本残留 0</td></tr><tr><td>P7</td><td>留档 + 推送</td><td>5 段齐备、Pages 生效</td></tr></tbody></table>
+<h3 id="2-3-红线">2.3 红线</h3>
+<p>对 <code>~/.dsh/**</code> 绝对只读（本轮是「分析 DSH」不是「改 DSH」）；不触碰 <code>/home/zako-mio/dsh</code>（已有未提交改动属他线）；不触碰迁移线任务目录（只读引用）；契约 §2.7③ 脱敏（<code>MEMORY.md</code> 正文不入公开库）；评分数值禁手改；<code>dsh-custom</code> 维持排名隔离。</p>
+<hr>
+</section>
+<section class="sec" id="3-执行情况">
+<h2>3. 执行情况</h2>
+<h3 id="3-1-p0-前置门">3.1 P0 前置门</h3>
+<p><strong>口径统一</strong>：skill 计数原为四套并存（v1.4 时点 45 / README 46 / <code>reconcile</code> 47 / 实测主根 49）。查明其<strong>不是矛盾读数而是四个不同口径</strong>（v1.4 时点值 / 源侧目录 / 派生件 / 主根含 DSH 原生），据此在契约 §2.6 立<strong>唯一口径</strong>：主根 <strong>49</strong> = 派生 <strong>47</strong> + DSH 原生 <strong>2</strong>（<code>dsh-config</code> / <code>dsh-reflection</code>）；模型可见 <strong>46</strong> = 49 − 3；<code>_overlay</code> <strong>6</strong>；并指定唯一机械承载 = <code>snapshot_dsh_custom.py</code>。</p>
+<p><strong>外部证据指针</strong>：登记 ADR-010 / ADR-011 / ADR-012（均 <code>proposed</code>）、<code>迁移台账.yaml</code>（43 任务：done 36 / partial 2 / not_done 3 / deferred 1）、收官取证件；并立引用纪律（<strong>必须带路径限定</strong>——<code>0928-前端设计方法论建设</code> 线存在同名 <code>ADR-011</code>）。</p>
+<h3 id="3-2-p1-契约刷新">3.2 P1 契约刷新</h3>
+<p><code>00-contract/contract.md</code> 升至 <strong>v1.5.0</strong>：§2.6 新增「skill 计数口径唯一化」小节（五口径表 + 换算关系 + 唯一承载）；§2.7 新增 <strong>⑥ 装配层「追平轮」登记</strong>（触发判据六项 / 追平义务 R1–R12 全轮次 / 外部指针纪律）；④ 版本号规则实例更新为 v1.4 → v1.5。</p>
+<h3 id="3-3-p2-证据层">3.3 P2 证据层</h3>
+<ul><li><strong>归档</strong>：v1.4 旧快照整目录 <code>mv</code> 至 <code>archive/1011-KB-v1.4-dsh装配与opencode追平/dsh-custom-snapshot-v1.4/</code>（附历史标注 README，逐项对账 v1.4↔v1.5），⛔ 未改写任何内容。</li><li><strong>扩展采集脚本</strong>：<code>snapshot_dsh_custom.py</code> 新增四个取证面 —— <strong>D</strong> skill 清单与原生件划分 / <strong>E</strong> 插件面 / <strong>F</strong> R 环载体（<strong>只记存在性与容量，⛔ 正文不入快照</strong>）/ <strong>G</strong> <code>verify_bundle</code> 判据清单。</li><li><strong>重取快照</strong>：<code>collected_at = 2026-10-13T05:09:43+08:00</code>，9 件全在、脱敏 0 处。关键读数：主根 49 / 原生 2 / 可见 46 / 宿主插件 1 / bundle 插件 2 / 候选 15 + archive 1 / <code>MEMORY.md</code> 14 段 · 10815 B · 14 条 <code>[src:]</code> / 判据 20 项。</li></ul>
+<h3 id="3-4-p3-评分层">3.4 P3 评分层</h3>
+<p><strong>8 维唯一变动</strong>：<code>memory</code> <strong>4 → 5</strong>（权重 10%）——依据 = R-A 载体使档位措辞「跨 session 知识库 + 长期记忆 + 结构化状态」三项齐备；v1.4 不取 5 的理由已被推翻。<strong>skill 维维持 4</strong>（数量 45→49 但未改档位）；<strong>沙箱维维持 4</strong>（环境事实更正不计收益）。</p>
+<p><strong>五环双层</strong>：SP +0.5 · <strong>M +0.5</strong> · P +0.5 · <strong>R +1.0</strong> · T 0 · <strong>E +2.0（达反转阈值）</strong>。</p>
+<p><strong>结果</strong>：官方 dsh <strong>3.6</strong>（未变）；<code>dsh-custom</code> <strong>3.8 → 3.9</strong>（raw 3.75 → 3.85，Δ 由 +0.2 变 <strong>+0.3</strong>）；<strong>档位仍「成品化受限」，未跨档</strong>。<strong>最弱环由「R」改为「R 与 E 并列 4.0」</strong>。</p>
+<p>脚本内新增 <code>HISTORY</code> 机读历史值 + 口径变更对账输出（可复算 v1.4 → v1.5 的每一处变动）。</p>
+<h3 id="3-5-p4-差量分析">3.5 P4 差量分析</h3>
+<table><thead><tr><th>文件</th><th>变化</th></tr></thead><tbody><tr><td><code>03-cases/dsh-custom.md</code></td><td>267 → <strong>364 行</strong>；新增 <strong>§7.7 R1–R12 轮次表</strong> + <strong>§7.8 外部证据指针</strong> + 文件末 <code>&lt;details&gt;</code> v1.4 历史块；§2 E 环 / §4 M 环 / §6 R 环（标题由「迁移损失」改为「闭环已接通」）/ §7.3 skill 口径 / §7.5 判据 20 项 / 总评 / 画像总结全量对齐</td></tr><tr><td><code>03-cases/dsh-custom-diff.md</code></td><td>114 → <strong>190 行</strong>；改造清单 10 类 → <strong>15 行</strong>；六环重写（R 增强、E 反转、最弱环并列）；八维重写；新增两条口径披露 + 五大发现（含「文档 vs 实况冲突」）；历史块保留全部 v1.4 旧值</td></tr><tr><td><code>03-cases/deepseek-harness.md</code>（官方）</td><td><strong>内核未变 ⇒ 不重算分值</strong>；新增 v1.5 处置说明（指向变体画像）；<strong>更正两处已证伪的沙箱环境事实</strong></td></tr></tbody></table>
+<h3 id="3-6-p5-交付层">3.6 P5 交付层</h3>
+<ul><li>数据层脚本更新：<code>gen_html.py</code>（页脚/tag → v1.5、门户卡片、对照页改造清单 10→15 类、发现四条→五条、口径披露加 v1.5 两条、signal 文案）、<code>gen_premium_cyto.py</code> 与 <code>fix_cyto.py</code>（页脚；后者改为<strong>幂等 + 页脚版本同步</strong>）、<code>nav_data.py</code>（无需改，条目未变）。</li><li><strong>全量重生成</strong>：<code>gen_html.py</code> 40 页 + <code>gen_premium_cyto.py</code> + <code>fix_cyto.py</code> → <code>04-interactive</code> 42 页全部重生成；门户 <code>index.html</code> 手工段（专题卡片 + 入口卡片 + 页脚 + tag）同步。</li><li>索引三处：<code>README.md</code>（新增 <strong>v1.5 摘要</strong> 六节、v1.4 摘要降为历史块）、<code>05-md/00-index.md</code>（版本行 + 变体专题整节重写）、根 <code>index.html</code>。</li><li><strong>实验层只补新机制</strong>：<code>06-experiments/dsh-custom.md</code> 新增「<strong>v1.5 新机制登记（实验面：他线实跑取证引用）</strong>」——N1 <code>run_gate</code> 通道 / N2 R-A 载体 / N3 沙箱真实强制 / N4 <code>dsh-config</code> 账本门控，逐条给「他线实跑取证 + 本库只读复算」；并<strong>登记已知缺口</strong>（本库未自跑行为实验的原因与最小启动条件）；更正环境事实、更新迁移损失登记（① ② 已追平、③ 未变）与命令级入口状态。</li></ul>
+<h3 id="3-7-p6-门控">3.7 P6 门控</h3>
+<table><thead><tr><th>层</th><th>结果</th></tr></thead><tbody><tr><td>L1 生成自验证</td><td>PASS（<code>py_compile</code> exit 0；重跑两轮 sha256 逐字节一致 <code>d1399d38da41e56f</code>）</td></tr><tr><td>L2 全量审计</td><td>PASS（issues 0 / warnings 1，历史遗留）</td></tr><tr><td>L3 结构/断链/导航</td><td>PASS（structure 183 / links 2081 / nav 43 对 42）</td></tr><tr><td>L4 视觉层</td><td>PASS（主 Agent 读图三页：compare-dsh / case-dsh-custom / portal）</td></tr><tr><td>L5 渲染层</td><td>PASS（43 页冒烟）</td></tr><tr><td>L6 覆盖度层</td><td>PASS（<strong>112 项</strong>，须带 <code>--manifest</code>）</td></tr><tr><td>L7 信源层</td><td>PASS（24/24）</td></tr><tr><td>级联层</td><td>PASS（6 项；warning 为历史报告页版本号，与 v1.4 同）</td></tr><tr><td>一致性</td><td>PASS（14 产品 × 6 处）</td></tr><tr><td>评分复算</td><td>PASS（dsh 3.6 / 3.9；opencode 2.9 / 3.9 未漂移）</td></tr><tr><td>版本残留</td><td><strong>0</strong></td></tr></tbody></table>
+<p><strong>★ 本轮发现并修复一处「空集假绿」</strong>：README 记载的 <code>kb_gate</code> 复现命令<strong>漏了 <code>--manifest</code></strong>，导致 coverage 层「<strong>检查项=0 却 PASS</strong>」。补参数后复跑得 <code>checked=112, issues=0</code>（真 PASS），并做了<strong>负向控制</strong>（以含不存在件的清单复跑 → 该层判 <code>FAIL</code>），证明判据能判假、非恒真。同时修正 README 的复现命令与口径说明。</p>
+<h3 id="3-8-遇到的问题及应对">3.8 遇到的问题及应对</h3>
+<table><thead><tr><th>问题</th><th>应对</th></tr></thead><tbody><tr><td>分析对象是动目标（迁移线并发改写）</td><td>先暂停、待其收尾；恢复时三项检查通过后<strong>重取冻结点</strong>，并在报告中标注 <code>as_of</code></td></tr><tr><td>子 Agent 编造取证件名（<code>verify-bundle-20checks.out.txt</code> 不存在）</td><td>主 Agent 逐项复核发现 → 改为真实件 <code>r11-final-gates.out.txt</code>（全库残留 0）</td></tr><tr><td>子 Agent 给出与实跑冲突的 raw 值告警（称 3.75）</td><td>以<strong>实跑 + 手算</strong>为准（3.85）；查明其告警源于按旧 <code>memory=4</code> 计算</td></tr><tr><td>过时读数（gate-runner 单测 56/56）</td><td>以 r11 实测 <strong>57/57</strong> 更正（保留 r09 的 56/56 作历史）</td></tr><tr><td><code>fix_cyto.py</code> 非幂等（再跑即 assert 失败）</td><td>改为幂等 + 页脚版本同步，使 <code>index_cyto.html</code> 版本可随脚本同步</td></tr><tr><td>门户卡片残留 v1.4 数值</td><td>读图发现 → 修正（陈旧数值扫描归零）</td></tr></tbody></table>
+<hr>
+</section>
+<section class="sec" id="4-完成情况">
+<h2>4. 完成情况</h2>
+<h3 id="4-1-交付物清单-知识库侧">4.1 交付物清单（知识库侧）</h3>
+<table><thead><tr><th>类别</th><th>路径</th><th>说明</th></tr></thead><tbody><tr><td>契约</td><td><code>00-contract/contract.md</code></td><td>v1.5.0；§2.6 口径唯一化 + §2.7⑥ 追平轮登记</td></tr><tr><td>证据</td><td><code>07-checkpoint/dsh-custom-snapshot/</code></td><td>v1.5 快照（<code>collected_at</code> 2026-10-13T05:09:43+08:00）+ 四个新取证面</td></tr><tr><td>证据</td><td><code>archive/1011-KB-v1.4-dsh装配与opencode追平/dsh-custom-snapshot-v1.4/</code></td><td>v1.4 历史快照（11 件）+ 历史标注 README</td></tr><tr><td>证据</td><td><code>07-checkpoint/quality-gate-result-v1.5.txt</code></td><td>L1–L7 门控结果 + 空集假绿修复记录</td></tr><tr><td>证据</td><td><code>07-checkpoint/l4-v15/*.png</code></td><td>L4 视觉取证件 3 张</td></tr><tr><td>评分</td><td><code>09-src-data/dsh_custom_scores.py</code></td><td>8 维 + 五环 + <code>HISTORY</code> 机读历史 + 口径变更对账</td></tr><tr><td>画像</td><td><code>03-cases/dsh-custom.md</code> / <code>dsh-custom-diff.md</code> / <code>deepseek-harness.md</code></td><td>364 / 190 / 209 行</td></tr><tr><td>实验</td><td><code>06-experiments/dsh-custom.md</code></td><td>新增 v1.5 新机制登记 + 缺口登记</td></tr><tr><td>页面</td><td><code>04-interactive/{case-dsh-custom,compare-dsh,exp-dsh-custom,case-dsh}.html</code> + 全站 42 页</td><td>全量重生成</td></tr><tr><td>索引</td><td><code>README.md</code> / <code>05-md/00-index.md</code> / <code>index.html</code></td><td>v1.5 摘要 + 版本同步</td></tr></tbody></table>
+<h3 id="4-2-核心结论">4.2 核心结论</h3>
+<table><thead><tr><th>项</th><th>v1.4</th><th><strong>v1.5</strong></th></tr></thead><tbody><tr><td>官方 dsh 精装度</td><td>3.6</td><td>3.6（未变）</td></tr><tr><td><code>dsh-custom</code> 精装度</td><td>3.8（raw 3.75）</td><td><strong>3.9（raw 3.85）</strong></td></tr><tr><td>Δ（装配层 − 官方）</td><td>+0.2</td><td><strong>+0.3</strong></td></tr><tr><td>档位</td><td>成品化受限</td><td>成品化受限（<strong>未跨档</strong>）</td></tr><tr><td>8 维</td><td>skill +1</td><td><strong>memory +1</strong>（skill 维持）</td></tr><tr><td>五环</td><td>SP+0.5 / M 0 / P+0.5 / R 0 / T 0 / E+1.5</td><td>SP+0.5 / <strong>M+0.5</strong> / P+0.5 / <strong>R+1.0</strong> / T 0 / <strong>E+2.0（反转）</strong></td></tr><tr><td>最弱环</td><td>R（3.0）</td><td><strong>R 与 E 并列（4.0）</strong></td></tr><tr><td>skill 口径</td><td>45 / 42 / 6</td><td><strong>主根 49（派生 47 + 原生 2）/ 可见 46 / overlay 6</strong></td></tr><tr><td>门控判据</td><td>13 项</td><td><strong>20 项</strong></td></tr></tbody></table>
+<h3 id="4-3-验证结果">4.3 验证结果</h3>
+<p>L1–L7 <strong>全 PASS、issue 0</strong>；级联 6 项 PASS；14 产品一致性 PASS；评分复算 PASS；<strong>版本标识残留 0</strong>；L4 三页视觉核验通过；负向控制证明 coverage 判据能判假。</p>
+<h3 id="4-4-改动明细与红线遵守">4.4 改动明细与红线遵守</h3>
+<p>知识库侧：契约 1 件、证据 4 类、评分 1 件、画像 3 件、实验 1 件、生成脚本 4 件、页面 43 件、索引 3 件。 <strong>红线遵守</strong>：全程对 <code>~/.dsh/**</code> 与迁移线目录<strong>只读</strong>（0 写入）；未触碰 <code>/home/zako-mio/dsh</code>；未修改任何记忆系统文件；评分数值全部由脚本涌现；<code>MEMORY.md</code> 正文未入公开库。</p>
+<hr>
+</section>
+<section class="sec" id="5-反思-分析-建议">
+<h2>5. 反思 / 分析 / 建议</h2>
+<h3 id="5-1-过程反思">5.1 过程反思</h3>
+<ol><li><strong>「重新分析」必须先判「旧结论是否仍成立」</strong>。本轮三条 v1.4 结论（沙箱 / R 环 / E 环）全部被现实推翻——若按维护性刷新处理，会把错误结论原样带进 v1.5。判定顺序应是「结论存续 → 机制有无 → 能力纵深」，而非直接重算分值。</li><li><strong>动目标是分析类任务最贵的方法学风险</strong>。先定静止点再取证据，比先取证据再发现过期便宜得多；<code>as_of</code> 标注与「他线可能并发变更」声明应成为此类任务的标配。</li><li><strong>口径不统一会让复评失去可比性</strong>。skill 计数四套读数困扰了两轮；本轮把口径写入契约并指定唯一机械承载（脚本），是可持续的解法——⛔ 只改文档数字不解决问题。</li><li><strong>子 Agent 的交付物必须由主 Agent 逐项复核</strong>。本轮实测到两类缺陷：<strong>编造取证件名</strong>（凭空推导出一个不存在的文件名）与<strong>过时读数</strong>（沿用上一轮的数字）。两者都不是格式问题，而是<strong>证据链完整性问题</strong>；若不复核会直接污染公开知识库。</li></ol>
+<h3 id="5-2-收获认知">5.2 收获认知</h3>
+<ol><li><strong>「环境事实」与「装配层收益」必须分账</strong>。沙箱从「无后端」到 <code>enforcement=full</code> 是真实变化，但归因在环境而非装配层；把它计入分值就是虚报。本轮将其单列为「口径变更披露」并冻结分值。</li><li><strong>空集假绿是最隐蔽的判据失效形态</strong>。<code>checked=0</code> 却 PASS，比判据报错更危险——它让「全绿」失去意义。修复方式是补参数 + 负向控制，并把「计数型判据为 0 即 FAIL」写入纪律。</li><li><strong>迁移损失的「追平」比「新增」更有信息量</strong>。R 环由断裂到接通、E 环由只判增强到反转，都来自对旧结论的正面推翻；这类结论应显式登记（历史块 + 结论变更表），而不是静默改写。</li><li><strong><code>proposed</code> 状态的 ADR 仍可作证据</strong>，但引用时必须如实标注状态；KB 只登记指针、不复制正文，既守住公开库边界，又保留可追溯性。</li></ol>
+<h3 id="5-3-建议">5.3 建议</h3>
+<ol><li><strong>下一轮（v1.6）建议把「装配层追平」做成例行节奏</strong>（如月度），并在契约里固化「静止点判定」三步法（判据脚本两次读数一致 / 上游线进入收官轮 / 本库无并发写入）。</li><li><strong>建议补做 v1.5 新机制的行为实验</strong>（N1–N4 的自跑版）：最小启动条件已登记在 <code>06-experiments/dsh-custom.md</code>，需用户开 <code>opencode-creator</code> 会话或显式放行 <code>/tmp</code> 隔离区复跑。</li><li><strong>建议把「他线实跑取证引用」与「本库自跑实验」在实验模板里分列标记</strong>，避免读者把引用当自证。</li><li><strong>建议为 <code>fix_cyto.py</code> 一类「一次性补丁脚本」立幂等要求</strong>（本轮已就地改造），否则每次重生成都会断链。</li></ol>
+<h3 id="5-4-契约遵守确认">5.4 契约遵守确认</h3>
+<p>全程遵守契约 §7 最小必要破坏性操作范围（可逆 + 受控）：未修改记忆系统文件、未做不可逆破坏、未申请任何密钥/授权；对 <code>~/.dsh/**</code> 与源码树只读；评分数值禁手改纪律全程执行；<code>MEMORY.md</code> 正文未入公开库。</p>
+<hr>
+</section>
+<section class="sec" id="证据来源">
+<h2>📚 证据来源</h2>
+<table><thead><tr><th>SRC</th><th>级别</th><th>信源</th><th>路径 / 依据</th><th>置信度</th></tr></thead><tbody><tr><td>SRC-001</td><td>S4</td><td>一手磁盘实测（冻结点读数）</td><td><code>~/.dsh/presets/opencode/**</code>、<code>~/.dsh/profiles/web/**</code> 字节比对与行 id 集合差</td><td>高</td></tr><tr><td>SRC-002</td><td>S4</td><td>本库脱敏快照（v1.5）</td><td><code>07-checkpoint/dsh-custom-snapshot/{inventory.json,manifest.json}</code>（<code>collected_at</code> 2026-10-13T05:09:43+08:00）</td><td>高</td></tr><tr><td>SRC-003</td><td>S4</td><td>本库评分单一数据源</td><td><code>09-src-data/dsh_custom_scores.py</code>（<code>SCORES</code> / <code>RING_SCORES</code> / <code>HISTORY</code>）</td><td>高</td></tr><tr><td>SRC-004</td><td>S4</td><td>本库门控结果</td><td><code>07-checkpoint/quality-gate-result-v1.5.txt</code>（L1–L7 全 PASS；含空集假绿修复与负向控制）</td><td>高</td></tr><tr><td>SRC-005</td><td>S4</td><td>本库 L4 视觉取证</td><td><code>07-checkpoint/l4-v15/{compare-dsh,case-dsh-custom,portal}.png</code></td><td>高</td></tr><tr><td>SRC-006</td><td>S4</td><td>他线实跑取证（只读引用）</td><td><code>Mission-file/2026-10/1011-deepseek harness-提示词迁移工程-从opencode/1011-全面适配性迁移分析/evidence/{r11-final-gates.out.txt,r09-*.out.txt}</code></td><td>中高</td></tr><tr><td>SRC-007</td><td>S4</td><td>决策依据指针（<code>proposed</code>）</td><td><code>…/1011-迁移适配-E环门控通道与R环纠正/arch/ADR-010.json</code>、<code>…/1011-全面适配性迁移分析/arch/{ADR-011.json,ADR-012.json}</code> + <code>迁移台账.yaml</code></td><td>中高</td></tr><tr><td>SRC-008</td><td>S1</td><td>任务留档（上一轮基线）</td><td><code>Mission-file/2026-10/1011-KB-v1.4-dsh装配与opencode追平/report.md</code></td><td>高</td></tr></tbody></table>
+</section>
+<div class="colophon">
+本页由 <code>build_report_html.py</code> 从 <code>report-execution.md</code> 派生
+（MD 是真相源，⛔ 禁手改本页）。<br>
+源 sha256：<code>c90164934d8533f8fb0a04a4568055f5eccb5a3b7f3e583446333f33df6477ae</code><br>
+样式承接 <code>fe-starter-kit/tokens/contract.json</code> 与 <code>M3-tokens.css</code>，⛔ 未另立令牌体系。
+</div>
+</main>
+</div>
+</body>
+</html>

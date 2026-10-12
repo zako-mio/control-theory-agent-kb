@@ -17,7 +17,7 @@
 | 五、验证与证据 | `~/.config/opencode/instructions/auto-mode.md` | rewritten | 282 | `d204b86d6f13` |
 | 六、故障自愈 | `~/.config/opencode/instructions/auto-mode.md` | verbatim | 282 | `d204b86d6f13` |
 | 七、缓存与并行 | `~/.config/opencode/instructions/auto-mode.md` | rewritten | 282 | `d204b86d6f13` |
-| 八、环境事实 | `~/.dsh/profiles/web/cordis.patch.yml` | rewritten | 269 | `9c00a1a14339` |
+| 八、环境事实 | `~/.dsh/profiles/web/cordis.patch.yml` | rewritten | 373 | `70d7abf72773` |
 | 九、留档规范 | `~/.config/opencode/instructions/agent-protocol.md` | rewritten | 83 | `125ef86d3897` |
 | 十、记忆纪律 | `~/.config/opencode/instructions/auto-mode.md` | rewritten | 282 | `d204b86d6f13` |
 | 十一、搜索行为 | `~/.config/opencode/instructions/search-behavior.md` | verbatim | 22 | `71769f677042` |
@@ -36,11 +36,11 @@
 - **五、验证与证据**（rewritten）：保留验证证据 / 路径本地化 / 元数据不入输出；「从磁盘读」改为强调依赖文件
 - **六、故障自愈**（verbatim）：工具失败 3 次阶梯 + 子 Agent 非 JSON 处理逐字保留
 - **七、缓存与并行**（rewritten）：压缩为各一句；删除 MCP 工具发现段与具体阈值
-- **八、环境事实**（rewritten）：沿用 profile 既有 DSH 版七段纪律中的环境事实段，并补「无沙箱后端」
+- **八、环境事实**（rewritten）：**2026-10-12 起**：机器特定事实已外迁至 `dsh-config` 技能的 `local/host-env-facts.md`（单一承载处）；本节只留「唯一指针 + 被判据直接提取的第 7 条」。第 7 条（外部 CLI 不在会话 PATH 上）的引导串是 check 17 的判据来源，⛔ 不得搬走或复制
 - **九、留档规范**（rewritten）：5 段模板与三门控保留；发问工具改为 ask_user_question
-- **十、记忆纪律**（rewritten）：保留 MEMORY.md 只读纪律；删除反思写入链；补「不常驻上下文」理由
+- **十、记忆纪律**（rewritten）：保留 MEMORY.md 只读纪律；队列工具链缺失按实测收窄登记（候选产出通道仍在）；补「不常驻上下文」理由
 - **十一、搜索行为**（verbatim）：整节逐字保留（含时效性准则）
-- **十二、架构行为**（rewritten）：保留规模三问 / 知识分层 / 产出契约；/arch 与 architect-worker 改写；门控执行方按 D3
+- **十二、架构行为**（rewritten）：保留规模三问 / 知识分层 / 产出契约；/arch 与 architect-worker 改写；门控执行方由窄通道 run_gate 承担（ADR-010）
 - **十三、需求发现行为**（rewritten）：/rd 改为点名触发；$TIER_TOOL 展开为绝对路径；worker 名改写
 - **十四、视觉与出图归位**（rewritten）：保留出图归位与视觉降级规则；pdf-worker 改写为 oc_pdf；标注未挂 MCP
 - **十五、迁移适配注记**（summary）：汇总 01 号调研 B 表的「冲突 / 不可实现 / 重复删除」条目；详表见 ADAPTATION-NOTES.md

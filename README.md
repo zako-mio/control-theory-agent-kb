@@ -1,10 +1,63 @@
 # 控制理论 ⊗ Agent 设计知识库
 
-> **版本**：v1.4.0（6 框架 + 14 精装房全景 + 装配层变体 opencode-custom / dsh-custom）｜创建：2026-09-07｜v1.1 扩展：2026-09-08｜v1.2 自改造 opencode 变体专题：2026-09-09｜v1.3 变体复评：2026-09-11｜v1.4 dsh 装配层变体专题 + opencode 月度追平：2026-10-11
+> **版本**：v1.5.0（6 框架 + 14 精装房全景 + 装配层变体 opencode-custom / dsh-custom）｜创建：2026-09-07｜v1.1 扩展：2026-09-08｜v1.2 自改造 opencode 变体专题：2026-09-09｜v1.3 变体复评：2026-09-11｜v1.4 dsh 装配层变体专题 + opencode 月度追平：2026-10-11｜v1.5 dsh 装配层二次追平：2026-10-13
 > **定位**：以 Agent 设计构建为业务核心，控制理论作为解决 Agent 工程问题的**技术工具库**引入。
 > **核心命题**：把 Agent 当作一架装了传感器、执行器、逻辑决断器的无人机去建模与控制，拒绝把它当成会聊天的搜索引擎。
 
 ---
+
+## v1.5 摘要（2026-10-13）— dsh 装配层二次追平
+
+本轮 **v1.4 → v1.5**，单线：把 dsh 侧装配层从 v1.4 快照点（2026-10-11 17:09）**追平**到 v1.5 冻结点（2026-10-13 05:04）。**内核零变化**（dsh `v0.2.1-alpha.2` / commit `d743267` 未变），全部增量在装配层。
+
+### 一、触发判据（契约 §2.7⑥）
+
+装配层命中「能力纵深增长 / 机制新增」六项：① `run_gate` 门控执行通道（ADR-010）；② `dsh-config` 能力包（ADR-011）；③ R 环 R-A 文件载体（ADR-012）；④ `dsh-wsl-desktop-path` / `dsh-opencode-commands` 两个新插件；⑤ `verify_bundle` 判据 **13 → 20 项**；⑥ 沙箱由「本机无可用后端」变为 `bwrap enforcement=full`。
+
+### 二、追平范围：R1–R12 全轮次
+
+| 时点 | 轮次 | 变化 |
+|---|---|---|
+| 10-11 17:16–18:07 | R1–R2 | 思考档 `reasoningEfforts` + 子 Agent 能力上限；**E 环 `run_gate` 通道（ADR-010）** |
+| 10-11 19:46–19:48 | R3 | 重挂 `dsh-wsl-desktop-path`（web + headless） |
+| 10-12 08:32–09:31Z | R4–R5 | **`dsh-config` skill v1.0（ADR-011）**；**R 环 R-A 载体（ADR-012）** |
+| 10-12 15:46–17:16 | R6–R8 | `verify_bundle` 13 → 19 项；persona 收敛（8018 → 6524 字符）；模型路由治理；R09 收尾 |
+| 10-12 17:40–19:13 | R9–R10 | E3 residue 119 → 0；R-A 落库取证；行为验收收尾 |
+| 10-13 02:37–03:38 | R11–R12 | caps 台账统一；判据 19 → 20 项；收官轮（重启后验收） |
+
+### 三、评分变动（唯一 8 维变动 + 三环上调）
+
+- **精装度**：官方 dsh 维持 **3.6**；`dsh-custom` **3.8 → 3.9**（raw 3.75 → 3.85，Δ 由 +0.2 变 **+0.3**）；档位仍「成品化受限」，**未跨档**。
+- **8 维唯一变动**：`memory` **4 → 5**（权重 10%）。依据＝R-A 载体落地：`~/.dsh/MEMORY.md`（14 个 `§` 段 / 10815 B / 14 条 `[src:]` 签名）+ 候选目录 15 份 + `dsh-reflection` skill。
+- **五环双层**：SP +0.5 · **M +0.5** · P +0.5 · **R +1.0** · T 0 · **E +2.0（达反转阈值）**。
+- ⚠️ **最弱环结论再次改变**：v1.4 判「最弱环由 E 转移到 R」；v1.5 下 **R 与 E 并列 4.0**，不再存在单一最弱环。
+
+### 四、三条旧结论被推翻 / 更正（本轮实质内容）
+
+| # | v1.4 旧结论 | v1.5 处置 |
+|:--:|---|---|
+| C1 | 「本机无可用沙箱后端（bwrap / Landlock 均不可用）」 | **已证伪**（bwrap 已装、`enforcement=full`）⇒ 属**环境事实更正**，⛔ 不计入分值 |
+| C2 | 「R 环迁移断裂、最弱环 R = 3.0」 | **已推翻**（R-A 载体落地，ADR-012 门控 6/6）⇒ R 3.0 → 4.0 |
+| C3 | 「门控脚本依赖 bash 而子 Agent 无 bash ⇒ E 环只判增强」 | **已消解**（`run_gate` 窄通道）⇒ E 3.5 → 4.0，Δ+2.0 反转 |
+
+### 五、口径唯一化（契约 §2.6 新增）
+
+skill 计数四口径并存（v1.4 时点 45 / README 46 / `reconcile` 47 / 实测主根 49）⇒ 本轮写入契约：**主根 49 = 派生 47 + DSH 原生 2**；**模型可见 46 = 49 − 3**；`_overlay` 6。采集口径的唯一机械承载＝`07-checkpoint/snapshot_dsh_custom.py`。
+
+### 六、本轮新增产物
+
+| 类型 | 产物 |
+|------|------|
+| 证据 | `07-checkpoint/dsh-custom-snapshot/`（v1.5 新快照，含 `skills_list` / `plugins` / `reflection` / `gate` 四个新取证面）；v1.4 旧快照归档至 `archive/1011-KB-v1.4-dsh装配与opencode追平/dsh-custom-snapshot-v1.4/` |
+| 数据源 | `09-src-data/dsh_custom_scores.py`（含 `HISTORY` 机读历史值与口径变更对账） |
+| 画像 | `03-cases/dsh-custom.md`（新增 R1–R12 轮次表）、`dsh-custom-diff.md`（双层 delta + 文档 vs 实况冲突） |
+| 契约 | `00-contract/contract.md` §2.6（口径唯一化）+ §2.7⑥（追平轮登记） |
+| 页面 | `04-interactive/{case-dsh-custom,compare-dsh}.html`（由生成脚本全量重生成） |
+
+---
+
+<details>
+<summary><b>历史块 · v1.4 摘要（2026-10-11，保留原版本号）</b></summary>
 
 ## v1.4 摘要（2026-10-11）— dsh 装配层变体专题 + opencode 月度追平
 
@@ -49,6 +102,8 @@
 | 实验 | `06-experiments/dsh-custom.md`（实验 11-14，延续 opencode-custom 的 1-10） |
 | 数据源 | `09-src-data/dsh_custom_scores.py`（与 `opencode_custom_scores.py` 同构） |
 | 证据 | `07-checkpoint/dsh-custom-snapshot/`（bundle / profile / inventory.json / manifest.json） |
+
+</details>
 
 ---
 
@@ -150,7 +205,7 @@ cd 04-interactive && python3 -m http.server 8321
 | 技术框架（对照） | 2.5-3 | opencode / dsh / PRIME / hermes / claude-code / codex |
 
 > ⚠️ **变体不计入本谱系**：`opencode-custom`（3.9）与 `dsh-custom`（3.8）为**个人装配层**，**不参与 14 产品市售精装度排名**（契约 §2.6 / §2.7①）——其分值仅用于「官方内核 vs 装配层增量」的内部对照。
-> ⚠️ **dsh 口径变更（不得读作跃升）**：本行 dsh 的旧标注 **2.5 为单点分**（`gen_html.py` `FRAMEWORK_DATA`，**非** 8 维模型输出）；v1.4 首次回填 v2.0 模型得 **官方 3.6 / 装配层 3.8**。**3.6 与 2.5 不同源、不可相减**（契约 §2.7⑤）。
+> ⚠️ **dsh 口径变更（不得读作跃升）**：本行 dsh 的旧标注 **2.5 为单点分**（`gen_html.py` `FRAMEWORK_DATA`，**非** 8 维模型输出）；v1.4 首次回填 v2.0 模型得 **官方 3.6 / 装配层 3.8**，v1.5 复评后装配层为 **3.9**（官方维持 3.6）。**3.6 与 2.5 不同源、不可相减**（契约 §2.7⑤）；v1.4 与 v1.5 属不同时点读数，亦不可相减。
 
 ### 三大实证发现
 
@@ -174,7 +229,7 @@ cd 04-interactive && python3 -m http.server 8321
 ├── 07-checkpoint/        # 门控脚本 + 实证证据 + 审计报告 + 变体脱敏快照
 ├── 08-drawio/            # 五环控制回路图 + 控制概念映射表
 ├── 09-src-data/          # DAG DATA / KT 详情 / 生成脚本 / 变体评分单一数据源
-├── archive/              # 任务留档（0908 精装房专题报告）
+├── archive/              # 任务留档（0908 精装房专题 / 0911 v1.3 / 1011 v1.4 报告 + v1.4 历史快照 / 1013 v1.5 报告）
 ├── index.html            # 人类入口
 └── README.md             # 本文件
 ```
@@ -195,8 +250,9 @@ cd 04-interactive && python3 -m http.server 8321
 | L6 | 覆盖度层 | `kb_gate.py --layers coverage` | PASS（79 项显式 manifest） |
 | L7 | 信源层 | `kb_gate.py --layers sources` | PASS（22/22 画像含证据区块） |
 
-> ⚠️ **口径说明**：上表为 **v1.3（2026-09-11）** 全量门控**实测值**，明细见 `07-checkpoint/quality-gate-result-v1.3.txt`。**v1.4 轮次的复跑结果由本轮门控步骤产出并写入 `07-checkpoint/quality-gate-result-v1.4.txt`**，届时以该文件为准——本表**不预先改写数值**（禁止未跑先报）。
-> v1.4 新增页面（`case-dsh-custom.html` / `compare-dsh.html` / `exp-dsh-custom.html`）与新增画像（`dsh-custom.md` / `dsh-custom-diff.md`）已纳入 L3/L6/L7 检查面：**04-interactive 页面 39 → 42**，**L7 信源层分母 22 → 24**。
+> ⚠️ **口径说明**：上表为 **v1.3（2026-09-11）** 全量门控**实测值**，明细见 `07-checkpoint/quality-gate-result-v1.3.txt`。**v1.5 轮次的复跑结果见 `07-checkpoint/quality-gate-result-v1.5.txt`**（L1–L7 全 PASS、issue 0；另记一处「空集假绿」的发现与修复），以该文件为准——本表**不预先改写数值**（禁止未跑先报）。
+> v1.4/v1.5 新增或改动的页面（`case-dsh-custom.html` / `compare-dsh.html` / `exp-dsh-custom.html` / `case-dsh.html`）与画像（`dsh-custom.md` / `dsh-custom-diff.md` / `deepseek-harness.md`）已纳入 L3/L6/L7 检查面：**04-interactive 页面 39 → 42**，**L7 信源层分母 22 → 24**，**L3 结构层 181 → 183**。
+> ⚠️ **复现命令修正（v1.5）**：下方命令原**漏了 `--manifest`**，导致 coverage 层「检查项=0 却 PASS」（空集假绿）。**必须带** `--manifest 07-checkpoint/coverage-manifest.txt`。
 
 复现命令：
 
@@ -208,6 +264,7 @@ python3 07-checkpoint/kb_gate.py \
   --exclude tmp-evidence --exclude 05-source --exclude 03-cases/source --exclude archive \
   --exclude 07-checkpoint/opencode-custom-snapshot --exclude 07-checkpoint/dsh-custom-snapshot \
   --nav-exempt 07-checkpoint/report-v1.1.html \
+  --manifest 07-checkpoint/coverage-manifest.txt \
   --content-glob "03-cases/*.md" \
   --render-glob "04-interactive/*.html" --render-glob index.html \
   --json-out 07-checkpoint/gate-result.json

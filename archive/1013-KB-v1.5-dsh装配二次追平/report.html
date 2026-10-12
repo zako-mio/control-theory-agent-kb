@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-source-sha256="39403f7f5a06fe4000f6546298430d1a6934e50a533e372ab014de713f783c87">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KB v1.5「dsh 装配层二次追平」— 情况摸底与执行计划留档</title>
+<style>
+/* report.css · 留档报告统一令牌与结构层
+ * ============================================================================
+ * 来源与承接关系（⛔ 本文件不是新令牌体系）：
+ *   值真相源：~/opencode/projects/fe-starter-kit/tokens/contract.json
+ *             （roles / palettes.content / usage_tiers；authority.threshold_source
+ *              → 0916-前端技术栈基线/adr/ADR-004.json 第 6/7/8 条）
+ *   排版令牌：fe-starter-kit/templates/content-a-static/assets/M3-tokens.css
+ *             （--measure:42em / 几何级数字号阶梯 / --lh-body:1.8）
+ *   本文件只做两件事：① 原样承接上述令牌值；② 追加「报告体裁」结构规则。
+ *   ⛔ 不新增色值、不发明阈值、不改上游令牌名。
+ *
+ * 报告体裁的可机检目标（对应门控 E13）：
+ *   正文 16px · 行高 1.8（≥1.6）· 行宽 42em（≤42em）· 正文对比度 ≥4.5:1
+ *
+ * 预览安全约束（对应门控 E4，由 DSH 侧栏 HTML 预览的清洗器反推）：
+ *   ⛔ 无 script 元素 · 无 SMIL · 无 img 元素 · 无加载类外链
+ *   ⇒ 深色模式**纯 CSS**：light-dark() + color-scheme，不依赖任何 JS 开关。
+ *   ⇒ 图**一律内联 SVG**，靠 viewBox 自适应，不用 img 元素。
+ *   ★ 注：本注释刻意**不写字面标签**——本文件会被内联进交付物，若注释里出现
+ *     script / img 的字面开标签，会把「按原文扫描」的门控判成假 FAIL（自指陷阱，
+ *     同 0918 字形门控的「交付物描述不安全字形须用码位」）。
+ * ========================================================================== */
+
+:root{
+  color-scheme: light dark;
+
+  /* ---------- 尺度令牌（承接 M3-tokens.css） ---------- */
+  --measure:42em;
+  --fs-body:16px;
+  --fs-h4:1.25rem;
+  --fs-h3:1.5rem;
+  --fs-h2:1.875rem;
+  --fs-h1:2.25rem;
+  --lh-body:1.8;
+  --lh-head:1.35;
+  --space-block:1.15em;
+  --radius:6px;
+  --fs-table:.94em;
+  --fs-code:.9em;
+  --fs-pre:.88em;
+  --fs-caption:.875rem;
+
+  /* ---------- 色彩令牌（★ 派生区：由 scripts/contract_tokens.py 从上游契约生成） ----------
+   * 真相源：`fe-starter-kit/tokens/contract.json` 的 `palettes.content.values`
+   *   （7 个内容族角色）。改色请改**上游契约**，再跑：
+   *     python3 scripts/contract_tokens.py            # 重新派生本区
+   *     python3 scripts/contract_tokens.py --check    # 只读对账（漂移 → rc 1）
+   * marker 区内**一行都不许手改**；区外的手写令牌见下方「报告体裁追加令牌」。
+   * 每色两行：先浅色字面值作**旧浏览器回退**，再用 light-dark() 覆盖为双值；
+   *   不支持 light-dark() 的引擎会丢弃第二条声明 ⇒ 退回浅色，不会出现无样式。
+   *   ★ 门控 E13/E16 的 token_light() 优先取 light-dark() 的浅色分量，故顺序不可颠倒。 */
+  /* >>> GENERATED:contract (由 scripts/contract_tokens.py 从 tokens/contract.json 生成；⛔ 勿手改) */
+  --bg:#ffffff;
+  --bg: light-dark(#ffffff, #14171a);
+  --bg-soft:#f6f8fa;
+  --bg-soft: light-dark(#f6f8fa, #1b2026);
+  --bg-stripe:#fbfcfd;
+  --bg-stripe: light-dark(#fbfcfd, #181d22);
+  --fg:#16191d;
+  --fg: light-dark(#16191d, #e3e6ea);
+  --fg-muted:#4a5058;
+  --fg-muted: light-dark(#4a5058, #a9b3bd);
+  --link:#0b57d0;
+  --link: light-dark(#0b57d0, #8ab4f8);
+  --rule:#d8dde3;
+  --rule: light-dark(#d8dde3, #2f363d);
+  /* <<< GENERATED:contract */
+
+  /* ---------- 报告体裁追加令牌（⛔ 非色值；仅尺度） ----------
+   * ★ 每个令牌都必须能说出它要达成什么效果（r1 缺陷 D2/D3/D4/D5 的教训：
+   *   图件原先没有任何令牌，「图该多宽 / 字最小多少 / 深色下怎么办」三问在令牌层无解，
+   *   只能落到实现里，于是产生了 6.7px 的字与 1.30:1 的对比度）。 */
+  /* 【why】外壳须容得下「目录栏 + 图件上限」：240(rail)+40(gap)+1080(fig) ≈ 1360px = 85rem。
+   *   原 60rem 会让 main 只剩 680px，即使 1440px 视口下图件也要横向滚动（实测）。 */
+  --shell:85rem;
+  --toc-w:15rem;          /* 目录栏宽 */
+  /* 【why】图的信息密度天然高于正文：一张 1000px 宽的画布压进 42em(672px) 正文栏，
+   *   10px 的图内标签会被缩到 6.7px。故图件**脱出正文行宽**，另给一个更宽的容器上限。 */
+  --fig-measure:min(92vw, 1080px);
+  /* 【why】图内标签的最小**实际显示**字号。取 11px：低于此值在 100% 缩放下即不可读；
+   *   它也是图表标签的通用下限（≈ 正文 16px 的 0.7 倍，与 --fs-caption 同档）。 */
+  --fig-fs-floor:11px;
+  /* 【why】图件底色与页面主题**解耦**。确定性布局引擎产出的是浅色线框（深色文字），
+   *   若让它继承页面 --bg-soft，深色模式下会变成「深字落深底」= 1.30:1 完全不可读。
+   *   故图件固定为「纸面」底色，在明暗两态下都保持高对比。 */
+  --fig-bg:#fdfdfc;
+  --fig-rule:#dcdcdc;     /* 图件外框，让「纸面」在深色页面上有边界感 */
+
+  /* ---------- 字体 ---------- */
+  --font-body:-apple-system,"Segoe UI","Noto Sans CJK SC","Source Han Sans SC","Microsoft YaHei",sans-serif;
+  --font-mono:ui-monospace,SFMono-Regular,Consolas,"Noto Sans Mono CJK SC",monospace;
+}
+
+/* ============================ 基础 ============================ */
+html{background:var(--bg);-webkit-text-size-adjust:100%}
+body{
+  margin:0;padding:32px 20px 64px;
+  font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);
+  letter-spacing:.008em;color:var(--fg);background:var(--bg);
+  overflow-wrap:anywhere;
+}
+.shell{max-width:var(--shell);margin:0 auto;display:grid;grid-template-columns:var(--toc-w) minmax(0,1fr);gap:2.5rem;align-items:start}
+/* 【why】main 取**图件**宽度，正文元素各自退回 --measure。
+ *   若 main 仍是 42em，图件无论怎么写都展不开（r1 缺陷 D4/D5：半屏下右侧空置而图不展宽）。 */
+main{max-width:var(--fig-measure);min-width:0}
+/* 【why】正文行宽是**排版**约束（中文长文 35–45 字/行），只该作用在文本块上，⛔ 不该外溢到图件。 */
+/* 【why】正文块在放宽后的 main 里**居中**，否则右侧会留下约 400px 空档、版面失衡。
+ *   图件同样居中且更宽 ⇒ 「居中文字列 + 更宽的居中图件」是稳定版式。 */
+main :is(p,ul,ol,blockquote,h1,h2,h3,h4,h5,h6,table,pre,.colophon,.crumb){max-width:var(--measure);margin-inline:auto}
+
+h1,h2,h3,h4{line-height:var(--lh-head);font-weight:650;letter-spacing:.01em}
+h1{font-size:var(--fs-h1);margin:0 0 .7em;padding-bottom:.35em;border-bottom:2px solid var(--rule)}
+h2{font-size:var(--fs-h2);margin:1.9em 0 .6em;padding-bottom:.28em;border-bottom:1px solid var(--rule)}
+h3{font-size:var(--fs-h3);margin:1.55em 0 .5em}
+h4{font-size:var(--fs-h4);margin:1.3em 0 .45em;color:var(--fg-muted)}
+p{margin:var(--space-block) 0}
+a{color:var(--link);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--link) 35%,transparent)}
+a:hover{border-bottom-color:var(--link)}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--link);outline-offset:2px;border-radius:3px}
+strong{font-weight:680}
+hr{border:0;border-top:1px solid var(--rule);margin:2.2em 0}
+ul,ol{padding-left:1.5em;margin:var(--space-block) 0}
+li{margin:.34em 0}
+li>ul,li>ol{margin:.3em 0}
+
+/* ============================ 表格 ============================ */
+table{border-collapse:collapse;width:100%;margin:1.2em 0;font-size:var(--fs-table);line-height:1.65}
+th,td{border:1px solid var(--rule);padding:8px 11px;text-align:left;vertical-align:top;
+  overflow-wrap:anywhere;word-break:normal}
+th{background:var(--bg-soft);font-weight:650}
+tbody tr:nth-child(even) td{background:var(--bg-stripe)}
+
+/* ============================ 代码 ============================ */
+code{background:var(--bg-soft);padding:.14em .38em;border-radius:4px;
+  font-family:var(--font-mono);font-size:var(--fs-code);overflow-wrap:anywhere}
+pre{background:var(--bg-soft);border:1px solid var(--rule);border-radius:var(--radius);
+  padding:13px 15px;overflow-x:auto;line-height:1.62;margin:1.2em 0}
+pre code{background:none;padding:0;font-size:var(--fs-pre);overflow-wrap:normal;white-space:pre}
+
+/* ============================ 引用 / 提示块 ============================ */
+blockquote{border-left:3px solid var(--link);background:var(--bg-soft);
+  margin:1.2em 0;padding:.7em 1em;color:var(--fg-muted);border-radius:0 var(--radius) var(--radius) 0}
+blockquote p{margin:.4em 0}
+blockquote p:first-child{margin-top:0}
+blockquote p:last-child{margin-bottom:0}
+
+/* ============================ 图（内联 SVG） ============================ */
+/* 【why】figure 取 --fig-measure（可宽于正文行宽）；svg 由 viewBox 自适应。
+ *   min-width 由渲染器按「画布宽 × 字号下限 ÷ 图内最小字号」算出并写进 style，
+ *   保证**任何视口下**图内字号都不低于 --fig-fs-floor（窄屏则横向滚动，⛔ 不缩到不可读）。 */
+figure{margin:1.6em auto;padding:0;max-width:var(--fig-measure)}
+figure svg{display:block;width:100%;height:auto;
+  background:var(--fig-bg);border:1px solid var(--fig-rule);border-radius:var(--radius)}
+figcaption{margin-top:.6em;font-size:var(--fs-caption);line-height:1.6;color:var(--fg-muted);max-width:var(--measure)}
+figcaption b{color:var(--fg);font-weight:650}
+/* 【why】图件在窄屏允许横向滚动，而不是继续缩小到不可读。 */
+.fig-scroll{overflow-x:auto;max-width:100%}
+
+/* ============================ 目录栏 ============================ */
+.rail{position:sticky;top:32px;font-size:var(--fs-caption);line-height:1.5;max-height:calc(100vh - 64px);overflow:auto}
+/* ⛔ 目录栏标题**不用 h2**：正文 h2 集合须与 MD 严格对齐（门控 E8），
+ *    目录若占用 h2 会被判为「HTML 多出标题」。故用 div.rail-h。 */
+.rail .rail-h{font-size:var(--fs-caption);text-transform:none;letter-spacing:.04em;color:var(--fg-muted);
+  margin:0 0 .6em;padding:0;font-weight:650}
+/* ⛔ 目录**不加 CSS 计数器编号**：正文标题自带编号（「0 目标与成功判据」），
+ *    若再叠一层 counter 会出现「01 0 目标…」这种双编号，且 lv3 项也会推进计数
+ *    导致 h2 编号跳号（实测：01,02,03,04,13,14…）。目录只复述标题原文。 */
+.rail ol{list-style:none;padding:0;margin:0}
+.rail li{margin:.3em 0}
+.rail a{display:block;padding:.22em 0;border:0;color:var(--fg-muted)}
+.rail a:hover{color:var(--link)}
+.rail li.lv3{padding-left:1.1em}
+.rail li.lv3 a{color:var(--fg-muted);opacity:.85}
+
+/* ============================ 页脚溯源 ============================ */
+.colophon{margin-top:3.5em;padding-top:1.2em;border-top:1px solid var(--rule);
+  font-size:var(--fs-caption);line-height:1.7;color:var(--fg-muted)}
+
+/* ============================ 窄屏 ============================ */
+@media (max-width:900px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  .rail{position:static;max-height:none;margin-bottom:1.5em;
+    border:1px solid var(--rule);border-radius:var(--radius);padding:.9em 1.1em;background:var(--bg-soft)}
+}
+@media (max-width:760px){
+  :root{--fs-h1:1.85rem;--fs-h2:1.6rem;--fs-h3:1.35rem;--fs-body:15px;--fs-table:.9em}
+  body{padding:20px 14px 48px}
+  th,td{padding:6px 8px}
+}
+
+/* ============================ 打印 ============================ */
+@media print{
+  :root{--fs-body:11pt;--fs-h1:20pt;--fs-h2:15pt;--fs-h3:13pt}
+  html,body{background:#fff;color:#000}
+  body{padding:0}
+  .shell{display:block;max-width:none}
+  .rail{display:none}
+  main{max-width:none}
+  a{color:#000;border:0}
+  a[href^="#"]{color:#000}
+  figure,table,pre,blockquote{break-inside:avoid}
+  h2,h3{break-after:avoid}
+  .colophon{color:#333}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+<nav class="rail" aria-label="本页目录">
+<div class="rail-h">本页目录</div>
+<ol>
+<li class="lv2"><a href="#1-当时情况">1. 当时情况</a></li><li class="lv3"><a href="#1-1-用户原始需求">1.1 用户原始需求</a></li><li class="lv3"><a href="#1-2-起点识别">1.2 起点识别</a></li><li class="lv3"><a href="#1-3-知识库现状-实测基线">1.3 知识库现状（实测基线）</a></li><li class="lv3"><a href="#1-4-v1-4-已下的结论-本轮要复核的对象">1.4 v1.4 已下的结论（本轮要复核的对象）</a></li><li class="lv3"><a href="#1-5-dsh-侧确实-又经历了几轮-实测">1.5 dsh 侧确实「又经历了几轮」（实测）</a></li><li class="lv2"><a href="#2-制定计划">2. 制定计划</a></li><li class="lv3"><a href="#2-1-三项由用户裁定的决策">2.1 三项由用户裁定的决策</a></li><li class="lv3"><a href="#2-2-触发判据与定档">2.2 触发判据与定档</a></li><li class="lv3"><a href="#2-3-计划要点-p0-p7">2.3 计划要点（P0–P7）</a></li><li class="lv3"><a href="#2-4-红线-计划内置">2.4 红线（计划内置）</a></li><li class="lv2"><a href="#3-执行情况">3. 执行情况</a></li><li class="lv3"><a href="#3-1-本轮实际完成的动作">3.1 本轮实际完成的动作</a></li><li class="lv3"><a href="#3-2-关键实测发现">3.2 关键实测发现</a></li><li class="lv3"><a href="#3-3-冻结点状态变化-重要">3.3 冻结点状态变化（重要）</a></li><li class="lv3"><a href="#3-4-暂停决定">3.4 暂停决定</a></li><li class="lv2"><a href="#4-完成情况">4. 完成情况</a></li><li class="lv3"><a href="#4-1-交付物清单">4.1 交付物清单</a></li><li class="lv3"><a href="#4-2-未完成-暂停点">4.2 未完成（暂停点）</a></li><li class="lv3"><a href="#4-3-验证">4.3 验证</a></li><li class="lv2"><a href="#5-反思-分析-建议">5. 反思 / 分析 / 建议</a></li><li class="lv3"><a href="#5-1-过程反思">5.1 过程反思</a></li><li class="lv3"><a href="#5-2-收获认知">5.2 收获认知</a></li><li class="lv3"><a href="#5-3-恢复条件-给下一轮的最小启动序列">5.3 恢复条件（给下一轮的最小启动序列）</a></li><li class="lv3"><a href="#5-4-契约遵守确认">5.4 契约遵守确认</a></li><li class="lv2"><a href="#证据来源">📚 证据来源</a></li>
+</ol>
+</nav>
+<main>
+<p class="crumb">任务留档 / 2026-10 / 1011-KB-v1.4-dsh装配与opencode追平 / 1013-v1.5-dsh装配二次追平</p>
+<h1>KB v1.5「dsh 装配层二次追平」— 情况摸底与执行计划留档</h1>
+<blockquote><p>性质：任务留档报告本体（AI 友好版；人类可读版见同目录 <code>report.html</code>，由 <code>report-renderer</code> 派生，禁手改）。 任务：控制理论 ⊗ Agent 设计知识库 v1.4 → v1.5（dsh 装配层二次追平）的前置摸底与计划制定。 日期：2026-10-13　负责人：主 Agent 状态：<strong>计划已留档，执行暂停</strong>（等迁移线收尾后由用户通知恢复）。 复杂度自评 16/20（影响范围 4 · 逻辑深度 4 · 操作数量 5 · 风险精度 3）→ 高复杂度。 架构分档：<strong>门控级</strong>（规模三问 Q2 跨多模块、Q3 公开仓反转成本命中）。</p></blockquote>
+<hr>
+<section class="sec" id="1-当时情况">
+<h2>1. 当时情况</h2>
+<h3 id="1-1-用户原始需求">1.1 用户原始需求</h3>
+<p>用户给出一句起点式需求（逐字）：「这是一个我的 github 项目的一个分析，现在我们的 dsh 又经历了几轮的能力装配迁徙的调整优化，所以需要将这些部分重新分析，支持后续的调整优化计划，你先了解情况，然后制定计划。」</p>
+<p>要点拆解如下：</p>
+<ol><li>目标是一个<strong>已发布到 GitHub 的项目</strong>；</li><li>该项目里有一部分是<strong>对 dsh 的分析</strong>；</li><li>dsh 侧<strong>又经历了几轮能力装配迁徙的调整优化</strong>；</li><li>需要<strong>重新分析</strong>那部分内容，为<strong>后续的调整优化计划</strong>提供支撑；</li><li>本轮先<strong>了解情况 + 制定计划</strong>（不直接开工执行）。</li></ol>
+<h3 id="1-2-起点识别">1.2 起点识别</h3>
+<p>会话工作目录为 <code>Mission-file/2026-09/0908-精装房Agent全景/</code>，但该目录只是知识库的 v1.1 阶段留档。经仓库普查（按 <code>git remote</code> 逐个确认归属 zako-mio 的本地检出），确认用户所指的 GitHub 项目是：</p>
+<p><code>zako-mio/control-theory-agent-kb</code>（控制理论 ⊗ Agent 设计知识库），本地仓库根 <code>Mission-file/2026-09/0907-控制理论Agent设计知识库/</code>。</p>
+<h3 id="1-3-知识库现状-实测基线">1.3 知识库现状（实测基线）</h3>
+<table><thead><tr><th>项</th><th>值</th></tr></thead><tbody><tr><td>版本</td><td>v1.4.0（2026-10-11）</td></tr><tr><td>覆盖</td><td>6 框架 + 14 精装房 + 2 装配层变体（<code>opencode-custom</code> / <code>dsh-custom</code>）</td></tr><tr><td>页面</td><td><code>04-interactive</code> 42 页交付 HTML</td></tr><tr><td>覆盖率期望清单</td><td><code>07-checkpoint/coverage-manifest.txt</code> 112 项</td></tr><tr><td>信源分母</td><td>24 份画像（6 + 14 + 2×2）</td></tr><tr><td>门控</td><td>L1–L7 全开，6 层 ALL PASS，issue 0</td></tr></tbody></table>
+<p>知识库中「涉及 dsh 的部分」共盘出 <strong>27 项资产</strong>，按角色分列：</p>
+<table><thead><tr><th>类别</th><th>资产（相对知识库根）</th></tr></thead><tbody><tr><td>画像</td><td><code>03-cases/deepseek-harness.md</code>、<code>dsh-custom.md</code>、<code>dsh-custom-diff.md</code></td></tr><tr><td>页面</td><td><code>04-interactive/case-dsh.html</code>、<code>case-dsh-custom.html</code>、<code>compare-dsh.html</code>、<code>exp-dsh.html</code>、<code>exp-dsh-custom.html</code></td></tr><tr><td>实验</td><td><code>06-experiments/deepseek-harness.md</code>、<code>dsh-custom.md</code></td></tr><tr><td>评分单一数据源</td><td><code>09-src-data/dsh_custom_scores.py</code></td></tr><tr><td>证据快照</td><td><code>07-checkpoint/dsh-custom-snapshot/</code>（9 件 + <code>inventory.json</code> + <code>manifest.json</code>）</td></tr><tr><td>采集与生成</td><td><code>07-checkpoint/snapshot_dsh_custom.py</code>、<code>09-src-data/gen_html.py</code>、<code>nav_data.py</code>、<code>gen_coverage_manifest.py</code></td></tr></tbody></table>
+<h3 id="1-4-v1-4-已下的结论-本轮要复核的对象">1.4 v1.4 已下的结论（本轮要复核的对象）</h3>
+<table><thead><tr><th>对象</th><th>精装度</th><th>五环（SP / M / P / R / T / E）</th></tr></thead><tbody><tr><td>官方 dsh <code>v0.2.1-alpha.2</code>（<code>d743267</code>）</td><td>3.6</td><td>4.5 / 4.0 / 4.5 / 3.0 / 5.0 / 2.0</td></tr><tr><td><code>dsh-custom</code>（+ <code>dsh-opencode-port</code> bundle）</td><td>3.8（Δ+0.2）</td><td>5.0 / 4.0 / 5.0 / 3.0 / 5.0 / 3.5</td></tr></tbody></table>
+<p>v1.4 的核心范式结论是「强内核 + 薄装配层」，并把<strong>最弱环</strong>由 E（2.0）改判为 <strong>R（3.0，迁移损失）</strong>。同时留有口径披露：旧单点分 2.5 与新的 8 维模型分 3.6 <strong>不同源、不可相减</strong>。</p>
+<h3 id="1-5-dsh-侧确实-又经历了几轮-实测">1.5 dsh 侧确实「又经历了几轮」（实测）</h3>
+<p>以 v1.4 快照点 <code>2026-10-11 17:09:09</code> 为基准，按磁盘时间戳与备份文件名重建出 <strong>11 轮</strong>装配层变更（详见 §3.2）。快照点当时正处在两轮之间，因此 v1.4 的结论天然落后于现实。</p>
+<hr>
+</section>
+<section class="sec" id="2-制定计划">
+<h2>2. 制定计划</h2>
+<h3 id="2-1-三项由用户裁定的决策">2.1 三项由用户裁定的决策</h3>
+<table><thead><tr><th>#</th><th>决策项</th><th>用户裁定</th></tr></thead><tbody><tr><td>D1</td><td>目标项目</td><td><code>zako-mio/control-theory-agent-kb</code></td></tr><tr><td>D2</td><td>范围</td><td><strong>全量 v1.5</strong>：证据层重算 + 评分重算 + 画像/diff/页面/实验/级联/门控</td></tr><tr><td>D3</td><td>冻结点</td><td>等迁移线第 10 轮（行为验收收尾）落地后再取快照</td></tr></tbody></table>
+<p>后续追加口径（用户）：计划制定完成后<strong>留档并执行</strong>；<strong>留档目录沿用上次 dsh 重分析的任务留档目录，可建子目录区分</strong>；迁移线收尾前<strong>保持暂停</strong>。</p>
+<h3 id="2-2-触发判据与定档">2.2 触发判据与定档</h3>
+<p>触发依据 = 契约 §2.7④「装配层发生能力纵深增长 / 机制新增时触发复评」。内核版本未变（<code>d743267</code>），但装配层命中六项：</p>
+<table><thead><tr><th>#</th><th>命中项</th><th>性质</th></tr></thead><tbody><tr><td>1</td><td><code>run_gate</code> 窄通道（新对外工具 + 新插件）</td><td>机制新增</td></tr><tr><td>2</td><td><code>dsh-config</code> skill v1.0（新技能层，ADR-011）</td><td>机制新增</td></tr><tr><td>3</td><td>R-A 记忆写入链（ADR-012）</td><td>机制新增</td></tr><tr><td>4</td><td><code>dsh-wsl-desktop-path</code> 插件</td><td>机制新增</td></tr><tr><td>5</td><td><code>verify_bundle</code> 13 → 19 项</td><td>判据扩面</td></tr><tr><td>6</td><td>沙箱由「无可用后端」变为 <code>bwrap enforcement=full</code></td><td>能力纵深增长</td></tr></tbody></table>
+<h3 id="2-3-计划要点-p0-p7">2.3 计划要点（P0–P7）</h3>
+<table><thead><tr><th>Phase</th><th>内容</th><th>完成判据</th></tr></thead><tbody><tr><td>P0</td><td>前置门：口径统一（skill 计数四套口径归一）、重新判静止点、确认可引用的外部证据指针</td><td>三项均有书面结论，口径无二义</td></tr><tr><td>P1</td><td>契约刷新：§2.6/§2.7 刷新、§2.7⑤ 补账义务（R1–R11 全轮次显式补入）、口径变更披露</td><td>无「静默跳过」</td></tr><tr><td>P2</td><td>证据层全量重算：重取脱敏快照 + 补 skill 面 / 插件面 / R 环载体容量三个取证面</td><td>快照落在静止点，脱敏 0 违例</td></tr><tr><td>P3</td><td>评分层重算：8 维逐维 + 硬门槛 + 五环双层</td><td>数值由脚本涌现，禁手改</td></tr><tr><td>P4</td><td>差量分析：三份画像 MD（官方侧只补指针与历史块）</td><td>结论与证据强制一致</td></tr><tr><td>P5</td><td>交付层全量更新：数据层 → 全量重生成页面；实验只补新机制</td><td>生成物 100% 由脚本产出</td></tr><tr><td>P6</td><td>门控 + 级联：六层全开 + 级联 12 项 + 判据锚点复核</td><td>ALL PASS、issue 0、版本残留 0</td></tr><tr><td>P7</td><td>交付 + 推送：留档双版本、commit/push、Pages 生效验证</td><td>5 段齐备、页面版本标识为 v1.5</td></tr></tbody></table>
+<h3 id="2-4-红线-计划内置">2.4 红线（计划内置）</h3>
+<p>对 <code>~/.dsh/**</code> 绝对只读（本轮是「分析 DSH」不是「改 DSH」）；不触碰 <code>/home/zako-mio/dsh</code>（已有 18 项未提交改动属他线）；不触碰迁移线任务目录（只读引用）；遵守契约 §2.7③ 脱敏红线（<code>MEMORY.md</code> 正文不入公开库）；评分数值禁手改；<code>dsh-custom</code> 维持排名隔离。</p>
+<hr>
+</section>
+<section class="sec" id="3-执行情况">
+<h2>3. 执行情况</h2>
+<h3 id="3-1-本轮实际完成的动作">3.1 本轮实际完成的动作</h3>
+<table><thead><tr><th>#</th><th>动作</th><th>手段</th><th>结果</th></tr></thead><tbody><tr><td>1</td><td>起点识别与仓库普查</td><td><code>git remote</code> 逐个确认</td><td>锁定 <code>control-theory-agent-kb</code></td></tr><tr><td>2</td><td>知识库 dsh 资产盘点</td><td>只读探索子 Agent + 本地实测</td><td>27 项资产、口径与级联链盘清</td></tr><tr><td>3</td><td>DSH 装配层与 v1.4 快照差量</td><td>字节比对 + 行 id 集合差 + 分键对账</td><td>8 个文件差异、轮次表重建</td></tr><tr><td>4</td><td>加载 <code>dsh-config</code> / <code>version-upgrade-cascade</code> / <code>report-renderer</code></td><td>skill 加载</td><td>分层实况与级联口径就位</td></tr><tr><td>5</td><td>三项裁定征集</td><td>结构化提问</td><td>D1/D2/D3 全部落定</td></tr><tr><td>6</td><td>计划留档</td><td>落盘 <code>PLAN-v1.5.md</code> + 本报告</td><td>完成</td></tr></tbody></table>
+<h3 id="3-2-关键实测发现">3.2 关键实测发现</h3>
+<p><strong>(a) 装配层 11 轮变更（按磁盘时间戳重建）</strong></p>
+<table><thead><tr><th>R#</th><th>时点</th><th>变化</th><th>迁移线自述轮次</th></tr></thead><tbody><tr><td>R1</td><td>10-11 17:16–17:20</td><td>思考档 <code>reasoningEfforts</code> + 子 Agent 能力上限</td><td>—</td></tr><tr><td>R2</td><td>10-11 18:07</td><td>E 环门控执行通道 <code>run_gate</code>（ADR-010）</td><td>—</td></tr><tr><td>R3</td><td>10-11 19:46–19:48</td><td>重挂 <code>dsh-wsl-desktop-path</code>（web + headless）</td><td>—</td></tr><tr><td>R4</td><td>10-12 08:32–08:41</td><td><code>dsh-config</code> skill v1.0（ADR-011，门控 6/6）</td><td>08</td></tr><tr><td>R5</td><td>10-12 09:31Z</td><td>R 环 R-A 文件载体（ADR-012，门控 6/6）</td><td>09</td></tr><tr><td>R6</td><td>10-12 15:46–15:50</td><td><code>verify_bundle</code> 13 → 19 项；persona 收敛</td><td>09</td></tr><tr><td>R7</td><td>10-12 16:07</td><td>模型路由：<code>maxTokens</code> 8192 → 32768、<code>reasoningEffort</code> max → high</td><td>独立线</td></tr><tr><td>R8</td><td>10-12 17:16</td><td>R09 收尾：<code>install.py</code>、<code>pdf-ocr</code>、<code>run_gate</code> 负向 18 → 30</td><td>09</td></tr><tr><td>R9</td><td>10-12 17:40–18:11</td><td>E3 residue 119 → 0；R-A 落库取证；E6/E9</td><td>09</td></tr><tr><td>R10</td><td>10-12 18:55–19:13</td><td>行为验收收尾（<code>迁移台账.yaml</code> 19:13 落笔）</td><td>10</td></tr><tr><td>R11</td><td>10-13 02:37–（进行中）</td><td>caps 台账统一 + 审查脚本单口径控制</td><td>11</td></tr></tbody></table>
+<p><strong>(b) 文件级差量（快照 → 2026-10-13 02:40）</strong></p>
+<table><thead><tr><th>文件</th><th>快照</th><th>现在</th><th>变化要点</th></tr></thead><tbody><tr><td>bundle <code>cordis.patch.yml</code></td><td>93283 B</td><td>85501 B</td><td>+<code>gate-runner</code>×3；persona prefix 段 −33 行×3</td></tr><tr><td>bundle <code>README.md</code></td><td>22168 B</td><td>40812 B</td><td>+4 节；§4.1「无沙箱后端」结论被推翻</td></tr><tr><td>bundle <code>persona.md</code></td><td>15403 B</td><td>12066 B</td><td>§八 外迁；§十一~十三 收敛</td></tr><tr><td>bundle <code>ADAPTATION-NOTES.md</code></td><td>9108 B</td><td>10913 B</td><td>反思写入链行重写为 ADR-012/R-A</td></tr><tr><td>bundle <code>provenance.json</code></td><td>11907 B</td><td>12209 B</td><td>生成物，指纹条目 +1</td></tr><tr><td>bundle <code>PROVENANCE.md</code></td><td>5692 B</td><td>5994 B</td><td>字节微增（内容差异待复核）</td></tr><tr><td>bundle <code>package.json</code></td><td>392 B</td><td>392 B</td><td>逐字未变</td></tr><tr><td>profile <code>cordis.patch.yml</code></td><td>17538 B</td><td>25569 B</td><td>+2 顶层行；<code>defaultPreset</code> read-only → opencode-plan</td></tr><tr><td>派生 skill（主根含 SKILL.md）</td><td>45</td><td>49</td><td><code>+dsh-config</code>、<code>+dsh-reflection</code> 等；<code>_overlay</code> 6 → 7</td></tr><tr><td>门控项</td><td>13</td><td>19</td><td><code>CHECK_TITLES</code> 19 条</td></tr></tbody></table>
+<p><strong>(c) 三条 v1.4 旧结论已被现实推翻或需重判</strong></p>
+<table><thead><tr><th>#</th><th>旧结论</th><th>现实</th><th>影响面</th></tr></thead><tbody><tr><td>C1</td><td>本机无可用沙箱后端（bwrap / Landlock 均不可用）</td><td><code>bwrap</code> 已装，<code>enforcement=full</code>，shell + fs 双侧真强制</td><td>沙箱维（权重 10）+ T 环</td></tr><tr><td>C2</td><td>R 环迁移断裂，最弱环 R = 3.0</td><td>R-A 文件载体已落地（ADR-012 6/6），候选目录 + 落库链 + skill 齐备</td><td>R 环 + 记忆维（权重 10）+「最弱环」结论</td></tr><tr><td>C3</td><td>子 Agent 无 shell，门控脚本无法在子 Agent 内自跑</td><td><code>run_gate</code> 窄通道已实机生效（负向 30 条）</td><td>E 环口径 + T 环工具面</td></tr></tbody></table>
+<p><strong>这三条使本轮从「维护性刷新」升级为「实质复评」</strong>——这是本轮计划存在的根本理由。</p>
+<h3 id="3-3-冻结点状态变化-重要">3.3 冻结点状态变化（重要）</h3>
+<p>用户裁定 D3 的触发条件是「迁移线第 10 轮落地」。实测该条件<strong>已于 2026-10-12 19:13 满足</strong>（<code>r10-behavioral.out.txt</code> 19994 B、<code>迁移台账.yaml</code> 落笔），但该线<strong>随即进入 R11</strong>，<code>~/.dsh/presets/opencode/verify_migration_state.py</code> 至 <strong>02:48 仍在增长（58080 B）</strong>。</p>
+<p>即：<strong>装配层当前并非静止态</strong>。按计划 §五 5.2 与风险 1，取快照前须重新判一次静止点。</p>
+<h3 id="3-4-暂停决定">3.4 暂停决定</h3>
+<p>用户指示：「留档完成后暂停即可，那边迁移完成后我会告诉你。」</p>
+<p>故本轮在此收束：<strong>计划已留档、执行未启动</strong>，恢复条件见 §5.3。</p>
+<hr>
+</section>
+<section class="sec" id="4-完成情况">
+<h2>4. 完成情况</h2>
+<h3 id="4-1-交付物清单">4.1 交付物清单</h3>
+<table><thead><tr><th>类别</th><th>路径</th><th>说明</th></tr></thead><tbody><tr><td>执行计划</td><td><code>PLAN-v1.5.md</code></td><td>P0–P7 全量阶段、红线、风险、未决项</td></tr><tr><td>留档报告</td><td><code>report.md</code></td><td>本文件（AI 友好版，5 段）</td></tr><tr><td>留档报告</td><td><code>report.html</code></td><td>由 <code>report-renderer</code> 派生的人类可读版（禁手改）</td></tr><tr><td>取证记录</td><td><code>evidence/baseline-deltas-20261013.md</code></td><td>本轮全部实测读数与所用命令（可复算）</td></tr></tbody></table>
+<h3 id="4-2-未完成-暂停点">4.2 未完成（暂停点）</h3>
+<p>P0–P7 全部阶段<strong>未启动</strong>。其中：</p>
+<table><thead><tr><th>Phase</th><th>状态</th><th>阻塞原因</th></tr></thead><tbody><tr><td>P0 前置门</td><td>未启动</td><td>冻结点问题（§3.3）</td></tr><tr><td>P1 契约刷新</td><td>未启动</td><td>依赖 P0 口径决议</td></tr><tr><td>P2–P7</td><td>未启动</td><td>依赖静止点</td></tr></tbody></table>
+<h3 id="4-3-验证">4.3 验证</h3>
+<table><thead><tr><th>验证项</th><th>结果</th></tr></thead><tbody><tr><td>留档路径符合 <code>Mission-file/{YYYY-MM}/{MMDD-任务名}/</code></td><td>PASS（<code>2026-10/1011-KB-v1.4-dsh装配与opencode追平/1013-v1.5-dsh装配二次追平/</code>）</td></tr><tr><td>目标项目唯一性</td><td>PASS（仓库普查仅 2 个 zako-mio 检出，另一为纯站点仓）</td></tr><tr><td>计划数值可溯源</td><td>PASS（全部来自本轮磁盘实测，取证见证据件）</td></tr><tr><td><code>report.html</code> 门控（E1–E18）</td><td>见 §4.1 产物渲染结果</td></tr><tr><td>对 <code>~/.dsh/**</code> 只读</td><td>PASS（全程仅读取与统计，0 写入）</td></tr></tbody></table>
+<hr>
+</section>
+<section class="sec" id="5-反思-分析-建议">
+<h2>5. 反思 / 分析 / 建议</h2>
+<h3 id="5-1-过程反思">5.1 过程反思</h3>
+<ol><li><strong>「重新分析」不能默认成「刷新数字」</strong>。摸底后发现三条 v1.4 结论已被推翻（沙箱、R 环、E 环口径），若按维护性刷新处理，会把错误结论原样带到 v1.5。⇒ 复评前先做「结论是否仍成立」的判定，比直接重算分值更重要。</li><li><strong>动目标是本轮最大的方法学风险</strong>。分析对象（dsh 装配层）在分析期间被另一条线持续改写；若不先定静止点，「证据层全量重算」会在数小时内失效。这属于「先问时序、再问内容」的典型。</li><li><strong>口径必须先归一</strong>。同一事实出现四套读数（skill 45 / 46 / 47 / 49），不是记录不勤，而是缺少「唯一权威口径」的约定；在没有唯一口径前做复评，各维度分值不可比。</li><li><strong>子 Agent 工具面须先探明</strong>：本轮把「跑 diff/stat」委派给了只读探索 worker，而该 worker <strong>无 shell</strong>，导致委派部分降级。⇒ 委派前先确认 worker 能力面，机械比对类任务应由主 Agent 用 shell 承担。</li></ol>
+<h3 id="5-2-收获认知">5.2 收获认知</h3>
+<ol><li><strong>装配层复评的「三条独立轴」</strong>：机制新增（有无）、能力纵深（够不够）、结论存续（旧判断是否仍成立）。第三条最容易被忽略，却最容易造成事实错误。</li><li><strong>备份文件名即时间线</strong>：<code>&lt;名&gt;.bak-&lt;原因&gt;-YYYYMMDD-HHMMSS</code> 的命名惯例使轮次重建无需版本控制即可完成——这是可复用的取证资产。</li><li><strong>「文档自述」与「磁盘实况」会分叉</strong>：本轮实测到至少 2 处（<code>README §5</code> 的 <code>defaultPreset</code> 陈旧、README 自标「45 件已过期」）。⇒ KB 这类以自述为主的产物，复评时必须把「实况读数」作为第一顺位证据。</li><li><strong>两条线共名会制造歧义</strong>：0928 线与迁移线各有一个 <code>ADR-011</code>。跨线引用必须带路径限定，否则深链会指向错件。</li></ol>
+<h3 id="5-3-恢复条件-给下一轮的最小启动序列">5.3 恢复条件（给下一轮的最小启动序列）</h3>
+<p>恢复由用户通知触发；开工前先跑：</p>
+<pre><code># 1) 判静止点：该文件连续两次读数不变，即可视为迁移线收尾
+stat -c '%y %s' ~/.dsh/presets/opencode/verify_migration_state.py
+# 2) 判迁移线轮次：看是否已有 11-接续prompt，以及 r11 取证件是否齐
+ls "/home/zako-mio/opencode/archive/Mission-file/2026-10/1011-deepseek harness-提示词迁移工程-从opencode/"
+# 3) 复核 KB 资产是否仍处 v1.4（无他线并发写入）
+git -C /home/zako-mio/opencode/archive/Mission-file/2026-09/0907-控制理论Agent设计知识库 status --short</code></pre>
+<p>三项读数与 <code>PLAN-v1.5.md</code> §五 对齐后，从 <strong>P0</strong> 起步。</p>
+<h3 id="5-4-契约遵守确认">5.4 契约遵守确认</h3>
+<p>全程只读对待 <code>~/.dsh/**</code> 与迁移线任务目录，未修改任何 DSH 装配层文件、未触碰 <code>/home/zako-mio/dsh</code>、未申请任何密钥/授权、未做不可逆操作；留档路径经校验符合规范；评分数值本轮未产生（P3 未启动），故无手改风险。</p>
+<hr>
+</section>
+<section class="sec" id="证据来源">
+<h2>📚 证据来源</h2>
+<table><thead><tr><th>SRC</th><th>级别</th><th>信源</th><th>路径 / 依据</th><th>置信度</th></tr></thead><tbody><tr><td>SRC-001</td><td>S4</td><td>一手磁盘实测</td><td><code>~/.dsh/presets/opencode/**</code>、<code>~/.dsh/profiles/web/**</code> 字节比对与行 id 集合差</td><td>高</td></tr><tr><td>SRC-002</td><td>S4</td><td>备份文件名时间戳</td><td><code>.bak-*</code>（10 个）与 <code>~/.dsh-backups/**</code></td><td>高</td></tr><tr><td>SRC-003</td><td>S4</td><td>知识库自身产物</td><td><code>README.md</code>、<code>00-contract/contract.md</code>、<code>07-checkpoint/dsh-custom-snapshot/</code></td><td>高</td></tr><tr><td>SRC-004</td><td>S4</td><td>迁移线留档（只读引用）</td><td><code>1011-全面适配性迁移分析/{迁移台账.yaml, r09*.out.txt, r10-behavioral.out.txt, r11*.out.txt}</code></td><td>中高</td></tr><tr><td>SRC-005</td><td>S4</td><td>DSH 配置技能实况</td><td><code>~/.dsh/skills/opencode/dsh-config/{SKILL.md, claims.yaml, conflicts.md}</code></td><td>中高</td></tr><tr><td>SRC-006</td><td>S1</td><td>任务留档</td><td><code>Mission-file/2026-10/1011-KB-v1.4-dsh装配与opencode追平/report.md</code></td><td>高</td></tr></tbody></table>
+</section>
+<div class="colophon">
+本页由 <code>build_report_html.py</code> 从 <code>report.md</code> 派生
+（MD 是真相源，⛔ 禁手改本页）。<br>
+源 sha256：<code>39403f7f5a06fe4000f6546298430d1a6934e50a533e372ab014de713f783c87</code><br>
+样式承接 <code>fe-starter-kit/tokens/contract.json</code> 与 <code>M3-tokens.css</code>，⛔ 未另立令牌体系。
+</div>
+</main>
+</div>
+</body>
+</html>

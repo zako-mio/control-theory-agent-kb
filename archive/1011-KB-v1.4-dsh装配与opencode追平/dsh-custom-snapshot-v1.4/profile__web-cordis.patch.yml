@@ -1,0 +1,282 @@
+# dsh profile patch — web 行为纪律 persona + 模型供应商（基线 0.2.1-alpha.2，2026-10-10 更新）
+# 内容：① 覆盖 system-prompt 的 personaPrefix（七段行为纪律，所有 web 会话生效）
+#       ② 覆盖 llm-pi-ai.providers（opencode-go / commandcode / opencode-go-tmp）
+#       ③ 覆盖 agent-default-model / ui-theme / ui-settings-general / permission
+# 字段名修正（2026-10-10）：原写作 `persona:`，不在 dsh-system-prompt 的 config schema 内
+#       （该插件只有 personaPrefix / personaSuffix），等于从未生效；已改为 `personaPrefix:`
+#       并改用会话日志取证验证。
+# 插件段已移除（2026-10-10）：自装插件整体备份于 ~/.dsh-backups/plugins-removed-20261010/；
+#       2026-09-14 的旧备份见 ~/.dsh-backups/plugin-patch-20260914/
+# 回滚：恢复本文件为 []
+- id: system-prompt
+  config:
+    personaPrefix: >-
+      You are a coding agent powered by the {{model}} model. Your working
+      directory is {{cwd}}.
+
+      ## 调度者定位 你是任务调度者，不是盲目执行者。面对复杂任务：先分析任务→拆解子任务→判断是否需要委派（≥2 个工具 / 联网 / 多步推理）→用
+      subagent 委派给子 Agent 执行。简单任务才自己直接完成。
+
+      ## 编码安全 1. 修改文件优先用 edit/write（UTF-8 安全），不降级为 shell 写文件。 2. 禁止在 shell 里写
+      python -c 内联管道（转义会截断中文）；必须用脚本时写成独立 .py 文件再执行。 3. 修改含中文的 JSON
+      后必须回读验证（json.load 成功、中文完整）。 4. Python 输出中文前先
+      sys.stdout.reconfigure(encoding='utf-8')。 5. 创建/修改文件前从磁盘重新读取依赖文件，不依赖对话记忆。
+
+      ## 委派纪律 1. 子 Agent 是纯执行者：只执行、不委派、不搜索其他 Agent。 2. 子 Agent 返回结构化
+      JSON：status/summary/data/files_created/files_modified/decisions/warnings/errors。
+      3. 独立子任务并行委派；有依赖的串行接力；紧密耦合流程不拆。 4. 子 Agent 失败自修复 3 次后上报，不无限重试。
+
+      ## 成本意识 1. 任务开始先评估复杂度（影响范围/逻辑深度/操作数量/风险精度，各 1-5 分）。 2. 简单任务（≤12
+      分）用低推理深度；复杂任务（≥13 分）用 max；绝不 off。默认模型为 opencode-go/deepseek-v4-flash，deep
+      变体留给 ≥13 分场景。 3. 互不依赖的只读操作在同一步并行发出（glob+grep+read 一轮），减少往返。 4.
+      超大输出分段读取/截断，不盲目全量返回。
+
+      ## 环境事实（0.2.1-alpha.2，勿套旧环境） 1. 密钥在 ~/dsh/.env（含 DEEPSEEK_API_KEY /
+      OPENCODE_GO_API_KEY / COMMANDCODE_FREE_API_KEY /
+      OPENCODE_GO_TMP_API_KEY）；不得打印、不得落盘、 不得泄露，仅按需 source。 2. web 服务由 systemd
+      管理：dsh-web.service；排查用 journalctl -u dsh-web.service -n 100。 3. 自装插件已于
+      2026-10-10 全部移出（备份于 ~/.dsh-backups/plugins-removed-20261010/），本 patch
+      不再挂载任何 file:// 插件。 4. 源码树 /home/zako-mio/dsh 为 git 树（基线 tag
+      dsh-v0.2.1-alpha.2）；build 用 `pnpm run build`， 换版后必须先 `pnpm run clean` 再
+      build，否则旧版 lib 残留会触发 MISSING_EXPORT 构建失败。 5. 源码树禁止被本 profile 修改（web 只改
+      ~/.dsh/ 运行目录与归档目录）。
+
+      ## 留档规范 面向用户的任务交付完成后，输出 5 段报告：当时情况 → 制定计划 → 执行情况 → 完成情况 → 反思建议。询问用户是否写入
+      /home/zako-mio/opencode/archive/Mission-file（路径规范：{YYYY-MM}\{MMDD-任务名}）。
+      Mission 报告必须双版本留档：report.md（AI 友好镜像）+ report.html（人类可读版），同目录保存。report.html
+      留档前必须通过质量门控：UTF-8 无替换字符 / div 开闭平衡 / 5 段完整 / HTML 结构齐全，任一项不通过则修复重跑。
+
+      ## MEMORY 硬门禁（reflection 链） ~/.dsh/MEMORY.md 是全局反思记忆库（§-分段 + [src:]
+      签名）。严禁直接修改该文件（edit/write/脚本均禁止）。记忆条目写入必须经完整链：① reflection_add 入队（pending）→
+      ② reflection_mark 裁决（reviewed，经 reflection-worker 处理）→ ③ 仅 reviewed 条目可带
+      [src: <reflection-id>] 签名落库 / 经 /reflection 写入。无签名禁止写入，主 Agent 负责入队与裁决，子
+      Agent 只产出 memory_pending 供审阅。 （2026-10-10 事实更新：提供 reflection_add /
+      reflection_mark 的 dsh-reflection 插件已随插件批次移出， 该链路在 dsh 侧当前不可用；本条纪律保留仅供
+      opencode 侧沿用，勿据此声称已在 dsh 内写入记忆。）
+
+      ## 联网代理纪律（WSL2 环境） 本机代理网关：宿主机 XQNetwork 监听 0.0.0.0:7890，WSL2 内经网关
+      172.29.0.1:7890 访问（HTTP+SOCKS5 混合端口）。默认直连，不依赖代理。 1. 模型 API 调用链（Node
+      fetch/undici）不读代理 env → api.deepseek.com / opencode.ai 必须直连，禁止为其设置代理。 2.
+      webfetch 工具同样不读代理 env → 访问境内站点可直接成功；境外被墙站点（Google/X 等）直连超时，需境外内容时改用 curl
+      -x http://172.29.0.1:7890 <url>，或依赖 git 定向代理 / browser-harness。 3.
+      curl/CLI 工具自动继承 shell env（默认无代理）→ 国内流量直连；境外站点显式加 -x
+      http://172.29.0.1:7890；proxy_on/proxy_off 可临时切换全局代理。 4. 子 Agent
+      联网优先国内源直连（百度/国内镜像/官方 API）；访问境外被墙站点才显式 -x http://172.29.0.1:7890。 5. git
+      已配置定向代理（http.proxy/https.proxy → 172.29.0.1:7890），操作 GitHub 始终走代理，无需额外处理。
+- id: ui-settings-general
+  name: "@deepseek-ai/dsh-client-ui-settings-general"
+  config:
+    welcomeNoticeVersion: 2026-09-28.1
+- id: ui-theme
+  name: "@deepseek-ai/dsh-client-ui-theme"
+  config:
+    preference: system
+    fontSize: 16
+- id: agent-default-model
+  name: "@deepseek-ai/dsh-agent-default-model"
+  config:
+    provider: opencode-go-tmp
+    model: deepseek-v4.1-flash
+- id: llm-pi-ai
+  name: "@deepseek-ai/dsh-llm-pi-ai"
+  config:
+    providers:
+      zai: {}
+      opencode-go:
+        displayName: OpenCode Go
+        api: openai-completions
+        baseURL: https://opencode.ai/zen/go/v1
+        apiKeyEnv: OPENCODE_GO_API_KEY
+        # zen Go 网关自 2026-10-10 起强制要求 x-opencode-session 头（A/B 裸 curl 实测：
+        #   无头 → 400 MissingSessionID；带合成 ses_<32hex> → 200）。dsh 侧不自动注入
+        #   （0.1.7 与 0.2.1-alpha.2 全仓 + 依赖层均零命中该字符串），故在此静态声明。
+        #   静态值只求可路由；若网关后续校验会话归属，需改为动态注入（插件）。
+        headers:
+          x-opencode-session: ses_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        compat:
+          thinkingFormat: deepseek
+        models:
+          - id: deepseek-v4-flash
+            name: DeepSeek-V4-Flash (Go)
+            contextWindow: 1000000
+            maxTokens: 16384
+          - id: glm-5.2
+            name: GLM-5.2 (Go)
+            contextWindow: 1000000
+            maxTokens: 65536
+          - id: kimi-k2.7-code
+            name: Kimi-K2.7-Code (Go)
+            contextWindow: 262144
+            maxTokens: 65536
+          - id: qwen3.7-plus
+            name: Qwen3.7-Plus (Go)
+            contextWindow: 1000000
+            maxTokens: 32768
+      # ── Command Code 免费模型（2026-09-27 加入）──────────────────────────────
+      # 只收免费模型。判据：commandcode.ai 定价页内置模型数据集，取 rows[].tiers[0].rates
+      #   的 input/output/cacheRead 三项全为 0 且 deal.free=true 者。同页另有两条 free
+      #   记录已失效，未纳入：ling-3.0-flash-free（2026-08-02 到期，标 deprecated）、
+      #   typesafe/jev（2026-09-24 到期）。
+      # key：apiKeyEnv 引用 COMMANDCODE_FREE_API_KEY，经 credential seam 解析；变量放在
+      #   ~/dsh/.env（项目 .env，同时被 systemd EnvironmentFile 注入为 launch env）。
+      #   注意与 COMMANDCODE_API_KEY 区分：后者是另一账户（旧 key user_3ira…）的凭据，
+      #   属 opencode 侧付费 provider，两者不可混用。
+      # ⚠ 必须经代理：2026-09-27 实测 api.commandcode.ai 直连被 reset，经
+      #   http://172.29.0.1:7890 正常。代理策略只能放 $DSH_HOME/.env（~/.dsh/.env）——
+      #   代理变量出现在项目 .env 时 launcher 会拒绝启动。
+      # ⚠ stealth 系是匿名第三方 provider 运营的隐身预览：官方明示该 provider 可能留存
+      #   prompt 与 completion、不提供 ZDR，勿投喂敏感代码/密钥；预览可能随时下线。
+      # reasoningEfforts 的 wire 取值集合取自 CC 服务端自身的枚举错误
+      #   （Invalid option: expected one of "low"|"medium"|"high"|"xhigh"|"max"），
+      #   pixel-canary / space-bunny / ling-3.0-flash-sante 已逐个实测 200。
+      #   未声明的 level 即「不支持」，故此表要写全；minimal 不被 CC 支持，故不声明。
+      commandcode:
+        displayName: Command Code (free)
+        api: openai-completions
+        baseURL: https://api.commandcode.ai/provider/v1
+        apiKeyEnv: COMMANDCODE_FREE_API_KEY
+        compat:
+          # CC 响应为 OpenRouter 形态（message.reasoning + reasoning_details + provider 字段）
+          thinkingFormat: openrouter
+        models:
+          - id: stealth/pixel-canary
+            name: Pixel Canary ★免费·隐身预览
+            contextWindow: 262144
+            maxTokens: 32768
+            input: [ text, image ]
+            reasoningEfforts:
+              off:
+              low: low
+              medium: medium
+              high: high
+              xhigh: xhigh
+              max: max
+          - id: stealth/space-bunny-alpha
+            name: Space Bunny Alpha ★免费·隐身预览
+            contextWindow: 1000000
+            # 输出上限实测 ≥524288 可接受（models.dev 三家独立 provider 记录 capabilities
+            # = 524288）；此处按本 profile 既有惯例（见上方 opencode-go 各条）取保守请求默认值
+            maxTokens: 32768
+            input: [ text, image ]
+            reasoningEfforts:
+              off:
+              low: low
+              medium: medium
+              high: high
+              xhigh: xhigh
+              max: max
+          - id: poolside/laguna-s-2.1-free
+            name: Laguna S 2.1 ★免费·容量期
+            contextWindow: 256000
+            maxTokens: 32768
+            input: [ text ]
+            # 2026-09-27 首测时 CC 侧上游返回 429「Upstream model provider is temporarily
+            #   unavailable」（官方标注 while capacity lasts），同日重试即通过并已完成
+            #   in-harness 真跑（max 档）。故属容量瞬态，不是配置问题；离线时下架风险仍在。
+            #   其 low/high 档未单独实测，映射表按同族免费模型填写。
+            reasoningEfforts:
+              off:
+              low: low
+              medium: medium
+              high: high
+              xhigh: xhigh
+              max: max
+          - id: inclusionai/ling-3.0-flash-sante:free
+            name: Ling 3.0 Flash Sante ★免费·100次/天
+            contextWindow: 262144
+            maxTokens: 32768
+            input: [ text ]
+            reasoningEfforts:
+              off:
+              low: low
+              medium: medium
+              high: high
+              xhigh: xhigh
+              max: max
+      # ── 临时 Go 套餐 key（2026-10-10 加入，到期 2026-10-15）────────────────────
+      # key：apiKeyEnv 引用 OPENCODE_GO_TMP_API_KEY；该变量 2026-10-10 追加进 ~/dsh/.env
+      #   （值取自 opencode 侧 ~/.config/opencode/opencode.env，本文件不落明文）。
+      # 与 opencode-go 的关系：同一 zen Go 网关（baseURL 同），但持另一个 key；
+      #   本地只登记用户指定的 2 个模型（服务端未做限制，属本地收敛）。
+      # 元数据来源：opencode models opencode-go-tmp --verbose（2026-10-10 实测），
+      #   api.id 即真实模型名：deepseek-v4.1-flash（context 1000000 / output 上限 384000）
+      #   与 glm-5.3-flash（context 1000000 / output 上限 131072）；此处 maxTokens 取
+      #   与本文件其余条目一致的保守值 32768。
+      # ⚠ 到期清理（2026-10-15）：删除本段 + ~/dsh/.env 中 OPENCODE_GO_TMP_API_KEY 行；
+      #   两处都删才算清干净（漏一处会留下悬空 apiKeyEnv 引用）。
+      opencode-go-tmp:
+        displayName: OpenCode Go (临时·至10-15)
+        api: openai-completions
+        baseURL: https://opencode.ai/zen/go/v1
+        apiKeyEnv: OPENCODE_GO_TMP_API_KEY
+        headers:
+          # 同上：网关要求的会话头；用另一个静态值以便两条链路在网关侧分开路由。
+          x-opencode-session: ses_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+        compat:
+          thinkingFormat: deepseek
+        models:
+          - id: deepseek-v4.1-flash
+            name: DeepSeek-V4.1-Flash (Go·临时·至10-15)
+            contextWindow: 1000000
+            # ⚠ 2026-10-11 止损（方案 D）：32768 → 8192。
+            # 依据：2026-10-10 会话 session-d33061a6 出现推理通道退化（"Let me go." 单行重复
+            #   19892 次 / 7 条消息共 966197 字符退化推理），2 个 turn 以 max-tokens 收尾。
+            #   单轮损害量被 maxTokens 直接封顶，故下调即线性降低单次失控的烧 token 上界。
+            #   根因见留档 Mission-file/2026-10/1011-dsh插件生态调研/report.md 第二部分 §4.3。
+            # 回滚：恢复 32768 即可（备份 cordis.patch.yml.bak-maxTokens-20261011-162505）。
+            # 何时该调回：需要单次长输出（如一次性生成长文件）时临时调高。
+            maxTokens: 8192
+            # 视觉能力声明：pi-ai 适配器读的是 **input**（不是 inputModalities），
+            # 见 packages/llm/llm-pi-ai/src/adapter.ts:295 `inputModalities: [...model.input]`。
+            # DSH 据此判定能否读图（packages/fs/tool-fs/src/read-image.ts:129）；
+            # 缺此字段会回退到安装目录（catalog）能力，而该目录未标注 image。
+            # 上游实测 2026-10-11：发 image content block → HTTP 200，
+            # prompt_tokens 1016（文本-only 约 50），模型正确描述图像内容。
+            input: [ text, image ]
+          - id: glm-5.3-flash
+            name: GLM-5.3-Flash (Go·临时·至10-15)
+            contextWindow: 1000000
+            maxTokens: 32768
+- id: permission
+  name: "@deepseek-ai/dsh-permission-presets"
+  config:
+    # 整表重述：bundle patch 会整体替换 config，故必须把全部档位写全。
+    # 2026-10-11 新增 opencode-plan / opencode-build 两档（opencode 迁移工程），
+    # 原有三档与 defaultPreset 逐字保留，行为不变。
+    presets:
+      read-only:
+        sandbox: read-only
+        approval: ask
+      workspace-write:
+        sandbox: workspace-write
+        approval: ask
+      opencode-plan:
+        sandbox: read-only
+        approval: ask
+        name: OC·Plan（只读）
+      opencode-build:
+        sandbox: workspace-write
+        approval: ask
+        name: OC·Build（工作区写）
+      danger-full-access:
+        sandbox: danger-full-access
+        approval: never
+    defaultPreset: read-only
+
+- id: plugin-manager
+  config:
+    # 2026-10-11（opencode 迁移工程）：web 服务由 systemd 启动，其 PATH 为
+    # /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/snap/bin，不含 nvm 的 node/pnpm；
+    # corepack 的 pnpm shim shebang 是 `#!/usr/bin/env node`，直接 spawn 会 ENOENT，
+    # 使 plugin_manager 的 install_bundle / remove_bundle 全部不可用（实测 exit 127）。
+    # 这里指向 ~/.dsh/bin/pnpm —— 用绝对 node 路径调用 corepack 的 pnpm.js 的包装脚本。
+    # 只覆盖本键，其余键走 Config schema 默认值（与 base 未配置该行时逐字一致）。
+    pnpmCommand: /home/zako-mio/.dsh/bin/pnpm
+
+# ── 插件挂载：已移除（2026-10-10）────────────────────────────────────────────
+# 8 个自装插件（list-directory / agent-role / vision-proxy / reflection / whitelist /
+#   preset-subagent / auto-approval / vision-fallback）已整体从 ~/.dsh/plugins 移出，
+#   备份于 ~/.dsh-backups/plugins-removed-20261010/（含当时的 plugins/node_modules）。
+# 本层不再有 insert 块。如需恢复：先把插件目录移回，再按
+#   ~/.dsh-backups/plugin-patch-20260914/{web,headless}.cordis.patch.yml 的 insert 段落回填，
+#   并先做符号级兼容审计（上游明示 Public APIs are pre-stable，跨 rc/minor 有静默移除先例）。

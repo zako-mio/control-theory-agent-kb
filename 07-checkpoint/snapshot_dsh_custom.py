@@ -12,6 +12,11 @@
      README.md / ADAPTATION-NOTES.md / PROVENANCE.md / provenance.json）
   B. 宿主增量：`~/.dsh/profiles/web/{package.json,cordis.patch.yml}`
   C. inventory：preset 表 / worker 别名 / permission 档位 / skill 计数 / provider 键名 / collected_at
+  D. **skill 面补全**（v1.5 新增）：主根清单 + 派生件 / DSH 原生件划分 + 源侧目录对照
+  E. **插件面**（v1.5 新增）：宿主插件根 `~/.dsh/plugins/` + bundle 内插件包 `presets/opencode/plugins/`
+  F. **R 环载体**（v1.5 新增）：`~/.dsh/reflection/` 与 `~/.dsh/MEMORY.md` 的**存在性与容量**
+     —— ⛔ 只记计数/字节/段数，**正文一律不入快照**（契约 §2.7③ 脱敏红线）
+  G. **门控面**（v1.5 新增）：bundle `verify_bundle.py` 的 `CHECK_TITLES` 判据清单
 """
 import os, re, json, hashlib, sys, datetime
 sys.stdout.reconfigure(encoding='utf-8')
@@ -121,6 +126,67 @@ if os.path.isdir(overlay):
     overlay_count = sum(1 for n in os.listdir(overlay)
                         if os.path.isfile(os.path.join(overlay, n, "SKILL.md")))
 
+# --- D. skill 面补全（v1.5）：主根清单 + 派生件 / DSH 原生件划分 + 源侧对照 ---
+SRC_SKILLS = os.path.join(HOME, ".config/opencode/skills")
+NON_SKILL_DIRS = ("_shared", "disabled")  # 源侧目录中不是技能的两项
+src_dirs = []
+if os.path.isdir(SRC_SKILLS):
+    src_dirs = sorted(n for n in os.listdir(SRC_SKILLS)
+                      if os.path.isdir(os.path.join(SRC_SKILLS, n)) and n not in NON_SKILL_DIRS)
+derived_skills = sorted(set(skill_dirs) & set(src_dirs))
+dsh_native_skills = sorted(set(skill_dirs) - set(src_dirs))
+
+# --- E. 插件面（v1.5）：宿主插件根 + bundle 内插件包 ---
+PLUGIN_ROOT = os.path.join(HOME, ".dsh/plugins")
+BUNDLE_PLUGINS = os.path.join(BUNDLE, "plugins")
+
+
+def _subdirs(p):
+    if not os.path.isdir(p):
+        return []
+    return sorted(n for n in os.listdir(p) if os.path.isdir(os.path.join(p, n)))
+
+
+def _file_count(p, suffix=""):
+    if not os.path.isdir(p):
+        return 0
+    return sum(1 for n in os.listdir(p)
+               if os.path.isfile(os.path.join(p, n)) and (not suffix or n.endswith(suffix)))
+
+
+# --- F. R 环载体（v1.5）：只记存在性与容量，⛔ 正文不入快照 ---
+REFLECTION = os.path.join(HOME, ".dsh/reflection")
+MEMORY_BODY = os.path.join(HOME, ".dsh/MEMORY.md")
+refl_dirs = _subdirs(REFLECTION)
+reflection = {
+    "reflection_dir": REFLECTION,
+    "exists": os.path.isdir(REFLECTION),
+    "subdirs": refl_dirs,
+    "file_counts": {d: _file_count(os.path.join(REFLECTION, d)) for d in refl_dirs},
+    "top_level_md": _file_count(REFLECTION, ".md"),
+    "memory_body": {"path": MEMORY_BODY, "exists": os.path.isfile(MEMORY_BODY)},
+    "dsh_reflection_skill": os.path.isdir(os.path.join(SKILLS, "dsh-reflection")),
+    "note": "只记存在性与容量；⛔ MEMORY.md 正文不入快照、不入公开库（契约 §2.7③）",
+}
+if os.path.isfile(MEMORY_BODY):
+    _body = open(MEMORY_BODY, encoding="utf-8", errors="replace").read()
+    reflection["memory_body"].update({
+        "bytes": len(_body.encode("utf-8")),
+        "lines": _body.count("\n") + (0 if _body.endswith("\n") else 1),
+        "sections": max(len(re.findall(r'^§', _body, re.M)),
+                        len(re.findall(r'^##\s*§', _body, re.M))),
+        "src_signature_count": len(re.findall(r'\[src:', _body)),
+    })
+
+# --- G. 门控面（v1.5）：verify_bundle 判据清单 ---
+VB = os.path.join(BUNDLE, "verify_bundle.py")
+check_titles = []
+if os.path.isfile(VB):
+    _vbtxt = open(VB, encoding="utf-8", errors="replace").read()
+    _m = re.search(r'CHECK_TITLES[^=]*=\s*\((.*?)\n\)', _vbtxt, re.S)
+    if _m:
+        check_titles = re.findall(r'"([^"]+)"', _m.group(1))
+
 # --- provider 键名（宿主 patch 的 llm-pi-ai 段） ---
 providers = sorted(set(re.findall(r'^\s{6,}([a-z0-9][a-z0-9\-_]*):\s*$', host, re.M)))
 apikey_envs = sorted(set(re.findall(r'apiKeyEnv:\s*([A-Z0-9_]+)', host)))
@@ -140,10 +206,33 @@ inventory = {
     },
     "providers": {"keys_found": providers, "apiKeyEnv_names": apikey_envs},
     "bundle_bundles": re.findall(r'"([^"]*opencode[^"]*)"', host_pkg),
+    # --- v1.5 新增四个取证面 ---
+    "snapshot_version": "v1.5",
+    "skills_list": {
+        "main_root_list": skill_dirs,
+        "derived": derived_skills,
+        "dsh_native": dsh_native_skills,
+        "source_skill_dirs": len(src_dirs),
+        "non_skill_dirs_excluded": list(NON_SKILL_DIRS),
+        "note": "主根 = 派生 + DSH 原生；源侧目录数含 _shared/disabled 两个非技能目录",
+    },
+    "plugins": {
+        "host_root": PLUGIN_ROOT,
+        "host_plugins": _subdirs(PLUGIN_ROOT),
+        "bundle_plugin_packages": _subdirs(BUNDLE_PLUGINS),
+        "note": "bundle 内插件包由 preset 顶层行以 name 引用；宿主插件由 profile patch 的 insert 行挂载",
+    },
+    "reflection": reflection,
+    "gate": {
+        "verify_bundle": VB,
+        "check_count": len(check_titles),
+        "checks": check_titles,
+    },
     "notes": [
         "只读采集；~/dsh/.env 与 ~/.dsh/.credentials.yaml 未拷贝",
         "persona 与 bundle README 含本机绝对路径（bundle 自述不可移植）",
         "permission 档位由文本存在性判定（非 YAML 解析），缺 YAML 语义时可回退看原文快照",
+        "v1.5 起 R 环载体只记存在性与容量，⛔ MEMORY.md 正文不入快照（契约 §2.7③）",
     ],
 }
 

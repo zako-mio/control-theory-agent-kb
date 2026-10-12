@@ -6,6 +6,8 @@
 
 > **版本跨度**：相对上一轮基线 `v0.1.1-rc.2`（2026-08-21）跨 **21 个预发布 tag**（0.1.2-alpha.1 … 0.2.1-alpha.2）。
 > **装配口径修正**：基线曾记「`bundle/base/cordis.patch.yml` 装配 76 核心 + 36 外部 seam」。当前该文件 `- id:` 条目为 95 行，与旧「76 + 36」**口径不同、不可直接相减**（旧口径把 base 与 seam 分列统计，现行文件为单层扁平装配表）。本版统一按上栏三层口径描述。
+>
+> **v1.5 处置（2026-10-13）**：本轮为「dsh 装配层二次追平」，**内核零变化**（仍 `v0.2.1-alpha.2` / `d743267`），故本画像**不重算分值**——官方精装度维持 **3.6**（raw 3.63）。装配层侧的全部增量（R1–R12 轮次登记、8 维 `memory` 4→5、五环 M/R/E 上调、E 环达反转阈值）见变体画像 `03-cases/dsh-custom.md` 与对照分析 `03-cases/dsh-custom-diff.md`；本轮**未新增**官方侧结论，仅更正一处环境事实（见文末「本机环境事实」栏）。
 
 ## 0. 一图总览：dsh 的五环拆解
 
@@ -80,7 +82,7 @@
 2. **PTC 真运行时（本轮最大 T 环增量）**：`ctx.ptcRuntime` 是正式 seam（`docs/capability-seams.md:672`），实现有两家——
    - `ptc-runtime-node`（`packages/ptc-runtime/ptc-runtime-node/README.md:12`）：执行模型编写的 TypeScript，**每次调用起一个受管 Node 进程**，宿主函数以 async binding 注入；受**同一套平台沙箱策略**约束（与 Bash 同源），带 elapsed deadline、输出上限、V8 heap limit；取消与完成终止整个托管进程组；**请求受限模式而后端不可用时直接失败**。
    - `experimental-ptc-runtime-python`：实验性 Python 路径，走 fd-3 协议，需 `sandbox` + `sandboxPolicy`，受限运行无法建立约束时以 `sandbox-unavailable` 失败（`docs/upgrade-guide/v0.2.1-alpha.1/python-ptc-sandbox/guide.md:12`）。
-3. **沙箱后端族 + fail-closed**：`sandbox-local` 按平台选 runner 链——`linux`: `bwrap` → Landlock；`darwin`: Seatbelt；`win32`: ACL restricted-token；另有 `sandbox-ssh`。**"A platform with no chain, or a chain where every probe fails, is unavailable and fails closed at `confine()`"**（`packages/sandbox/sandbox-local/README.md:71`），`enforcement` 分 full/partial，不可用即 `SANDBOX_UNAVAILABLE`。⚠️ **本机事实**：本机 bubblewrap 与 Landlock 均不可用 → 实际走 fail-closed 分支，属**环境事实**而非设计缺陷。
+3. **沙箱后端族 + fail-closed**：`sandbox-local` 按平台选 runner 链——`linux`: `bwrap` → Landlock；`darwin`: Seatbelt；`win32`: ACL restricted-token；另有 `sandbox-ssh`。**"A platform with no chain, or a chain where every probe fails, is unavailable and fails closed at `confine()`"**（`packages/sandbox/sandbox-local/README.md:71`），`enforcement` 分 full/partial，不可用即 `SANDBOX_UNAVAILABLE`。⚠️ **本机事实（v1.5 更正）**：本机 `bwrap` 已安装且 runner 链**选中 bwrap**，`enforcement=full`——read-only / workspace-write 档在 shell + fs 双侧真强制。v1.4 所记「本机 bubblewrap 与 Landlock 均不可用 → 实际走 fail-closed 分支」**已证伪**（属环境事实更正，非内核设计变化，⛔ 不计入分值变动）。
 4. **permission preset 打包 sandbox + approval**：`set(session, name)` 解析 preset（未知名抛错），跑 Auto admission，追加 **log-only** `permission/preset` 事件，再分别经 `setSandboxMode`（dsh-sandbox-policy）与 `setApprovalPolicy`（dsh-user-approval）写入两个 knob，且仅在有效值变化时写（`docs/subsystems/permission-presets.md:73`）；可从内置档**派生 custom/Auto**。
 5. **dsh-tool-call-timeout-policy**：读每个工具声明的 `timeoutMs` 派生 per-tool deadline，超时替换为 `TOOL_TIMEOUT`——看门狗硬超时。
 6. **dsh-spill-policy**：超 `maxInlineBytes` 的纯文本结果 spill 到 Store，替换为有界首尾预览——输出 token 限幅（anti-windup 的 token 侧）；PTC 子派发经 `tools/ptc-dispatch-log` 瀑布复用同一预览策略。
@@ -203,5 +205,5 @@
 | SRC-007 | S1 | 官方升级指南 + 文档（P 环） | `docs/upgrade-guide/v0.2.1-alpha.1/subagent-activations/guide.md:12`（activations + 删 `job_output`/`job_kill`）、`docs/subsystems/subagent.md:326`（6 provider + `prepareContinuable`）、`packages/subagent/tool-subagent-control/README.md:12`、`docs/subsystems/agent-team.md:58`（revision CAS + blockedBy 无环）、`docs/tool-catalog.md:43`（agent-team 默认 disabled） | 高 |
 | SRC-008 | S1 + S4 | 官方源码/文档 + 一手观察（R 环 + 上游生态） | `packages/llm/llm-retry/README.md:50-58`（对模型不可见）、`packages/experimental/hooks-claude-code/README.md:89`（steer/deny）、`packages/guard/repeat-tool-reminder/README.md:91`（只 enrich）、`packages/guard/repeat-output-guard/README.md:136`（"Stops, never repairs"）+ `packages/bundle/base/cordis.patch.yml:454-461`（默认 `mode: cancel`）、`packages/core/agent-loop/README.md:220`（No built-in turn budget）；上游：`https://github.com/deepseek-ai/deepseek-harness`、`https://deepseek-harness.github.io/deepseek-harness/`、`npx @deepseek-ai/dsh web`、`README.md:13`（Public APIs are pre-stable）；生态旁证：`/home/zako-mio/opencode/archive/Mission-file/2026-10/1011-dsh插件生态调研/evidence/compat-check-0.2.1-alpha.2.txt`（35 个外部插件三态：PASS / REFUSED / NO-DSH-PEERS） | 高 |
 
-> ⚠️ **本机环境事实**：本机 bubblewrap 与 Landlock 均不可用 → `sandbox-local` 走 fail-closed 分支（`SANDBOX_UNAVAILABLE`），属**环境事实**，非设计缺陷；画像中对沙箱能力的描述均以源码/文档契约为准。
+> ✅ **本机环境事实（v1.5 更正）**：本机 `bwrap` 已安装，`sandbox-local` 的 runner 链**选中 bwrap**，`enforcement=full`（read-only / workspace-write 于 shell + fs 双侧真强制）。v1.4 所记「本机 bubblewrap 与 Landlock 均不可用 → 走 fail-closed 分支（`SANDBOX_UNAVAILABLE`）」**已证伪**。画像对沙箱能力的描述仍以源码/文档契约为准；本机可达性属**环境事实**，⛔ 不计入任何分值变动。
 > ⚠️ **口径提示**：`packages/bundle/base/cordis.patch.yml` 的 `- id:` 装配行现计 **95** 条（事实包记为 94，以源码实际计数为准）；旧「76 + 36」为分列口径，**不可与新口径相减**。

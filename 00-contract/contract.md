@@ -2,7 +2,7 @@
 
 > 本文件是本知识库的**宪法级硬约束**。所有子Agent 必须以本文件为唯一契约来源，禁止在 prompt 中复制本文件全文（避免长 prompt 截断），只允许引用其短路径 `00-contract/contract.md`。
 >
-> 版本：`v1.4.0`　创建：2026-09-07　v1.1 扩展：2026-09-08（精装房全景专题）　v1.2 扩展：2026-09-09（自改造 opencode 变体专题）　v1.3 扩展：2026-09-11（自改造 opencode 变体复评）　v1.4 扩展：2026-10-11（dsh 装配层变体专题 + opencode 月度追平）　负责人：主Agent
+> 版本：`v1.5.0`　创建：2026-09-07　v1.1 扩展：2026-09-08（精装房全景专题）　v1.2 扩展：2026-09-09（自改造 opencode 变体专题）　v1.3 扩展：2026-09-11（自改造 opencode 变体复评）　v1.4 扩展：2026-10-11（dsh 装配层变体专题 + opencode 月度追平）　v1.5 扩展：2026-10-13（**dsh 装配层二次追平**：口径唯一化 + R1–R12 全轮次追平 + 三条旧结论重判）　负责人：主Agent
 
 ---
 
@@ -63,15 +63,31 @@
 - **基线**：
   - `opencode-custom`：官方 opencode 默认 + 最小常规装配（四 agent + 官方内置 skills + 基础 provider），基线口径见 `03-cases/opencode.md`；v1.4 起本机运行时基线为 **1.18.35**（上游最新 release `v1.19.0` 于 2026-10-11 发布，**只登记不追**）。
   - `dsh-custom`：官方 **dsh v0.2.1-alpha.2**（2026-10-09，commit `d743267`，跨 21 个预发布 tag）默认装配作为宿主内核，装配层为 `dsh-opencode-port` bundle。
-- **落点**（`dsh-custom`）：`~/.dsh/presets/opencode/`（3 preset：opencode-standard / creator / ptc）+ `~/.dsh/skills/opencode/`（45 派生 skill）+ 宿主 profile patch（4 provider / permission 5 档 / plugin-manager `pnpmCommand`）。
+- **落点**（`dsh-custom`）：`~/.dsh/presets/opencode/`（3 preset：opencode-standard / creator / ptc）+ `~/.dsh/skills/opencode/`（**主根 49** = 派生 47 + DSH 原生 2；**模型可见 46**；`_overlay` 另 6 件）+ 宿主 profile patch（4 provider / permission 5 档 / plugin-manager `pnpmCommand`）。v1.4 时点值为「45 派生 / 42 可见 / 6 叠加」，**属历史口径，保留不改**。
 - **评分方法**：五环**双层评分**（内核层 + 装配层增量 Δ）+ 复用精装度 **v2.0**（硬门槛 + 8 维加权 + 一票否决，见 `07-checkpoint/premium-scoring-model.md`）。
 - **口径**（已定结论）：
   - `opencode-custom`：官方精装度 2.9 → 自改造 3.9（Δ+1.0）；五环双层 SP 3.5→4.5、M 3.5→4.0、P 4.5→5.0、R 2.0→4.5（反转）、T 4.5→5.0、E 2.0→4.0（反转）。
-  - `dsh-custom`：官方精装度 **3.6 → 3.8**（Δ+0.2）；五环双层 SP 4.5→5.0、M 4.0→4.0、P 4.5→5.0、R 3.0→3.0、T 5.0→5.0、E 2.0→3.5。
+  - `dsh-custom`（**v1.4 时点口径**）：官方精装度 **3.6 → 3.8**（Δ+0.2）；五环双层 SP 4.5→5.0、M 4.0→4.0、P 4.5→5.0、R 3.0→3.0、T 5.0→5.0、E 2.0→3.5。⚠ 该组读数为 **v1.4 快照点（2026-10-11T17:09:09）** 的时点值，与 v1.5 复评值**不同时点、不可相减**。
 - **排名约定**：变体（`opencode-custom` / `dsh-custom`）**不参与 14 产品市售精装度排名**（个人装配层无分发渠道，不与市售产品同轴比较）。
 - **证据**：
   - `opencode-custom`：脱敏快照 `07-checkpoint/opencode-custom-snapshot/`（opencode.jsonc / instructions / command / inventory.json），评分单一数据源 `09-src-data/opencode_custom_scores.py`。
   - `dsh-custom`：脱敏快照 `07-checkpoint/dsh-custom-snapshot/`（bundle / profile / inventory.json / manifest.json），评分单一数据源 `09-src-data/dsh_custom_scores.py`（与 `opencode_custom_scores.py` **同构**）。
+
+### skill 计数口径唯一化（v1.5 新增，硬约束）
+
+本库对 skill 规模**一律采用「派生目录口径」**；四个数各有定义，⛔ 不得混用、⛔ 不得互相推断：
+
+| 口径 | 定义 | v1.5 读数 | v1.4 时点值 |
+|------|------|---:|---:|
+| **主根** | `<root>/<name>/SKILL.md` 一层扫描（深度 2） | **49** | 45 |
+| **派生件** | 主根中**有** opencode 源者（`reconcile.py` 断言对象） | **47** | 45 |
+| **DSH 原生** | 主根中**无** opencode 源者（`dsh-config` / `dsh-reflection`） | **2** | 0 |
+| **模型可见** | 主根 − 带 `disable-model-invocation: true` 者（3 件 opencode 域技能） | **46** | 42 |
+| **叠加层** | `_overlay/<name>/SKILL.md`（深度 3），**不计入主根** | **6** | 6 |
+
+> ⚠ 换算关系：主根 = 派生件 + DSH 原生；模型可见 = 主根 − 3。
+> ⚠ 源侧 `~/.config/opencode/skills/` 的目录数含 `_shared` / `disabled` 两个**非技能目录** ⇒ 「源侧目录数」≠「派生件数」，两者相差 2。
+> ⚠ 采集口径的**唯一机械承载** = `07-checkpoint/snapshot_dsh_custom.py`（`inventory.json` 的 `skills` 段）；任何对口径的改动必须经由该脚本，⛔ 不得只在文档里改数字。
 
 ---
 
@@ -92,7 +108,7 @@
 
 ### ④ 复评节奏与版本号规则
 - **触发条件**：官方基线漂移（opencode / dsh 内核升版）或装配层发生「能力纵深增长 / 机制新增」时触发复评。
-- **版本号规则**：复评后知识库版本号递增（如 v1.2 → v1.3），并同步刷新全站版本标识（生成脚本 + 生成物双轨，零残留）。
+- **版本号规则**：复评后知识库版本号递增（如 v1.4 → v1.5），并同步刷新全站版本标识（生成脚本 + 生成物双轨，零残留）。
 - **诚实口径**：若复评未跨评分模型 5 档产品阈值，**维持原分值、不虚报跃升**，仅在画像/diff 中刷新 evidence 与机制叙述。
 
 ### ⑤ 未入库轮次的补账义务（v1.4 新增）
@@ -101,6 +117,19 @@
   - **本轮先例**：`2026-09/0914-自改造opencode再评估v1.4` 全量复评明确「**不更新知识库**」→ 本库存在 2026-09-11 → 2026-10-11 的**一个月 backlog**，本轮（v1.4）一次性补入。
 - **口径变更须披露（硬约束）**：当某产品从「**单点分**」改为「**8 维模型分**」时，必须**显式声明两者不同源、不可相减**，**禁止呈现为跃升**。
   - **本轮先例**：dsh 旧口径仅「技术框架对照」的**单点分 2.5**（`gen_html.py` `FRAMEWORK_DATA`，**非** 8 维模型输出）；v1.4 首次回填 v2.0 模型得 **3.6**。`3.6` 与 `2.5` **不同源、不可相减**，旧单点分作为历史口径保留（见 `03-cases/dsh-custom-diff.md` §口径披露）。
+
+### ⑥ 装配层「追平轮」登记（v1.5 新增）
+
+- **触发判据（v1.5 实例）**：内核**未升版**（dsh `v0.2.1-alpha.2` / commit `d743267` 未变），但装配层命中「能力纵深增长 / 机制新增」六项 ⇒ 复评成立：
+  1. `run_gate` 门控执行通道（新对外工具 + 新插件，ADR-010）；
+  2. `dsh-config` 能力包（新技能层，ADR-011）；
+  3. R 环 R-A 文件载体（新记忆写入链，ADR-012）；
+  4. `dsh-wsl-desktop-path` / `dsh-opencode-commands`（新插件）；
+  5. `verify_bundle` 判据 **13 → 20 项**；
+  6. 沙箱由「本机无可用后端」变为 `bwrap enforcement=full`。
+- **追平义务（硬约束）**：装配层在两轮复评之间发生的**每一轮变更**必须在画像 / diff 中显式登记（时点 + 变化 + 证据指针），⛔ 不得只写首尾两点、⛔ 不得静默跳过中间轮次。
+  - **本轮范围**：v1.4 快照点 `2026-10-11T17:09:09` → v1.5 冻结点 `2026-10-13T05:04:50` 之间的 **R1–R12** 全部轮次，落点 `03-cases/dsh-custom.md` 的轮次表。
+- **外部证据指针纪律（硬约束）**：装配层变更的**决策依据**在迁移线留档（`Mission-file/2026-10/1011-deepseek harness-提示词迁移工程-从opencode/**`），本库**只登记「指针 + 状态 + 用途」，⛔ 不复制其正文进公开库**；指针**必须带路径限定**——`0928-前端设计方法论建设` 线存在同名 `ADR-011`，裸写会指向错件。
 
 ---
 

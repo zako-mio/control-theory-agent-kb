@@ -1,0 +1,17 @@
+{
+  "name": "dsh-profile-web",
+  "private": true,
+  "dsh": {
+    "profile": {
+      "bundles": [
+        "@deepseek-ai/dsh-base",
+        "@deepseek-ai/dsh-web-app",
+        "dsh-opencode-port"
+      ],
+      "patchReload": "live"
+    }
+  },
+  "dependencies": {
+    "dsh-opencode-port": "link:/home/zako-mio/.dsh/presets/opencode"
+  }
+}

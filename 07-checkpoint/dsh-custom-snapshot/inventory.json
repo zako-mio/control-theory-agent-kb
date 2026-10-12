@@ -1,5 +1,5 @@
 {
-  "collected_at": "2026-10-11T17:09:09+08:00",
+  "collected_at": "2026-10-13T05:09:43+08:00",
   "source": {
     "bundle": "/home/zako-mio/.dsh/presets/opencode",
     "profile": "/home/zako-mio/.dsh/profiles/web",
@@ -38,15 +38,15 @@
     "danger-full-access"
   ],
   "skills": {
-    "main_root": 45,
+    "main_root": 49,
     "overlay": 6,
-    "skill_md_total": 51,
+    "skill_md_total": 55,
     "model_invocable_off": [
       "opencode-capability-audit",
       "opencode-capability-extension",
       "opencode-config"
     ],
-    "model_visible_estimate": 42
+    "model_visible_estimate": 46
   },
   "providers": {
     "keys_found": [
@@ -74,9 +74,183 @@
     "dsh-opencode-port",
     "link:/home/zako-mio/.dsh/presets/opencode"
   ],
+  "snapshot_version": "v1.5",
+  "skills_list": {
+    "main_root_list": [
+      "agency-agents",
+      "architecture-judgment",
+      "browser-harness",
+      "criterion-design-validation",
+      "cytoscape-dag-visualization",
+      "dag-tutorial-authoring",
+      "design-material-library",
+      "diagram-lite",
+      "dsh-config",
+      "dsh-reflection",
+      "frontend-design-methodology",
+      "github-bulk-upload",
+      "grill-me",
+      "headroom",
+      "job-listing-filter",
+      "kb-construction",
+      "lark-suite",
+      "login-auth-channel",
+      "multi-window-dag-delivery",
+      "opencode-capability-audit",
+      "opencode-capability-extension",
+      "opencode-config",
+      "openspec-apply-change",
+      "openspec-archive-change",
+      "openspec-bulk-archive-change",
+      "openspec-continue-change",
+      "openspec-explore",
+      "openspec-ff-change",
+      "openspec-new-change",
+      "openspec-onboard",
+      "openspec-propose",
+      "openspec-sync-specs",
+      "openspec-update-change",
+      "openspec-verify-change",
+      "pdf-ocr",
+      "recruit-assist",
+      "release-openspec",
+      "report-renderer",
+      "requirement-discovery",
+      "restricted-corpus-acquisition",
+      "resumable-content-pipeline",
+      "resume-builder",
+      "search-methodology",
+      "single-source-docs-pipeline",
+      "soe-resume",
+      "superpowers-feature-workflow",
+      "superpowers-learning-workflow",
+      "superpowers-openspec-superpowers-workflow",
+      "version-upgrade-cascade"
+    ],
+    "derived": [
+      "agency-agents",
+      "architecture-judgment",
+      "browser-harness",
+      "criterion-design-validation",
+      "cytoscape-dag-visualization",
+      "dag-tutorial-authoring",
+      "design-material-library",
+      "diagram-lite",
+      "frontend-design-methodology",
+      "github-bulk-upload",
+      "grill-me",
+      "headroom",
+      "job-listing-filter",
+      "kb-construction",
+      "lark-suite",
+      "login-auth-channel",
+      "multi-window-dag-delivery",
+      "opencode-capability-audit",
+      "opencode-capability-extension",
+      "opencode-config",
+      "openspec-apply-change",
+      "openspec-archive-change",
+      "openspec-bulk-archive-change",
+      "openspec-continue-change",
+      "openspec-explore",
+      "openspec-ff-change",
+      "openspec-new-change",
+      "openspec-onboard",
+      "openspec-propose",
+      "openspec-sync-specs",
+      "openspec-update-change",
+      "openspec-verify-change",
+      "pdf-ocr",
+      "recruit-assist",
+      "release-openspec",
+      "report-renderer",
+      "requirement-discovery",
+      "restricted-corpus-acquisition",
+      "resumable-content-pipeline",
+      "resume-builder",
+      "search-methodology",
+      "single-source-docs-pipeline",
+      "soe-resume",
+      "superpowers-feature-workflow",
+      "superpowers-learning-workflow",
+      "superpowers-openspec-superpowers-workflow",
+      "version-upgrade-cascade"
+    ],
+    "dsh_native": [
+      "dsh-config",
+      "dsh-reflection"
+    ],
+    "source_skill_dirs": 47,
+    "non_skill_dirs_excluded": [
+      "_shared",
+      "disabled"
+    ],
+    "note": "主根 = 派生 + DSH 原生；源侧目录数含 _shared/disabled 两个非技能目录"
+  },
+  "plugins": {
+    "host_root": "/home/zako-mio/.dsh/plugins",
+    "host_plugins": [
+      "dsh-wsl-desktop-path"
+    ],
+    "bundle_plugin_packages": [
+      "dsh-opencode-commands",
+      "dsh-opencode-gate-runner"
+    ],
+    "note": "bundle 内插件包由 preset 顶层行以 name 引用；宿主插件由 profile patch 的 insert 行挂载"
+  },
+  "reflection": {
+    "reflection_dir": "/home/zako-mio/.dsh/reflection",
+    "exists": true,
+    "subdirs": [
+      "archive",
+      "candidates"
+    ],
+    "file_counts": {
+      "archive": 1,
+      "candidates": 15
+    },
+    "top_level_md": 1,
+    "memory_body": {
+      "path": "/home/zako-mio/.dsh/MEMORY.md",
+      "exists": true,
+      "bytes": 10815,
+      "lines": 57,
+      "sections": 14,
+      "src_signature_count": 14
+    },
+    "dsh_reflection_skill": true,
+    "note": "只记存在性与容量；⛔ MEMORY.md 正文不入快照、不入公开库（契约 §2.7③）"
+  },
+  "gate": {
+    "verify_bundle": "/home/zako-mio/.dsh/presets/opencode/verify_bundle.py",
+    "check_count": 20,
+    "checks": [
+      "package.json",
+      "cordis.patch.yml 结构",
+      "persona 与 persona.md 一致性",
+      "persona 禁用字面量与插值变量",
+      "插件名可解析（bundle 平面；preset 平面见 check 10）",
+      "toolFilter：求值后必须是扁平字符串数组，且名字已知",
+      "worker 编队",
+      "三模式差异",
+      "子行 config 通过真实插件 Config schema",
+      "node_modules 锚点",
+      "源指纹漂移",
+      "生成幂等",
+      "A12 host personaPrefix 作用域取证",
+      "门控执行通道 run_gate（结构 P1-P5 + 行为负向）",
+      "真实挂载审计（真 runProfile + 真 Loader + 负向控制）",
+      "工具 output.schema / parameters 通过 DSH 子集校验",
+      "会话 PATH 引导（外部 CLI 可达性）",
+      "dsh-config 声明账本漂移（源指针 / 层归属 / 层间冲突 / 台账一致性）",
+      "迁移状态（E3 residue / 陈旧断言 / E7 互斥 / R 环载体）+ 判据自检",
+      "命令注册插件（E10：/arch /rd /reflection；含注册单测）"
+    ]
+  },
   "notes": [
     "只读采集；~/dsh/.env 与 ~/.dsh/.credentials.yaml 未拷贝",
     "persona 与 bundle README 含本机绝对路径（bundle 自述不可移植）",
-    "permission 档位由文本存在性判定（非 YAML 解析），缺 YAML 语义时可回退看原文快照"
+    "permission 档位由文本存在性判定（非 YAML 解析），缺 YAML 语义时可回退看原文快照",
+    "v1.5 起 R 环载体只记存在性与容量，⛔ MEMORY.md 正文不入快照（契约 §2.7③）"
   ]
 }
