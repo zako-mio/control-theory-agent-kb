@@ -25,7 +25,7 @@ HOME = os.path.expanduser("~")
 BUNDLE = os.path.join(HOME, ".dsh/presets/opencode")
 PROFILE = os.path.join(HOME, ".dsh/profiles/web")
 SKILLS = os.path.join(HOME, ".dsh/skills/opencode")
-DST = "/home/zako-mio/opencode/archive/Mission-file/2026-09/0907-控制理论Agent设计知识库/07-checkpoint/dsh-custom-snapshot"
+DST = os.path.join(os.path.dirname(os.path.abspath(__file__)), "dsh-custom-snapshot")  # ★ 本地化：本目录由本文件位置推导
 os.makedirs(DST, exist_ok=True)
 COLLECTED_AT = datetime.datetime.now().astimezone().isoformat(timespec="seconds")
 

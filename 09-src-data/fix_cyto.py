@@ -7,7 +7,9 @@ v1.5 起本脚本改为**幂等**：
 """
 import sys
 sys.stdout.reconfigure(encoding='utf-8')
-sys.path.insert(0, '/home/zako-mio/opencode/archive/Mission-file/2026-09/0907-控制理论Agent设计知识库/09-src-data')
+import os  # ★ 本地化：需要 os 做路径推导
+_HERE = os.path.dirname(os.path.abspath(__file__))  # ★ 本地化：本目录由本文件位置推导
+sys.path.insert(0, _HERE)
 import nav_data as nd
 
 FOOTER_VER = "v1.5 dsh 装配层二次追平版"
@@ -18,7 +20,7 @@ OLD_FOOTER_VERS = [
     "v1.0.0",
 ]
 
-p = '/home/zako-mio/opencode/archive/Mission-file/2026-09/0907-控制理论Agent设计知识库/04-interactive/index_cyto.html'
+p = os.path.join(os.path.dirname(_HERE), '04-interactive', 'index_cyto.html')  # ★ 本地化：仓库根由本文件位置推导
 c = open(p, encoding='utf-8').read()
 
 # 生成统一 sidebar(active='index_cyto')

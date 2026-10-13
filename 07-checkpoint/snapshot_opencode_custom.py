@@ -18,7 +18,7 @@ import os, re, json, hashlib, sys, datetime
 sys.stdout.reconfigure(encoding='utf-8')
 
 SRC = os.path.expanduser("~/.config/opencode")
-DST = "/home/zako-mio/opencode/archive/Mission-file/2026-09/0907-控制理论Agent设计知识库/07-checkpoint/opencode-custom-snapshot"
+DST = os.path.join(os.path.dirname(os.path.abspath(__file__)), "opencode-custom-snapshot")  # ★ 本地化：本目录由本文件位置推导
 os.makedirs(DST, exist_ok=True)
 COLLECTED_AT = datetime.datetime.now().astimezone().isoformat(timespec="seconds")
 

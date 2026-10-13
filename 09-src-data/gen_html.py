@@ -7,7 +7,7 @@ sys.stdout.reconfigure(encoding='utf-8')
 import premium_scores as ps  # 精装房评分模型单一数据源
 import dsh_custom_scores as dcs  # dsh 官方 vs 装配层 评分单一数据源（与 opencode_custom_scores 同构）
 
-BASE = "/home/zako-mio/opencode/archive/Mission-file/2026-09/0907-控制理论Agent设计知识库"
+BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # ★ 本地化：仓库根由本文件位置推导（⛔ 不硬编码作者机路径）
 OUT = os.path.join(BASE, "04-interactive")
 
 # ---- 全局 CSS (高可读) ----
@@ -169,7 +169,7 @@ def page(title, crumb, body, active_file, prev=None, nxt=None):
     return f"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{title} — 控制理论⊗Agent知识库</title>
-<link rel="stylesheet" href="assets/design-tokens.css"></head>
+<link rel="stylesheet" href="assets/derived-design-tokens.css"><link rel="stylesheet" href="assets/site.css"></head>
 <body><div class="shell">{sidebar(active_file)}
 <div class="main">
 <div class="main-topbar"><div class="crumb"><b>{title}</b> · 控制理论 ⊗ Agent</div></div>

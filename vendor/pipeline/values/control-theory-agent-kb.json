@@ -1,0 +1,428 @@
+{
+  "meta": {
+    "id": "value-contract.control-theory-agent-kb",
+    "contract_version": "1.1.0-batchI",
+    "frozen_at": "2026-10-13",
+    "round": "批 I · ROLLOUT-PLAN 第 3 轮（站 03 标准档：先解耦再改值 ＋ L1 本地化 ＋ 站点侧门控落地）",
+    "title": "control-theory-agent-kb 站点值件（形态 1 外链表）",
+    "nature": "站点侧独立机读值件 —— 单一真相源；⛔ 不直接改站点模板文件；写入由 pipeline/write_site_tokens.py 完成",
+    "authority": "角色口径沿用 fe-starter-kit/tokens/contract.json 的 11 角色，语义角色扩展沿用 solutions/_shared/SH0-tokens-draft.json（19 角色）；本件由批 C 任务 4 PoC 件升格而来",
+    "adr_ref": "ADR-001（令牌分发）· ADR-002（令牌集选型）· ADR-003（统一构建管线）",
+    "upgrade_from": "pipeline/values/control-theory-agent-kb.json @ 批 D（1.0.0-batchD，AUD 侧唯一真相源；本件是其**站点轮演化**）"
+  },
+  "scope": {
+    "site": "control-theory-agent-kb",
+    "site_number": "03",
+    "upstream_repo_head": "99e1dd8bbaeff58dc0e0eca6b052e36a345c70e0",
+    "declared_forms": [
+      "light"
+    ],
+    "declared_forms_reason": "本站实测为**浅色单档**：全仓 grep prefers-color-scheme / color-scheme / data-theme 命中 0。⇒ ADR-002 的 D3 双档契约在本站**不适用**，按纪律登记为「不适用」而非「未做」。",
+    "declared_forms_evidence": "evidence/c/_poc/control-theory-agent-kb 全仓 grep（批 D）· 批 I 复验：解耦后站点仓内 `prefers-color-scheme`/`color-scheme`/`data-theme` 命中仍为 0",
+    "family": "content-kg-swiss-light",
+    "family_note": "本站方向为 Swiss / 工程可视化（浅色），与 ADR-002 新增的 content-kg 族（深色内容站）不同族。取值**沿用本站现有色**，只补齐角色与缺档，以验证**机制**而非混入视觉改版。",
+    "family_ruling": "CT-Q2=A：登记为 **content-kg 族的浅色变体**（⛔ 不另立第五族、⛔ 不并入 content 族）"
+  },
+  "coverage_levels": {
+    "order": [
+      "family-default",
+      "site-override",
+      "page-family"
+    ],
+    "note": "本件为单族（default）；三级覆盖的第 ③ 级在本站不适用（其成因实例是 12-factor 的一站两值）。登记为「不适用」而非「未做」。"
+  },
+  "usage_tiers": {
+    "body": {
+      "allowed_use": "正文类（p/li/dd/dt/blockquote 内文本）与非正文类均可",
+      "min_contrast": {
+        "light": 4.5
+      },
+      "gate": "hard",
+      "provenance": "fe-starter-kit/tokens/contract.json usage_tiers.body（阈值权威＝0916-前端技术栈基线/TOKEN-USAGE-SPEC.md，非本件自造）"
+    },
+    "non-body": {
+      "allowed_use": "× 仅非正文类（表头/标签/图标/占位符/停用态）",
+      "min_contrast": {
+        "light": 4.5
+      },
+      "gate": "report-only",
+      "provenance": "fe-starter-kit/tokens/contract.json usage_tiers.non-body"
+    },
+    "non-text": {
+      "allowed_use": "非文本元素（边框/分隔线/图形/焦点环）",
+      "min_contrast": {
+        "light": 3.0
+      },
+      "gate": "hard",
+      "provenance": "fe-starter-kit/tokens/contract.json usage_tiers.non-text；border.line 提 hard 的依据是 ADR-002 的 D4（3:1 已在 hub scripts/gate_contrast.py 在用）"
+    },
+    "non-text-decorative": {
+      "allowed_use": "弱分隔：按定义应不可见，只报告不硬判（判据对象＝强分隔，⛔ 不用同一门槛去判它）",
+      "min_contrast": {
+        "light": 3.0
+      },
+      "gate": "report-only",
+      "provenance": "SH5 §4.0 第 1 条「判据对象必须与断言对象一致」+ 批 C PoC 对 border.subtle 的处置"
+    }
+  },
+  "roles": {
+    "text.primary": {
+      "tier": "body",
+      "kind": "text",
+      "purpose": "主文字：标题与正文默认档",
+      "site_source": "--ink（本站既有，逐字节沿用）"
+    },
+    "text.secondary": {
+      "tier": "body",
+      "kind": "text",
+      "purpose": "次要文字：正文类默认档 / 辅助说明",
+      "site_source": "--muted（本站既有，逐字节沿用）"
+    },
+    "text.tertiary": {
+      "tier": "non-body",
+      "kind": "text",
+      "purpose": "三级灰：× 仅非正文（表头/标签/图标/占位符）",
+      "site_source": "复用本站 --muted-2"
+    },
+    "link": {
+      "tier": "body",
+      "kind": "text",
+      "purpose": "链接文字（按页面底色计对比度）",
+      "site_source": "复用本站 --ctrl-blue"
+    },
+    "brand.primary": {
+      "tier": "non-text",
+      "kind": "brand",
+      "purpose": "品牌主色（按钮底/选中态底，非文字对比度对象）",
+      "site_source": "--ctrl-blue（本站既有）"
+    },
+    "border.line": {
+      "tier": "non-text",
+      "kind": "border",
+      "purpose": "强分隔：表格线 / 输入框描边",
+      "site_source": "★ 本站缺此档（原只有单一 --line:#DFE5EC，对 --surface 1.19 / 对 --panel 1.27，不达 3:1）。新增值 #7d8a9e 取本站自身的冷蓝灰族"
+    },
+    "border.subtle": {
+      "tier": "non-text-decorative",
+      "kind": "border",
+      "purpose": "弱分隔：容器描边",
+      "site_source": "承接本站原 --line:#DFE5EC 的弱分隔语义（report-only）"
+    },
+    "surface.page": {
+      "tier": "non-text",
+      "kind": "surface",
+      "purpose": "页面底色（对比度计算的参考背景）",
+      "site_source": "--surface（本站既有）"
+    },
+    "surface.raised": {
+      "tier": "non-text",
+      "kind": "surface",
+      "purpose": "容器/卡片底色",
+      "site_source": "--panel（本站既有）"
+    },
+    "surface.subtle": {
+      "tier": "non-text",
+      "kind": "surface",
+      "purpose": "次级底色：hover / 表头 / 代码块",
+      "site_source": "新值 #EEF2F7（中性灰蓝，不引入品牌色倾向）"
+    },
+    "surface.stripe": {
+      "tier": "non-text",
+      "kind": "surface",
+      "purpose": "斑马纹底色",
+      "site_source": "新值 #FBFCFE（斑马纹按定义仅需可辨）"
+    },
+    "ok": {
+      "tier": "body",
+      "kind": "semantic-text",
+      "purpose": "成功态",
+      "site_source": "--state-green（本站既有）"
+    },
+    "warn": {
+      "tier": "body",
+      "kind": "semantic-text",
+      "purpose": "警告态",
+      "site_source": "★ 本站 --signal-amber:#C77700 作为**文字**只有 3.25（不达 body 4.5）⇒ 改用本站 CSS 中已存在的 --gold:#B45309（实测 4.72 / 5.02）。这是一处**由门控驱动的取值修正**，不是审美选择。"
+    },
+    "err": {
+      "tier": "body",
+      "kind": "semantic-text",
+      "purpose": "错误态",
+      "site_source": "--signal-red（本站既有）"
+    },
+    "ext": {
+      "tier": "body",
+      "kind": "semantic-text",
+      "purpose": "外部链/外部依赖",
+      "site_source": "复用本站 --signal-purple"
+    },
+    "upgrade": {
+      "tier": "body",
+      "kind": "semantic-text",
+      "purpose": "升级态",
+      "site_source": "复用本站 --state-green 的深档 #166534（与 ok 拉开可辨差异，同色相）"
+    },
+    "disabled": {
+      "tier": "non-body",
+      "kind": "semantic-text",
+      "purpose": "停用态（非活动控件，WCAG 豁免对比度门槛）",
+      "site_source": "复用本站 --muted-2（停用态＝降饱和而非降亮度）"
+    },
+    "measure": {
+      "tier": "non-text",
+      "kind": "dimension",
+      "purpose": "行长度量：正文阅读宽度",
+      "site_source": "--w-reading:72ch（本站既有，分辨率自适应）"
+    },
+    "focus.ring": {
+      "tier": "non-text",
+      "kind": "focus",
+      "purpose": "焦点环",
+      "site_source": "复用本站 --ctrl-blue（design-tokens.css:54 的 :focus-visible 已用它描边，本角色把既有做法登记为角色）"
+    }
+  },
+  "palettes": {
+    "content-kg-swiss-light": {
+      "family": "内容知识库族 · Swiss 浅色变体（03 站）",
+      "provenance": "本站既有 04-interactive/assets/design-tokens.css 的 :root 块（as_of=2026-10-13，HEAD 5ed8c157fc）；新增档位逐条登记在 roles[*].site_source",
+      "values": {
+        "text.primary": {
+          "light": "#0B1220"
+        },
+        "text.secondary": {
+          "light": "#5A6B85"
+        },
+        "text.tertiary": {
+          "light": "#8794A8"
+        },
+        "link": {
+          "light": "#1E5AA8"
+        },
+        "brand.primary": {
+          "light": "#1E5AA8"
+        },
+        "border.line": {
+          "light": "#7d8a9e"
+        },
+        "border.subtle": {
+          "light": "#DFE5EC"
+        },
+        "surface.page": {
+          "light": "#F6F8FB"
+        },
+        "surface.raised": {
+          "light": "#FFFFFF"
+        },
+        "surface.subtle": {
+          "light": "#EEF2F7"
+        },
+        "surface.stripe": {
+          "light": "#FBFCFE"
+        },
+        "ok": {
+          "light": "#1F7A52"
+        },
+        "warn": {
+          "light": "#B45309"
+        },
+        "err": {
+          "light": "#B23A2F"
+        },
+        "ext": {
+          "light": "#5B4B9B"
+        },
+        "upgrade": {
+          "light": "#166534"
+        },
+        "disabled": {
+          "light": "#8794A8"
+        },
+        "measure": {
+          "light": "72ch"
+        },
+        "focus.ring": {
+          "light": "#1E5AA8"
+        }
+      }
+    }
+  },
+  "binding": {
+    "site_token_names": {
+      "text.primary": "--ink",
+      "text.secondary": "--muted",
+      "text.tertiary": "--muted-2",
+      "link": "--ctrl-blue",
+      "brand.primary": "--ctrl-blue",
+      "border.line": "--line",
+      "border.subtle": "--line-subtle",
+      "surface.page": "--surface",
+      "surface.raised": "--panel",
+      "surface.subtle": "--surface-2",
+      "surface.stripe": "--stripe",
+      "ok": "--state-green",
+      "warn": "--warn",
+      "err": "--signal-red",
+      "ext": "--signal-purple",
+      "upgrade": "--upgrade",
+      "disabled": "--disabled",
+      "measure": "--w-reading",
+      "focus.ring": "--focus-ring"
+    },
+    "aliases": {},
+    "note": "绑定表是「角色 → 本站令牌名」的映射，属**分发机制**（SH1 §4.5 的形态 1「外链表」在本站的落地）。19 角色映射到 18 个唯一令牌（link 与 brand.primary 共用 --ctrl-blue）。",
+    "passthrough_tokens_reason": "★ 非角色令牌必须显式透传：批 C 实测初版实现只输出角色令牌，会丢 18 枚（含 --font-sans）⇒ 整站字体回退。由全集守卫捕获。",
+    "passthrough_tokens": {
+      "typography": {
+        "--font-sans": "-apple-system,BlinkMacSystemFont,\"Segoe UI\",\"PingFang SC\",\"Hiragino Sans GB\",\"Microsoft YaHei\",\"Noto Sans SC\",sans-serif",
+        "--font-mono": "\"JetBrains Mono\",\"SF Mono\",ui-monospace,SFMono-Regular,Menlo,Consolas,\"Liberation Mono\",monospace"
+      },
+      "layout": {
+        "--w-max": "1120px"
+      },
+      "spacing": {
+        "--space-1": "4px",
+        "--space-2": "8px",
+        "--space-3": "16px",
+        "--space-4": "24px",
+        "--space-5": "32px",
+        "--space-6": "48px"
+      },
+      "radius": {
+        "--r-sm": "6px",
+        "--r-md": "10px",
+        "--r-lg": "14px"
+      },
+      "semantic_bg_variants": {
+        "_note": "语义色浅底变体：批 C 实测这 4 枚在线上真实页（43 页）中 var() 引用数为 0 ⇒ 属候选死令牌；因本站无死 CSS 门控、且本轮形象是「机制验证」而非「清理」，故原样透传并在 known_site_defects_registered 登记。",
+        "--ctrl-blue-soft": "#EAF1FA",
+        "--signal-amber-bg": "#FDF3E3",
+        "--signal-red-bg": "#FBE9E7",
+        "--state-green-bg": "#E7F4EC",
+        "--signal-purple-bg": "#EFECF7",
+        "--signal-amber": "#C77700"
+      }
+    }
+  },
+  "families": {
+    "default": {
+      "targets": [
+        "04-interactive/assets/derived-design-tokens.css"
+      ],
+      "generator": "（无：形态 1 的派生产物由 pipeline/derive_site_tokens.py 生成，不由站点生成器产出）",
+      "overrides": {
+        "--ctrl-green": "#1F7A52"
+      },
+      "note": "本站单族。派生产物＝**解耦后的独立令牌文件** `04-interactive/assets/derived-design-tokens.css`（只含令牌、不承载布局规则）；布局规则在解耦后由站点侧 `09-src-data/decouple_styles.py` 搬到 `04-interactive/assets/site.css`（16423 B / 162 条，逐字节搬家）。⇒ 写入模式为 whole-file。★ 页面 `<link>` 两件套（先派生令牌、后布局），解耦前那份 17648 B 的 `design-tokens.css` 已**退役**。"
+    }
+  },
+  "derivation": {
+    "state": "batch-i-site-round",
+    "direction": "单向：本值件 → 派生产物（形态 1 外链件）",
+    "generator_ref": "pipeline/derive_site_tokens.py",
+    "derived_fields": [
+      "palettes.*.values",
+      "roles[*].tier",
+      "families[*].overrides"
+    ],
+    "mirror_fields": [
+      "usage_tiers"
+    ],
+    "rule": "派生只产出一份**只含令牌**的外链文件（`04-interactive/assets/derived-design-tokens.css`）；布局规则由站点侧解耦脚本搬到 `site.css` 并**逐字节保留**（判据：`sha256(site.css) == 解耦前冻结的规则段 sha256`）。",
+    "write_surface_guard": "whole-file 模式：目标为**专用产物**（只含令牌），非目标段守卫不适用（已由 vendor/pipeline/check_site_tokens.py 的 C8/C9 显式登记该差异）。★ 本站真正的「非目标段」守卫在解耦脚本与站点门控里：`build/decoupling-provenance.json` 冻结了**解耦前**的规则段 sha256，`gate_tokens.py` 的 R1 对 `site.css` 重算并比对。",
+    "write_mode": "whole-file"
+  },
+  "known_value_changes": {
+    "--line": {
+      "from": "#DFE5EC",
+      "to": "#7d8a9e",
+      "reason": "原值对 --surface 1.19 / 对 --panel 1.27，不达 non-text 的 3:1；取本站自身冷蓝灰族的达标值（3.29 / 3.50）。门控驱动，非审美选择。"
+    }
+  },
+  "intended_additions": {
+    "tokens": [
+      "--line-subtle",
+      "--warn",
+      "--upgrade",
+      "--disabled",
+      "--focus-ring",
+      "--surface-2",
+      "--stripe",
+      "--ctrl-green"
+    ],
+    "note": "新增 --line-subtle 承接原 --line 的弱分隔语义；--warn/--upgrade/--disabled/--focus-ring 是把本站既有做法或既有值登记为角色（--warn 取本站既有的 --gold:#B45309）；--surface-2/--stripe 为派生补齐的底色档；★ 本批（批 I）新增 --ctrl-green：它是**规则段早已引用、而 :root 从未定义**的令牌（C1-D1），本轮按 CT-Q3=A 补值。"
+  },
+  "bootstrap": {
+    "seeded_by": "批 D",
+    "seeded_from": "evidence/c/_poc/site-value-contract.json + evidence/c/_poc/control-theory-agent-kb",
+    "seeded_at": "2026-10-13",
+    "purpose": "建立「站点现状 → 值件 → 派生产物」的可复现基线，且本轮**零改动被审计仓**（写入只发生在工作副本）"
+  },
+  "transition": {
+    "state": "site-round-landed",
+    "derivation_direction_now": "值件 → 派生产物（站点仓内，`build/payloads/default.css` → `04-interactive/assets/derived-design-tokens.css`）",
+    "guard_expiry": "本轮不解除任何护栏；fe-starter-kit 与 AUD 侧值件零改动",
+    "done_in_this_round": [
+      "① CT-Q1=A：令牌层与布局层**已解耦**（`site.css` 16423 B 逐字节=解耦前规则段；`design-tokens.css` 已退役）",
+      "② CT-Q3=A：`--ctrl-green` 已补达标值 #1F7A52（对 --surface 4.98 / 对 --panel 5.30）",
+      "③ CT-L1=A：10 处 L1 主机绝对路径**已本地化**（AUD 侧复测 L1 10 → **0**）",
+      "④ 站点侧门控落地：仓根 `gate_tokens.py` + `gate-manifest.json` + `build/profile.json` + `vendor/**` 薄副本",
+      "⑤ 本站无 CI ⇒ 门控在构建脚本 `build.sh` 收尾处**内联调用**，并写**确定性** `gate-report.json` 随产物入库"
+    ],
+    "not_yet_done": [
+      "归档页自带的内联令牌表未统一（CT-Q5=A：本轮不动，理想档再统一）",
+      "深色档**不适用**（本站单浅色档），⛔ 不是「未做」",
+      "未把本站族登记进上游 value-contract.json（属方法论侧变更，须单独走流程）",
+      "未接入 CI（ADR-003 的发布形态收敛是**常设排除项**，⛔ 本轮不碰）"
+    ]
+  },
+  "known_site_defects_registered": [
+    {
+      "id": "C1-D1",
+      "defect": "规则段引用 `var(--ctrl-green)`，但解耦前的 `:root` 从未定义该令牌⇒ 该 var() 恒取回退值（既有真缺陷）",
+      "handling": "★ **已修**（批 I · CT-Q3=A）：`--ctrl-green` 已补值 #1F7A52（见 registered_token_aliases）。⛔ 未删其 var() 引用。"
+    },
+    {
+      "id": "C1-D3",
+      "defect": "gen_html.py:14 的 CSS 常量含一套 :root 调色板但从未被写入输出（死代码）",
+      "handling": "登记，⛔ 不删（CT-Q4=A）。站点门控 D2 判据：该常量必须**真的**还在位、且**真的**在 `gen_html.py` 内零引用 ⇒ 登记不得过期（双向）。"
+    },
+    {
+      "id": "C1-D4",
+      "defect": "4 枚语义色 -bg 变体在 43 个真实页中 var() 引用数为 0（候选死令牌）",
+      "handling": "原样透传并登记（CT-Q4=A，⛔ 不删）。站点门控 T4 判据：登记的零引用令牌必须**真的**零引用 ⇒ 登记不得过期（双向）。"
+    },
+    {
+      "id": "C1-D5",
+      "defect": "★ **批 I 实测新发现**：`04-interactive/exp-dsh-custom.html` 在 HEAD 上**落后于它的生成器输入**——`06-experiments/dsh-custom.md` 已含 v1.5 的实验 15–18，而该产物未随之重生成（实测：重跑 `gen_html.py` 产出 59750 B，提交态只有 45092 B；同批其余 41 个 04-interactive 页面重跑后逐字节不变）。",
+      "handling": "★ 本轮把产物**重生成到与源一致**（内容追平，⛔ 非设计改动）——否则「重跑全部生成器后 `git status` 为空」这条硬要求不成立。★ 按 ROLLOUT-PLAN §6.1 的 **T7**，「L1 本地化后重跑生成器 ⇒ 产物越出预期」成立 ⇒ 本轨道**升级为「独立过门控」**，站点侧 `gate_tokens.py` + 随产物入库的 `gate-report.json` 即该独立门控的载体。",
+      "evidence": "evidence/i/measure/control-theory-agent-kb@post.json 与站点仓 gate-report.json"
+    }
+  ],
+  "not_provided": [
+    "多方法用户研究",
+    "含残障用户的可用性测试",
+    "★ 像素层视觉回归：本批由 AUD 侧 I3/I4 承担；站点侧门控**不含**像素判据"
+  ],
+  "registered_token_aliases": {
+    "--ctrl-green": {
+      "role": "ok",
+      "tier": "body",
+      "value": "#1F7A52",
+      "ruling": "CT-Q3=A（★ 本会话用户，批 I · 2026-10-13）：为 var(--ctrl-green) **补一个达标值**（⛔ 不删其 var() 引用、⛔ 不保留待议）",
+      "served_usage": "解耦后的布局件 `04-interactive/assets/site.css` 里的 `.prem-table td.prem-ok{color:var(--ctrl-green,#1F7A52);font-weight:700}` ⇒ **正文文字色** ⇒ body 档",
+      "why": "补值取**现行 `var()` 回退值本身** #1F7A52（= `--state-green`）⇒ ① 达标；② **观感逐像素不变**（该 var() 此前恒取回退值，浏览器渲染的就是 #1F7A52）⇒ 「补值即新增可见色」这一顾虑在本枚上**可证伪**：可见色早已存在，本轮只是把它**显式化**。",
+      "contrast_evidence": {
+        "implementation": "tools/contrast.py（项目唯一实现，import 复用，⛔ 未另写公式）",
+        "threshold_source": "本值件 usage_tiers.body.min_contrast.light = 4.5",
+        "min_ratio": 4.71,
+        "vs": {
+          "--surface (surface.page)": 4.98,
+          "--panel (surface.raised)": 5.3,
+          "--surface-2 (surface.subtle)": 4.71,
+          "--stripe (surface.stripe)": 5.16
+        },
+        "verdict": "PASS（最差 4.71 ≥ 4.5）"
+      }
+    }
+  }
+}

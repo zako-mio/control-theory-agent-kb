@@ -1,0 +1,51 @@
+{
+  "schema": "decoupling-provenance/2",
+  "station": "control-theory-agent-kb",
+  "site_number": "03",
+  "batch": "批 I · ROLLOUT-PLAN 第 3 轮（CT-Q1=A：先解耦再改值）",
+  "captured_from_git_rev": "99e1dd8bbaeff58dc0e0eca6b052e36a345c70e0",
+  "capture_source": "git show 99e1dd8bbaeff58dc0e0eca6b052e36a345c70e0:04-interactive/assets/design-tokens.css（**提交态**，不可变 ⇒ 本器可重复运行且结果恒定）",
+  "method": "规则段 = 解耦前原文**去掉首个括号平衡的 `:root{...}` 块**之后的全部字节（⛔ 不重排、不规范化、不补换行）。所有偏移均为**字节**偏移。",
+  "anchor_cross_check": {
+    "A_start_head_matches": true,
+    "A_registered_start_head": "99e1dd8bbaeff58dc0e0eca6b052e36a345c70e0",
+    "B_batch_d_registration": {
+      "registered_in": "pipeline/profiles/control-theory-agent-kb.json",
+      "registered_coverage_source": "04-interactive/assets/design-tokens.css",
+      "registered_sha256": "a7213c872cbbac07b313b3c71d9980b30b775145616088fc23c163f733fb5c1c",
+      "matches": true,
+      "note": "该登记写于**批 D**（早于本批），本批⛔ 未改动它 ⇒ 冻结值不是「按当前盘面反推」的自证数，而是一个**独立留痕的既存常量**。"
+    },
+    "C_reproducible_from_git": true
+  },
+  "pre_file": {
+    "path": "04-interactive/assets/design-tokens.css",
+    "bytes": 17648,
+    "sha256": "a7213c872cbbac07b313b3c71d9980b30b775145616088fc23c163f733fb5c1c"
+  },
+  "root_block": {
+    "byte_range": [
+      294,
+      1519
+    ],
+    "bytes": 1225,
+    "sha256": "bdd8d575a98e517573b841cdc603531881276926557aa15be971c14de8b8bb46",
+    "token_count": 29
+  },
+  "rule_segment": {
+    "definition": "pre_file \\ root_block（其余字节逐字节保留，顺序不变）",
+    "bytes": 16423,
+    "ratio_of_original": 0.9306,
+    "sha256": "07952274ca6cfd325b7addd4938a6c06bba6dcedc1fafbfdeb629e47826d94c4"
+  },
+  "arithmetic_invariants": {
+    "pre_bytes_eq_block_plus_rules": true,
+    "pre_sha_is_batch_d_anchor": true
+  },
+  "post_files": {
+    "layout": "04-interactive/assets/site.css",
+    "tokens": "04-interactive/assets/derived-design-tokens.css",
+    "retired": "04-interactive/assets/design-tokens.css"
+  },
+  "why_this_matters": "原文 **93.1%** 是 162 条布局规则 ⇒ 整份替换会**删掉整站布局**。「规则段 sha256 未变」是把该最坏情形的失败面**有界化**的唯一判据；它必须与**解耦前**冻结值比对，⛔ 不得写成自己比自己。★ 反恒真装置：同一常量在 `gate-manifest.json` 里**另登记一次**，门控的 R3 交叉校验两处必须一致（只改一处 ⇒ FAIL）。"
+}

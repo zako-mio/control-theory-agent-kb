@@ -12,7 +12,7 @@
 import os, sys, glob
 sys.stdout.reconfigure(encoding='utf-8')
 
-KB = "/home/zako-mio/opencode/archive/Mission-file/2026-09/0907-控制理论Agent设计知识库"
+KB = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # ★ 本地化：仓库根由本文件位置推导（⛔ 不硬编码作者机路径）
 OUT = os.path.join(KB, "07-checkpoint/coverage-manifest.txt")
 
 sys.path.insert(0, os.path.join(KB, "09-src-data"))

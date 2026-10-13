@@ -1,0 +1,254 @@
+{
+  "site": "control-theory-agent-kb",
+  "site_number": "03",
+  "repo": "zako-mio/control-theory-agent-kb",
+  "default_branch": "main",
+  "form": "external-link",
+  "form_reason": "本站实测为**形态 1「外链表」**：解耦后页面 `<link>` **两件套**（派生令牌 `04-interactive/assets/derived-design-tokens.css` ＋ 布局 `04-interactive/assets/site.css`），共 **44 页**；页面层内联值块为 0（仅归档页与手写报告页自带内联 `:root`，见 out_of_judgement_scope）。★ 解耦后**仍是形态 1**（同一发布根、同一 Pages 地址、同一 HTML 路径集合）⇒ 未改对外 URL 面，架构分档维持咨询级。",
+  "profile_provenance": {
+    "basis": "AUD 侧 pipeline/profiles/control-theory-agent-kb.json（批 D）",
+    "evolved_in": "批 I · ROLLOUT-PLAN 第 3 轮（站 03 标准档：CT-Q1=A 先解耦再改值）",
+    "why_not_identical": "★ 站点轮必须把「解耦后的目标路径 / 判据对象 / 登记表」落到本件 ⇒ 与批 D 副本**有意不同**。批 D 那一份**逐字节冻结**在 `vendor/pipeline/profiles/control-theory-agent-kb.json` 作**锚点**（见 decoupling.frozen_anchor），⛔ 本批不改它。"
+  },
+  "publish_dir": ".",
+  "publish_dir_shape": "root",
+  "value_file": "vendor/pipeline/values/control-theory-agent-kb.json",
+  "local_clone": "",
+  "local_clone_note": "★ 站点仓内**不设**本地克隆：ADR-003 条款六要求门控不依赖仓外输入。AUD 侧的克隆对账（check_site_tokens 的 C12）需要仓外路径 ⇒ 留在 AUD 侧跑，站点侧由 gate_tokens.py 承担本站判据。",
+  "generator_dirs": [
+    "07-checkpoint",
+    "09-src-data"
+  ],
+  "generator_commands": [
+    "python3 09-src-data/gen_dag_data.py",
+    "python3 09-src-data/gen_cyto.py",
+    "python3 09-src-data/fix_cyto.py",
+    "python3 09-src-data/gen_premium_cyto.py",
+    "python3 09-src-data/gen_html.py",
+    "python3 09-src-data/decouple_styles.py --site-root .",
+    "python3 vendor/pipeline/derive_site_tokens.py --contract vendor/pipeline/values/control-theory-agent-kb.json --profile build/profile.json --family default --out build/payloads/default.css --apply",
+    "python3 vendor/pipeline/write_site_tokens.py --profile build/profile.json --payloads build/payloads --site-root . --apply",
+    "python3 07-checkpoint/gen_coverage_manifest.py",
+    "python3 07-checkpoint/quality-gate.py"
+  ],
+  "generator_commands_note": "★ 这一串就是构建入口 `build.sh` 的逐步内容（逐条可单独重跑）。★★ `decouple_styles.py` 放在这一串里而不是一次性手工动作：**解耦本身也是生成器行为**（brief §8：⛔ 不手改生成物、⛔ 不得手工切割 CSS）。它幂等：原文已退役且每页已是两件套 ⇒ 报 `already`，零写入。",
+  "build_cwd": ".",
+  "build_entry": "build.sh",
+  "python_version": "3.11",
+  "targets": [
+    {
+      "path": "04-interactive/assets/derived-design-tokens.css",
+      "mode": "whole-file",
+      "family": "default",
+      "expect_absent": false,
+      "frozen_sha256": null,
+      "note": "★ 解耦后的**独立令牌文件**（只含令牌；写入模式 whole-file）。它是「派生」的产物：值件 → `build/payloads/default.css` → 本文件。⛔ 不手改（由 vendor/pipeline/write_site_tokens.py 写出）。"
+    }
+  ],
+  "decoupling": {
+    "ruling": "CT-Q1=A（★ 本会话用户，批 I · 2026-10-13）：**先解耦再改值**",
+    "action": "把令牌层从 `04-interactive/assets/design-tokens.css` 拆出为独立令牌文件 + 保留布局为 `site.css`，页面 `<link>` 两者；再派生 `derived-design-tokens.css`。",
+    "retired_artifact": "04-interactive/assets/design-tokens.css",
+    "retired_artifact_must_be_absent": true,
+    "retired_artifact_reason": "其内容已被 `site.css`（规则段，逐字节）与 `derived-design-tokens.css`（令牌层，派生）**完全接管** ⇒ 保留它会造成「双真相源」且线上无人引用。★ R2 判据要求它**真的**不在盘上；R4 的反向守卫要求全仓**无任何页面**仍链接它（否则线上 404）。",
+    "layout_file": "04-interactive/assets/site.css",
+    "token_file": "04-interactive/assets/derived-design-tokens.css",
+    "split_generator": "09-src-data/decouple_styles.py",
+    "provenance": "build/decoupling-provenance.json",
+    "provenance_note": "★★ 解耦**前**原文的冻结取证（三个锚点：工作树干净 / == git HEAD blob / 整份 sha256 == 批 D 独立登记值）。**先冻结、后重算** —— ⛔ 判据绝不写成自己比自己。",
+    "linked_pages": {
+      "globs": [
+        "04-interactive/*.html",
+        "index.html",
+        "07-checkpoint/report-v1.1.html"
+      ],
+      "expected_count": 44,
+      "note": "★ 这 44 页是解耦前的**全部**外链表引用面（42 个 `04-interactive/*.html` + 根 `index.html` + `07-checkpoint/report-v1.1.html`）。每页的 `<link>` 由 1 条变 2 条（先令牌、后布局）。★ 期望页数是**登记值**：实测 ≠ 登记 ⇒ FAIL（防「扫描面碰巧没扫到」退化成空集假绿）。"
+    },
+    "pages_without_external_stylesheet": [
+      {
+        "page": "report.html",
+        "why": "仓内**手写**的留档报告页（自带内联 `:root` 与内联样式，从不引用外链表）⇒ 不属迁移面。★ S2 会反向校验：它**真的**不链接任何外链样式表。"
+      },
+      {
+        "page": "archive/0908-精装房Agent全景/report-v1.1.html",
+        "why": "归档留档页（自带内联令牌表）；见 out_of_judgement_scope 的 CT-Q5=A 声明。"
+      },
+      {
+        "page": "archive/0909-自改造opencode评估/report.html",
+        "why": "同上"
+      },
+      {
+        "page": "archive/0911-自改造opencode再评估/report.html",
+        "why": "同上"
+      },
+      {
+        "page": "archive/1011-KB-v1.4-dsh装配与opencode追平/report.html",
+        "why": "同上"
+      },
+      {
+        "page": "archive/1013-KB-v1.5-dsh装配二次追平/IMPROVEMENT-REPORT.html",
+        "why": "同上"
+      },
+      {
+        "page": "archive/1013-KB-v1.5-dsh装配二次追平/report-execution.html",
+        "why": "同上"
+      },
+      {
+        "page": "archive/1013-KB-v1.5-dsh装配二次追平/report.html",
+        "why": "同上"
+      }
+    ]
+  },
+  "out_of_judgement_scope": [
+    {
+      "id": "CT-Q5",
+      "ruling": "CT-Q5=A（取方案建议 A，用户未逐条表态）：归档页自带的**第 3 套令牌表本轮不动**，理想档再统一。",
+      "subject": "archive/**（本轮实测 7 个 `*.html`）",
+      "declaration": "★ **归档页不在本门控的判据对象内**。理由：① 归档页属**历史留档**——它们记录的是当时版本的形态，改动等于篡改留档；② 归档页各带**自己的一套内联 `:root`**（与主站令牌层不同源），把它们并入主站令牌层是**理想档**动作，收益低而回归面大；③ 它们**不引用**本站的外链表，故与解耦、派生、`--ctrl-green` 补值**无因果关系**。",
+      "why_explicit": "★★ 必须**显式声明**而不是「靠扫描面碰巧没扫到」：后者会让 `0 命中` 与「扫描面为空」不可区分 ⇒ 退化成**空集假绿**。本条与该类反向守卫（S1）成对存在。",
+      "reverse_guard": "S1：扫描面**一旦**命中 `archive/**` 下的 `*.html` ⇒ **FAIL**（声明与实现不符）。★ 反向亦然：若归档页哪天被移出 `archive/`，S1 的对照判据会因「登记的 7 页数不符」而 FAIL。"
+    }
+  ],
+  "inline_root_pages_registered": {
+    "pages": [
+      {
+        "page": "report.html",
+        "why": "手写留档报告页，自带内联 `:root`；不属站点令牌面的判据对象。"
+      },
+      {
+        "page": "archive/0908-精装房Agent全景/report-v1.1.html",
+        "why": "归档页第 3 套令牌表（CT-Q5=A：本轮不动）"
+      },
+      {
+        "page": "archive/0909-自改造opencode评估/report.html",
+        "why": "同上"
+      },
+      {
+        "page": "archive/0911-自改造opencode再评估/report.html",
+        "why": "同上"
+      },
+      {
+        "page": "archive/1011-KB-v1.4-dsh装配与opencode追平/report.html",
+        "why": "同上"
+      },
+      {
+        "page": "archive/1013-KB-v1.5-dsh装配二次追平/IMPROVEMENT-REPORT.html",
+        "why": "同上"
+      },
+      {
+        "page": "archive/1013-KB-v1.5-dsh装配二次追平/report-execution.html",
+        "why": "同上"
+      },
+      {
+        "page": "archive/1013-KB-v1.5-dsh装配二次追平/report.html",
+        "why": "同上"
+      }
+    ],
+    "note": "★ 本站的**令牌面判据对象不是页面的内联 `:root`**（那是形态 2 的口径），而是**外链令牌文件**。这张表只用来证明「页面上的内联 `:root` 都已逐页登记、无漏网」，由 S2 反向校验（登记的页必须**真的**有内联 `:root`）。"
+  },
+  "dead_code_and_dead_tokens": {
+    "ruling": "CT-Q4=A（取方案建议 A，用户未逐条表态）：C1-N4／N5 的死代码与死令牌，标准档**不删**、只登记（本站无死 CSS 门控兜底）。",
+    "discipline": "★ 登记**不得过期**（**双向**）：① 声明为「死」的项必须**真的**还在盘上；② 声明为「零引用」的令牌必须**真的**零引用（一旦被引用即 FAIL）；③ 声明为「零引用代码」的常量必须**真的**在源码内零引用。⛔ 本表**不是豁免白名单**：它只登记「已知的、本轮按裁定不动的」缺陷，不含任何「允许违反判据」的语义。",
+    "dead_code": [
+      {
+        "id": "C1-D3",
+        "file": "09-src-data/gen_html.py",
+        "symbol": "CSS",
+        "why": "该常量持有一套 10 枚 `:root` 调色板（与站点令牌层**不同族**），但**从未写入任何输出**——站点页面的内联 `<style>` 块为 0（该常量在文件内亦无提及点）。误导读者以为本站有第二套令牌定义。★ 实测：本文件内 `CSS` 仅在定义行出现。",
+        "handling": "登记，⛔ 不删（CT-Q4=A）。删除会扩大改动面且本站无死 CSS 门控兜底。"
+      }
+    ],
+    "dead_tokens": [
+      {
+        "token": "--disabled",
+        "why": "角色 `disabled`（non-body 停用态）派生补齐的档位；规则段 162 条里尚无停用态样式⇒ 本轮无人引用。★ 保留以便理想档把停用态显式化。",
+        "class": "hard（登记双向对账：真的零引用 ／ 真的在盘上）"
+      },
+      {
+        "token": "--focus-ring",
+        "why": "角色 `focus.ring`：把本站**既有做法**（规则段的 `:focus-visible` 直接用 `var(--ctrl-blue)` 描边）登记为角色名。⛔ 本轮不改规则段 ⇒ 角色令牌暂无人引用。",
+        "class": "hard（登记双向对账：真的零引用 ／ 真的在盘上）"
+      },
+      {
+        "token": "--line-subtle",
+        "why": "角色 `border.subtle`（弱分隔，non-text-decorative 档）：承接原 `--line:#DFE5EC` 的弱分隔语义。★ 规则段 162 条**没有一条**为「弱分隔」单列令牌（解耦前后逐字节相同）⇒ 本轮无人引用。这是「补档位」而非「已接线」，如实登记。",
+        "class": "hard（登记双向对账：真的零引用 ／ 真的在盘上）"
+      },
+      {
+        "token": "--signal-purple",
+        "why": "★ **既有**零引用令牌（来自解耦前原 `:root` 块，非本轮新增）：批 G 的独立读数亦把它列为零引用 ⇒ 两把尺一致。CT-Q4=A：登记，⛔ 不删。",
+        "class": "hard（登记双向对账：真的零引用 ／ 真的在盘上）"
+      },
+      {
+        "token": "--signal-purple-bg",
+        "why": "★ **既有**零引用令牌（解耦前原 `:root` 块的 5 枚语义色 `-bg` 变体之一；批 G 读数一致）。CT-Q4=A：登记，⛔ 不删。",
+        "class": "hard（登记双向对账：真的零引用 ／ 真的在盘上）"
+      },
+      {
+        "token": "--space-1",
+        "why": "★ **既有**零引用令牌（解耦前原 `:root` 块的间距档；批 G 读数一致）：规则段用的是 `--space-2`…`--space-6`。CT-Q4=A：登记，⛔ 不删。",
+        "class": "hard（登记双向对账：真的零引用 ／ 真的在盘上）"
+      },
+      {
+        "token": "--stripe",
+        "why": "角色 `surface.stripe`（斑马纹底色）派生补齐；规则段的斑马纹写法未走令牌 ⇒ 本轮无人引用。",
+        "class": "hard（登记双向对账：真的零引用 ／ 真的在盘上）"
+      },
+      {
+        "token": "--surface-2",
+        "why": "角色 `surface.subtle`（次级底色）派生补齐；规则段的 hover/表头底色仍是字面 hex ⇒ 本轮无人引用。",
+        "class": "hard（登记双向对账：真的零引用 ／ 真的在盘上）"
+      },
+      {
+        "token": "--upgrade",
+        "why": "角色 `upgrade`（升级态）派生补齐；规则段尚无升级态样式 ⇒ 本轮无人引用。",
+        "class": "hard（登记双向对账：真的零引用 ／ 真的在盘上）"
+      },
+      {
+        "token": "--warn",
+        "why": "角色 `warn` 派生补齐（值 #B45309 = 本站既有的 `--gold`）。★ 规则段用 `--signal-amber` 表达警告（解耦前后逐字节相同）⇒ 本角色令牌本轮无人引用。⛔ 未把规则段改写成 `--warn`：那会破坏「规则段 sha256 未变」判据。",
+        "class": "hard（登记双向对账：真的零引用 ／ 真的在盘上）"
+      }
+    ],
+    "dead_tokens_note": "★ 本表由 `gate_tokens.py` 的 T7 判据**实算**得出：在**派生令牌文件**里被声明、但在**全站出货面**（布局件 `site.css` ＋ 44 个链接页 ＋ 令牌文件自身以外的引用）里 `var(--名)` 引用数为 0 的令牌。⛔ 不由人猜；判据会实时对账（登记 ≠ 实算 ⇒ FAIL）。",
+    "dead_tokens_measure": {
+      "surface": "布局件 `04-interactive/assets/site.css` ＋ 44 个链接派生令牌的页面",
+      "declared": 37,
+      "referenced": 27,
+      "zero_reference": 10,
+      "cross_reference": "★ 与批 G 的独立读数交叉：批 G 的零引用集 `['--bad','--fig-fs-floor','--ok','--signal-purple','--signal-purple-bg','--space-1','--warn']` 是在**页面**口径上算的（本站令牌层在解耦前不在页面里）；其中 `--signal-purple` / `--signal-purple-bg` / `--space-1` 三枚在**本门控口径**下也零引用 ⇒ 两把尺在这三枚上一致。★ 口径差异如实登记：⛔ 不把两个数混用。"
+    }
+  },
+  "gates": {
+    "manifest": "gate-manifest.json",
+    "entry": "gate_tokens.py",
+    "hard_blocking": [
+      "token-consistency",
+      "contrast",
+      "empty-set-guard",
+      "artifact-existence"
+    ],
+    "hard_blocking_note": "★ 本批**未扩枚举**：`vendor/pipeline/site-profile.schema.json` 的 `hard_blocking` 枚举只有这四项（token-consistency / contrast / empty-set-guard / artifact-existence）⇒ 本门控的每一类判据都归入这四项之一，⛔ 未改 schema、⛔ 未新增枚举值。",
+    "report_only": [],
+    "report_only_note": "★ **空**：本站的门控**没有报告模式**——判据要么是硬阻断，要么根本不作判据。★ 这不是「判据更严」的自夸：未覆盖的面在 `gate-manifest.json` 的 `not_covered` 与 `gate_tokens.py` 的 `not_enforced_here` 里**显式登记**，⛔ 不得读作「没问题」。",
+    "mode_now": "enforce",
+    "mode_now_reason": "★ 本站接入门控的**第一轮就是硬阻断**：其全部判据都立基于**解耦前冻结的实测常量**（规则段 sha256 / 批 D 独立登记的原文件 sha256），不存在「首轮只记基线」的必要。★ 空集守卫不随任何模式放宽：致盲即 exit 1。",
+    "commands": [
+      "python3 gate_tokens.py --site-root . --manifest gate-manifest.json --mode enforce --report gate-report.json",
+      "python3 vendor/pipeline/check_gate_manifest.py --manifest gate-manifest.json --profile build/profile.json"
+    ],
+    "commands_note": "★ 站点侧只跑这两条（无 CI ⇒ 由 `build.sh` 收尾**内联调用**，并写随产物入库的确定性 `gate-report.json`）。**不**在站点侧调 `vendor/pipeline/check_site_tokens.py`：它的 C12 需要仓外的本地克隆与 fe-starter-kit，在他人机器上必然 FAIL（判据成立但环境不成立）⇒ 骨架级契约门控留在 AUD 侧跑。★ 该文件仍作为**薄副本**入库（供审阅与对账），但不进 `gate-manifest.json` 的登记表（未登记 ⇒ 不被 M1 要求被调用，双向一致）。"
+  },
+  "non_target_guard": {
+    "kind": "rules-segment",
+    "regex": ":root\\s*\\{[^{}]*\\}",
+    "note": "★★ 本站**最贵的一类事故**是「解耦/派生把整站布局删掉」——解耦前原文 17648 B 里 `:root` 仅 1225 B（6.9%），规则段 16423 B（**93.1%**，162 条布局规则）。⇒ 非目标段判据落在**解耦面**：`sha256(site.css) == build/decoupling-provenance.json.rule_segment.sha256`（**解耦前冻结值**）。★ 负例：把 `site.css` 改一个字节即 FAIL（见 gate_tokens.py 的 R1 负向夹具）。"
+  },
+  "not_covered_here": [
+    "★ 像素层／渲染层未测（站点侧门控是静态判据）：本批的像素比对由 AUD 侧 `evidence/i/tools/pixel_compare.py` 承担。★ 值改动（`--line` #DFE5EC→#7d8a9e、`warn` #C77700→#B45309）与新增可见令牌 `--ctrl-green` 会改变渲染 ⇒ 44 页在像素层面均应登记为 expect=differs。",
+    "★ 真实浏览器下的几何（四视口 scrollWidth）与「侧栏覆盖画布」类缺陷未测。",
+    "★ 无障碍／SEO 只到「标记与声明存在性」层未做（本步未纳入判据面）；批 H 已登记的同类缺口按 P3=B **另立一轮**。",
+    "★ 门控「真的在真实 CI 上跑过」未验——本站**无 CI**（属 ADR-003 的 5 站之一），故门控以「构建脚本收尾内联调用 + `gate-report.json` 随产物入库」的形式留痕。"
+  ]
+}

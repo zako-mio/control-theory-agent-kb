@@ -1,0 +1,38 @@
+{
+  "site": "control-theory-agent-kb",
+  "site_number": "03",
+  "repo": "zako-mio/control-theory-agent-kb",
+  "default_branch": "main",
+  "form": "external-link",
+  "form_reason": "本站实测为形态 1：外链 CSS 1 个（04-interactive/assets/design-tokens.css 线上 200 / 17648 B）、页面层内联值块 0（43 页只 <link> 它）。是 11 站里唯一现成的形态 1 样板（SH1 §4.5.2）。",
+  "publish_dir": ".",
+  "publish_dir_shape": "root",
+  "value_file": "pipeline/values/control-theory-agent-kb.json",
+  "local_clone": "evidence/c/_poc/control-theory-agent-kb",
+  "generator_dirs": ["07-checkpoint", "09-src-data"],
+  "generator_commands": ["python3 gen_html.py"],
+  "build_cwd": "09-src-data",
+  "python_version": "3.11",
+  "targets": [
+    {
+      "path": "04-interactive/assets/tokens.css",
+      "mode": "whole-file",
+      "family": "default",
+      "expect_absent": true,
+      "coverage_source": "04-interactive/assets/design-tokens.css",
+      "frozen_sha256": "a7213c872cbbac07b313b3c71d9980b30b775145616088fc23c163f733fb5c1c",
+      "note": "★ 新建的**专用外链产物**（只含令牌）。⛔ 不触碰既有 design-tokens.css —— 实测它 17648 B 里令牌块仅 1225 B、其余 16423 B 是 162 条布局规则，整份替换会删掉整站布局（批 C 的核心实测发现）。"
+    }
+  ],
+  "gates": {
+    "manifest": "gate-manifest.json",
+    "hard_blocking": ["token-consistency", "contrast", "empty-set-guard", "artifact-existence"],
+    "report_only": ["dead-css", "a11y", "responsive", "metadata"],
+    "commands": [
+      "python3 vendor/pipeline/check_site_tokens.py --contract vendor/pipeline/values/control-theory-agent-kb.json --profile vendor/pipeline/profiles/control-theory-agent-kb.json --site-root . --orig-root . --payloads build/payloads",
+      "python3 vendor/pipeline/check_gate_manifest.py --manifest gate-manifest.json --profile vendor/pipeline/profiles/control-theory-agent-kb.json",
+      "python3 vendor/pipeline/check_workflow_contract.py --check .github/workflows/pages.yml"
+    ]
+  },
+  "non_target_guard": {"kind": "none", "note": "whole-file 模式：目标是专用产物，不承载布局规则 ⇒ 非目标段判据不适用（已在契约 derivation.write_surface_guard 登记）。"}
+}

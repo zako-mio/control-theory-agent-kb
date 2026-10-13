@@ -5,7 +5,7 @@
 import json, os, sys
 sys.stdout.reconfigure(encoding='utf-8')
 
-BASE = "/home/zako-mio/opencode/archive/Mission-file/2026-09/0907-控制理论Agent设计知识库"
+BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # ★ 本地化：仓库根由本文件位置推导（⛔ 不硬编码作者机路径）
 sys.path.insert(0, os.path.join(BASE, "09-src-data"))
 import nav_data as nd
 import premium_scores as ps
@@ -64,7 +64,7 @@ for slug, label in CLAIM_EDGES:
 HTML = """<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>精装房 DAG — 控制理论⊗Agent知识库</title>
-<link rel="stylesheet" href="assets/design-tokens.css">
+<link rel="stylesheet" href="assets/derived-design-tokens.css"><link rel="stylesheet" href="assets/site.css">
 <style>
   .cy-shell{display:flex;min-height:100vh;flex-direction:column}
   .cy-toolbar{display:flex;align-items:center;gap:14px;padding:0 var(--space-5);height:48px;border-bottom:1px solid var(--line);background:var(--panel)}

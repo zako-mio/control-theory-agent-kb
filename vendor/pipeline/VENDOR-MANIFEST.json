@@ -1,0 +1,100 @@
+{
+  "site": "control-theory-agent-kb",
+  "schema": "vendor-manifest/1",
+  "source": "AUD `pipeline/` 与 `tools/contrast.py`（唯一真相源）",
+  "generated_by": "evidence/i/tools/vendor_into_control_theory.py（⚠ 刻意不用批 E 的 vendor_into_site.py：它硬编码 12-factor 且 --site 要仓根绝对路径，传相对站名会在 AUD 根误建空壳目录）",
+  "note": "薄副本：⛔ 不在此处改语义。sha256 由本清单登记，并由**站点侧门控 `gate_tokens.py` 的 V1/V2 判据**在每次构建时对盘面重算比对（登记⇒盘面一致 ／ 盘面文件⇒已登记，双向 fail-closed）。",
+  "roles": {
+    "薄副本": "与 AUD 侧源**逐字节相同**（分发纪律：本目录是唯一真相源）",
+    "冻结锚点": "批 D 的逐字节冻结副本，⛔ 本批刻意不改（作解耦前 sha256 的独立锚点）",
+    "站点轮演化": "在 AUD 侧源基础上按站点轮裁定演化的**有意差异**件"
+  },
+  "files": {
+    "vendor/pipeline/derive_site_tokens.py": "bd1bd4266776daea72ba3af1c258ece2b8cdaaa01658a2f8af7140c40b8ccada",
+    "vendor/pipeline/write_site_tokens.py": "5d6158650baaf97ec0c51695574e138a9178f4cd863318e20f177079f376b06a",
+    "vendor/pipeline/check_site_tokens.py": "9455c9106f40416ca9239a610670722ec1d464c0754f5790b841d340425798ca",
+    "vendor/pipeline/check_gate_manifest.py": "aa458eeefd5c929f285cd229334945aab2b37fed644c3c876360f269cf44ab9d",
+    "vendor/pipeline/check_workflow_contract.py": "16e86e1a6503e6bd76cfa06da78f67cf023b83531da4ab360b2245246921adae",
+    "vendor/pipeline/site-value-contract.schema.json": "30a73f90290ce8d547a3c77f75c62659ad6e736d56666329351b913af74d870d",
+    "vendor/pipeline/site-profile.schema.json": "4a4c505b32e0e27f9817e7f0029919544f483afcd953597468a9d2571638472e",
+    "vendor/pipeline/workflow-3job.template.yml": "c7d6bd6d69a066d07e6ef6e0db917995cf805db541348cc8f4062b451603fb1f",
+    "vendor/pipeline/profiles/control-theory-agent-kb.json": "ec8b8f0dd194884cfe4a856a051d313a2c7e1938abbea8d25f9620156211c2d3",
+    "vendor/tools/contrast.py": "1b9291c935b0db1d8901f1cafcc1c29681b86061f4164496401af0b45b9e01c7",
+    "vendor/pipeline/values/control-theory-agent-kb.json": "3d5d3d6e387931b255667d5340a866d8398a48cc091a78597c1eaa5d9a6880b9",
+    "build/profile.json": "0b203ce2dad30a96b8952c89faf528e2f2ff087913393e749d94f8448bffe2b9"
+  },
+  "details": [
+    {
+      "path": "vendor/pipeline/derive_site_tokens.py",
+      "role": "薄副本",
+      "sha256": "bd1bd4266776daea72ba3af1c258ece2b8cdaaa01658a2f8af7140c40b8ccada",
+      "note": "值件 → 令牌块的派生器（三级覆盖）"
+    },
+    {
+      "path": "vendor/pipeline/write_site_tokens.py",
+      "role": "薄副本",
+      "sha256": "5d6158650baaf97ec0c51695574e138a9178f4cd863318e20f177079f376b06a",
+      "note": "形态 1 的写入器（whole-file / root-block / marker-region 三模式 + B1–B5 护栏）"
+    },
+    {
+      "path": "vendor/pipeline/check_site_tokens.py",
+      "role": "薄副本",
+      "sha256": "9455c9106f40416ca9239a610670722ec1d464c0754f5790b841d340425798ca",
+      "note": "骨架级契约门控（C1–C12）——★ 站点侧**不调用**：C12 依赖仓外克隆 ⇒ 在他机必然 FAIL（判据成立、环境不成立）"
+    },
+    {
+      "path": "vendor/pipeline/check_gate_manifest.py",
+      "role": "薄副本",
+      "sha256": "aa458eeefd5c929f285cd229334945aab2b37fed644c3c876360f269cf44ab9d",
+      "note": "门控清单双向 fail-closed 校验（M1–M6）；★ 站点侧**调用**它"
+    },
+    {
+      "path": "vendor/pipeline/check_workflow_contract.py",
+      "role": "薄副本",
+      "sha256": "16e86e1a6503e6bd76cfa06da78f67cf023b83531da4ab360b2245246921adae",
+      "note": "ADR-003 三 job 模板契约门控（W1–W9）——★ 本站无 CI、且发布形态收敛是**常设排除项** ⇒ 仅入库存档"
+    },
+    {
+      "path": "vendor/pipeline/site-value-contract.schema.json",
+      "role": "薄副本",
+      "sha256": "30a73f90290ce8d547a3c77f75c62659ad6e736d56666329351b913af74d870d",
+      "note": "值件 schema（⛔ 本批未改一字）"
+    },
+    {
+      "path": "vendor/pipeline/site-profile.schema.json",
+      "role": "薄副本",
+      "sha256": "4a4c505b32e0e27f9817e7f0029919544f483afcd953597468a9d2571638472e",
+      "note": "profile schema（★ hard_blocking 枚举只有四项，⛔ 本批未扩枚举）"
+    },
+    {
+      "path": "vendor/pipeline/workflow-3job.template.yml",
+      "role": "薄副本",
+      "sha256": "c7d6bd6d69a066d07e6ef6e0db917995cf805db541348cc8f4062b451603fb1f",
+      "note": "ADR-003 三 job 模板（本站不采用）"
+    },
+    {
+      "path": "vendor/pipeline/profiles/control-theory-agent-kb.json",
+      "role": "冻结锚点",
+      "sha256": "ec8b8f0dd194884cfe4a856a051d313a2c7e1938abbea8d25f9620156211c2d3",
+      "note": "★ 批 D 的**逐字节冻结副本**，本批**刻意不改**：它是「解耦前原文 sha256」的独立锚点（R3 交叉校验）。它的 targets[0].frozen_sha256 = 解耦前 design-tokens.css 的整份 sha256。"
+    },
+    {
+      "path": "vendor/tools/contrast.py",
+      "role": "薄副本",
+      "sha256": "1b9291c935b0db1d8901f1cafcc1c29681b86061f4164496401af0b45b9e01c7",
+      "note": "★ 项目**唯一**的对比度实现（取值判据一律引它，⛔ 不造第二套）；derive_site_tokens.py 亦按此路径取它"
+    },
+    {
+      "path": "vendor/pipeline/values/control-theory-agent-kb.json",
+      "role": "站点轮演化",
+      "sha256": "3d5d3d6e387931b255667d5340a866d8398a48cc091a78597c1eaa5d9a6880b9",
+      "note": "🔸 站点轮演化件（AUD 侧批 D 值件 + 3 组差量：派生产物改名 / 补 --ctrl-green / 登记面推进）"
+    },
+    {
+      "path": "build/profile.json",
+      "role": "站点轮演化",
+      "sha256": "0b203ce2dad30a96b8952c89faf528e2f2ff087913393e749d94f8448bffe2b9",
+      "note": "🔸 站点轮演化件（AUD 侧批 D profile + 解耦面/判据面/登记面）"
+    }
+  ]
+}

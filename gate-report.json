@@ -1,0 +1,192 @@
+{
+  "schema": "gate-report/1",
+  "site": "control-theory-agent-kb",
+  "site_number": "03",
+  "gate": "gate_tokens.py",
+  "mode": "enforce",
+  "inputs": {
+    "gate_manifest": "gate-manifest.json",
+    "gate_manifest_sha256": "0f79b6bcb628fe7f26530ddcf79d3631768a3d5801766f688cba1608cbfd15ca",
+    "profile": "build/profile.json",
+    "profile_sha256": "0b203ce2dad30a96b8952c89faf528e2f2ff087913393e749d94f8448bffe2b9",
+    "value_file": "vendor/pipeline/values/control-theory-agent-kb.json",
+    "value_file_sha256": "3d5d3d6e387931b255667d5340a866d8398a48cc091a78597c1eaa5d9a6880b9",
+    "provenance": "build/decoupling-provenance.json",
+    "provenance_sha256": "e61537d13aaa853d22a01d3b4342fc7192e96444ffcbd680c3560792f852a57b",
+    "generator": "build.sh",
+    "build_entry": "build.sh"
+  },
+  "judges": [
+    {
+      "id": "T1",
+      "name": "空集守卫（链接页 / 令牌文件 / 布局件 / 值件 / 令牌名 均非空）",
+      "blocking": "empty-set-guard",
+      "ok": true,
+      "detail": "链接页 44 · 令牌名 37 · 布局件 16423 B · 值件装载"
+    },
+    {
+      "id": "T2",
+      "name": "派生一致性（派生产物 == 值件派生；归一化口径复用派生器本体）",
+      "blocking": "token-consistency",
+      "ok": true,
+      "detail": "family=default · 令牌 37 枚 · 归一化逐字节相同=True"
+    },
+    {
+      "id": "T3",
+      "name": "角色/族覆盖/别名取值登记一致（三方：盘上 · 值件 · 别名登记表）",
+      "blocking": "token-consistency",
+      "ok": true,
+      "detail": "角色 19 · 别名 1 · 族覆盖 1 全部一致"
+    },
+    {
+      "id": "T4",
+      "name": "未声明令牌（盘上令牌名 ⊆ 值件声明面）",
+      "blocking": "token-consistency",
+      "ok": true,
+      "detail": "盘上 37 枚全部在声明面（角色 19 ∪ passthrough ∪ 族覆盖 ∪ 别名）内"
+    },
+    {
+      "id": "T5",
+      "name": "引用完整性（布局件与链接页的每个 var(--X) 都在令牌文件里有定义）",
+      "blocking": "token-consistency",
+      "ok": true,
+      "detail": "引用 27 枚（布局件 16423 B + 44 页），未定义 0 枚；★ `--ctrl-green` 在引用集内=True"
+    },
+    {
+      "id": "T6",
+      "name": "成对对比度（逐档；用 vendor/tools/contrast.py —— 项目唯一实现，⛔ 未造第二套）",
+      "blocking": "contrast",
+      "ok": true,
+      "detail": "硬判 10 枚全部达标：--ctrl-blue, --ctrl-green, --focus-ring, --ink, --line, --muted, --signal-purple, --signal-red, --upgrade, --warn；背景集（在用且可解析的 surface 角色）= ['--panel', '--surface']；★ --ctrl-green 逐值：--panel 5.30 / --surface 4.98；非硬判档（如实报告）：--ink              tier=body                   #0B1220 最差 17.60 / 门槛 4.5 ｜ --muted            tier=body                   #5A6B85 最差 5.09 / 门槛 4.5 ｜ --muted-2          tier=non-body               #8794A8 最差 2.89 / 门槛 4.5  [report-only] ｜ --ctrl-blue        tier=body                   #1E5AA8 最差 6.40 / 门槛 4.5 ｜ --line             tier=non-text               #7d8a9e 最差 3.29 / 门槛 3.0 ｜ --line-subtle      tier=non-text-decorative    #DFE5EC 最差 1.19 / 门槛 3.0  [report-only] ｜ --ctrl-green       tier=body                   #1F7A52 最差 4.98 / 门槛 4.5 ｜ --warn             tier=body                   #B45309 最差 4.72 / 门槛 4.5 ｜ --signal-red       tier=body                   #B23A2F 最差 5.58 / 门槛 4.5 ｜ --signal-purple    tier=body                   #5B4B9B 最差 6.75 / 门槛 4.5 ｜ --upgrade          tier=body                   #166534 最差 6.70 / 门槛 4.5 ｜ --disabled         tier=non-body               #8794A8 最差 2.89 / 门槛 4.5  [report-only] ｜ --focus-ring       tier=non-text               #1E5AA8 最差 6.40 / 门槛 3.0"
+    },
+    {
+      "id": "T7",
+      "name": "零引用令牌登记（**双向**：声明须真零引用 ∧ 真零引用须已登记）",
+      "blocking": "token-consistency",
+      "ok": true,
+      "detail": "实算零引用 10 枚 == 登记 10 枚（--disabled, --focus-ring, --line-subtle, --signal-purple, --signal-purple-bg, --space-1, --stripe, --surface-2, --upgrade, --warn）"
+    },
+    {
+      "id": "T8",
+      "name": "死代码登记（**双向**：登记项须真的在盘上 ∧ 真的零引用）★ AST 口径，⛔ 不用正则（防注释假 FAIL）",
+      "blocking": "token-consistency",
+      "ok": true,
+      "detail": "死代码登记 1 项：模块级定义在位，且被读取 0 次（AST 口径）"
+    },
+    {
+      "id": "T9",
+      "name": "族归属登记（CT-Q2=A：content-kg 族的浅色变体，⛔ 不另立第五族）",
+      "blocking": "token-consistency",
+      "ok": true,
+      "detail": "族=content-kg-swiss-light（单族 default）· 裁定登记在位 · palettes/families 键一致"
+    },
+    {
+      "id": "R1",
+      "name": "★ 规则段 sha256：sha256(site.css) == **解耦前冻结值**（⛔ 不是自己比自己）",
+      "blocking": "artifact-existence",
+      "ok": true,
+      "detail": "实测 07952274ca6cfd325b7addd4938a6c06bba6dcedc1fafbfdeb629e47826d94c4 ← 解耦前冻结 07952274ca6cfd325b7addd4938a6c06bba6dcedc1fafbfdeb629e47826d94c4 ⇒ 相同（布局件 16423 B / 冻结 16423 B）"
+    },
+    {
+      "id": "R2",
+      "name": "退役件确实不在盘上（04-interactive/assets/design-tokens.css）",
+      "blocking": "artifact-existence",
+      "ok": true,
+      "detail": "退役件缺席 ✔；其内容由 04-interactive/assets/site.css（规则段，逐字节）与 04-interactive/assets/derived-design-tokens.css（令牌层，派生）完全接管"
+    },
+    {
+      "id": "R3",
+      "name": "冻结链三方交叉（gate-manifest 登记 · 冻结件 · 批 D 独立锚点 · 算术不变量）",
+      "blocking": "artifact-existence",
+      "ok": true,
+      "detail": "三处 rule_segment sha256 一致；pre_file sha256 == 批 D 独立锚点 a7213c872cbbac07；算术不变量 pre = block(1225) + rules(16423) = 17648 ✔"
+    },
+    {
+      "id": "R4",
+      "name": "页面两件套覆盖（== 登记页数）＋ 无残留引用（全仓 *任何* 页面都不得再链退役件）",
+      "blocking": "artifact-existence",
+      "ok": true,
+      "detail": "两件套 44 页 == 登记 44；全仓 52 个 *.html 中链接退役件者 0"
+    },
+    {
+      "id": "S1",
+      "name": "CT-Q5=A：归档页**不在判据对象内**（显式声明 ＋ 反向守卫：被扫到即 FAIL）",
+      "blocking": "empty-set-guard",
+      "ok": true,
+      "detail": "判据扫描面 44 页，其中 archive/** 命中 0；盘上归档页 7 页已逐页登记（者：archive/）"
+    },
+    {
+      "id": "S2",
+      "name": "「无外链样式表」页**双向**登记（声明须真无 ∧ 真无须已登记）",
+      "blocking": "artifact-existence",
+      "ok": true,
+      "detail": "实测无外链样式表 8 页 == 登记 8 页（含 7 个归档页与手写报告页）"
+    },
+    {
+      "id": "L1",
+      "name": "站点 `*.py`（排除 vendor/）无主机绝对路径字面量（L1 本地化的可回归判据）",
+      "blocking": "artifact-existence",
+      "ok": true,
+      "detail": "21 个 *.py 全部不含 `/home/…`、`C:\\…` 形态的路径字面量（URL 已先摘除，防假阳）"
+    },
+    {
+      "id": "V1",
+      "name": "VENDOR-MANIFEST 登记的每个文件 sha256 == 盘上实测（薄副本不得漂移）",
+      "blocking": "token-consistency",
+      "ok": true,
+      "detail": "登记 12 个文件，sha256 全部与盘面一致"
+    },
+    {
+      "id": "V2",
+      "name": "vendor/** 文件 ↔ VENDOR-MANIFEST 登记（**双向**：登记须在盘 ∧ 在盘须登记）",
+      "blocking": "artifact-existence",
+      "ok": true,
+      "detail": "vendor/ 下 11 个文件全部已登记（清单自身 self-excluded）"
+    }
+  ],
+  "summary": {
+    "total": 18,
+    "fail": 0,
+    "by_blocking": {
+      "empty-set-guard": {
+        "total": 2,
+        "fail": 0
+      },
+      "token-consistency": {
+        "total": 8,
+        "fail": 0
+      },
+      "contrast": {
+        "total": 1,
+        "fail": 0
+      },
+      "artifact-existence": {
+        "total": 7,
+        "fail": 0
+      }
+    }
+  },
+  "rule_segment_sha256": {
+    "frozen_before_decoupling": "07952274ca6cfd325b7addd4938a6c06bba6dcedc1fafbfdeb629e47826d94c4",
+    "frozen_bytes": 16423,
+    "measured_on_disk": "07952274ca6cfd325b7addd4938a6c06bba6dcedc1fafbfdeb629e47826d94c4",
+    "equal": true,
+    "layout_file": "04-interactive/assets/site.css",
+    "negative_control": "把 site.css 改一个字节 ⇒ R1 必 FAIL（--selftest 的 R1 负例已实跑）"
+  },
+  "tree": {
+    "file_count": 265,
+    "tree_digest": "fd83d841232e1f617a2d1a65e0e10af8dfa161c32e346dddaa7264b55398472a",
+    "definition": "仓内文件（相对路径 + 内容）的 sha256 归并；★ 排除报告自身（否则自指）"
+  },
+  "determinism": "⛔ 无墙钟时间戳 · ⛔ 无作者机绝对路径 · ⛔ 无随机/网络；同输入两次运行逐字节相同",
+  "not_covered": [
+    "★★ **像素层视觉回归未测**（站点侧是静态门控）⇒ 值改动与新增可见令牌的渲染影响由 AUD 侧 pixel_compare 承担；本门控的 0 FAIL ⛔ 不得读作「渲染没问题」。",
+    "★ 真实浏览器几何（四视口 documentElement.scrollWidth）与「侧栏覆盖画布」类缺陷未测。",
+    "★ 无障碍（skip link / :focus-visible / 地标）与 SEO（description / og / canonical / favicon）未纳入本门控判据面。",
+    "★ 对比度只到「令牌对令牌」层，未到「元素计算样式」层。",
+    "★ 门控未在真实 CI 上跑过（本站无 CI，属 ADR-003 的 5 站之一）；发布形态收敛是**常设排除项**，本轮不碰。",
+    "★ 归档页自带的内联令牌表未统一（CT-Q5=A：本轮不动）⇒ 归档页与主站的视觉一致性**未验**。",
+    "★ 站点侧**不调用** vendor/pipeline/check_site_tokens.py（其 C12 依赖仓外克隆与 fe-starter-kit，在他机必然 FAIL：判据成立但环境不成立）⇒ 骨架级契约门控留在 AUD 侧跑。"
+  ]
+}
