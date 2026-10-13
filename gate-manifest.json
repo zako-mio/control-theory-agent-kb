@@ -1,84 +1,278 @@
 {
-  "site": "control-theory-agent-kb",
-  "schema": "gate-manifest/1",
-  "schema_note": "范式沿用 hub 的 scripts/check_ci_manifest.py（站点侧由 vendor/pipeline/check_gate_manifest.py 的 M1–M6 判）。★ 本文件由**站点仓内**版本化，⛔ 不含任何豁免/白名单字段（M4 会主动拒绝 waivers/exempt/allow/skip/ignore 一类键）。",
-  "generated_by": "批 I · ROLLOUT-PLAN 第 3 轮（站 03 标准档）。★ 本站**无 CI**（属 ADR-003 的 5 站之一）⇒ 本清单由构建入口 build.sh 收尾**内联调用**，⛔ 不新建 CI。",
-  "gates": [
+ "site": "control-theory-agent-kb",
+ "schema": "gate-manifest/1",
+ "schema_note": "范式沿用 hub 的 scripts/check_ci_manifest.py（站点侧由 vendor/pipeline/check_gate_manifest.py 的 M1–M6 判）。★ 本文件由**站点仓内**版本化，⛔ 不含任何豁免/白名单字段（M4 会主动拒绝 waivers/exempt/allow/skip/ignore 一类键）。",
+ "generated_by": "批 I · ROLLOUT-PLAN 第 3 轮（站 03 标准档）。★ 本站**无 CI**（属 ADR-003 的 5 站之一）⇒ 本清单由构建入口 build.sh 收尾**内联调用**，⛔ 不新建 CI。；★ 批 J：a11y / metadata 由 report_only **转硬档**（mode=hard），判据与阈值未改",
+ "gates": [
+  {
+   "id": "gate-tokens",
+   "script": "gate_tokens.py",
+   "reads": [
+    "外链令牌文件 04-interactive/assets/derived-design-tokens.css（形态 1 的**判据对象**：本站的令牌面在外部样式表里，⛔ 不在页面内联 :root 里）",
+    "布局件 04-interactive/assets/site.css（162 条布局规则；**规则段 sha256 判据**的对象）",
+    "解耦前原文的冻结取证 build/decoupling-provenance.json（pre_file / root_block / rule_segment 三份 sha256 + 字节数）",
+    "值件 vendor/pipeline/values/control-theory-agent-kb.json（角色/档位/passthrough/族覆盖/别名登记）",
+    "profile build/profile.json（targets / decoupling / out_of_judgement_scope / 死代码与死令牌登记 / pages_without_external_stylesheet）",
+    "vendor/pipeline/profiles/control-theory-agent-kb.json（★ 批 D 的**同期冻结副本**，作解耦前 sha256 的**独立锚点**）",
+    "vendor/pipeline/VENDOR-MANIFEST.json（薄副本逐文件 sha256）",
+    "全仓 *.html（除 vendor/）的 <link rel=\"stylesheet\"> 集合；全仓 *.py（除 vendor/）的字符串字面量"
+   ],
+   "selftest": true,
+   "mode": "enforce",
+   "mode_note": "★ 本站接入门控的**第一轮就是硬阻断**：全部判据都立基于**解耦前冻结的实测常量**（规则段 sha256 ＋ 批 D 独立登记的原文 sha256），不存在「首轮只记基线」的必要。★ 空集守卫不随任何模式放宽：致盲即 exit 1。",
+   "judges": [
     {
-      "id": "gate-tokens",
-      "script": "gate_tokens.py",
-      "reads": [
-        "外链令牌文件 04-interactive/assets/derived-design-tokens.css（形态 1 的**判据对象**：本站的令牌面在外部样式表里，⛔ 不在页面内联 :root 里）",
-        "布局件 04-interactive/assets/site.css（162 条布局规则；**规则段 sha256 判据**的对象）",
-        "解耦前原文的冻结取证 build/decoupling-provenance.json（pre_file / root_block / rule_segment 三份 sha256 + 字节数）",
-        "值件 vendor/pipeline/values/control-theory-agent-kb.json（角色/档位/passthrough/族覆盖/别名登记）",
-        "profile build/profile.json（targets / decoupling / out_of_judgement_scope / 死代码与死令牌登记 / pages_without_external_stylesheet）",
-        "vendor/pipeline/profiles/control-theory-agent-kb.json（★ 批 D 的**同期冻结副本**，作解耦前 sha256 的**独立锚点**）",
-        "vendor/pipeline/VENDOR-MANIFEST.json（薄副本逐文件 sha256）",
-        "全仓 *.html（除 vendor/）的 <link rel=\"stylesheet\"> 集合；全仓 *.py（除 vendor/）的字符串字面量"
-      ],
-      "selftest": true,
-      "mode": "enforce",
-      "mode_note": "★ 本站接入门控的**第一轮就是硬阻断**：全部判据都立基于**解耦前冻结的实测常量**（规则段 sha256 ＋ 批 D 独立登记的原文 sha256），不存在「首轮只记基线」的必要。★ 空集守卫不随任何模式放宽：致盲即 exit 1。",
-      "judges": [
-        {"id": "T1", "name": "空集守卫（链接页 / 令牌文件 / 布局件 / 值件 / 令牌名 均非空）", "blocking": "empty-set-guard"},
-        {"id": "T2", "name": "派生一致性（派生产物 == 值件派生；归一化口径复用派生器本体）", "blocking": "token-consistency"},
-        {"id": "T3", "name": "角色/族覆盖/别名取值登记一致（三方对账）", "blocking": "token-consistency"},
-        {"id": "T4", "name": "未声明令牌（盘上 ⊆ 值件声明面）", "blocking": "token-consistency"},
-        {"id": "T5", "name": "引用完整性（布局件与链接页的每个 var(--X) 都有定义）——★ C1-N2 的缺陷类", "blocking": "token-consistency"},
-        {"id": "T6", "name": "成对对比度（逐档；用 vendor/tools/contrast.py —— 项目唯一实现）", "blocking": "contrast"},
-        {"id": "T7", "name": "零引用令牌登记（**双向**：声明须真零引用 ∧ 真零引用须已登记）", "blocking": "token-consistency"},
-        {"id": "T8", "name": "死代码登记（**双向**：登记项须真的在盘上 ∧ 真的零引用）", "blocking": "token-consistency"},
-        {"id": "T9", "name": "族归属登记（CT-Q2=A：content-kg 族的浅色变体）", "blocking": "token-consistency"},
-        {"id": "R1", "name": "★ 规则段 sha256：sha256(site.css) == **解耦前冻结值**（⛔ 不是自己比自己）", "blocking": "artifact-existence"},
-        {"id": "R2", "name": "退役件确实不在盘上（04-interactive/assets/design-tokens.css）", "blocking": "artifact-existence"},
-        {"id": "R3", "name": "冻结链三方交叉（gate-manifest 登记 · 冻结件 · 批 D 独立锚点 · 算术不变量）——反恒真装置", "blocking": "artifact-existence"},
-        {"id": "R4", "name": "页面两件套覆盖（== 登记页数）＋ 无残留引用（全仓任何页面都不得再链退役件）", "blocking": "artifact-existence"},
-        {"id": "S1", "name": "CT-Q5=A：归档页**不在判据对象内**（显式声明 ＋ 反向守卫：被扫到即 FAIL）", "blocking": "empty-set-guard"},
-        {"id": "S2", "name": "「无外链样式表」页**双向**登记（声明须真无 ∧ 真无须已登记）", "blocking": "artifact-existence"},
-        {"id": "L1", "name": "站点 *.py（排除 vendor/）无主机绝对路径字面量（L1 本地化的可回归判据）", "blocking": "artifact-existence"},
-        {"id": "V1", "name": "VENDOR-MANIFEST 登记的每个文件 sha256 == 盘上实测（薄副本不得漂移）", "blocking": "token-consistency"},
-        {"id": "V2", "name": "vendor/** 文件 ↔ VENDOR-MANIFEST 登记（**双向**）", "blocking": "artifact-existence"}
-      ],
-      "frozen_anchor": {
-        "why": "★★ **反恒真装置**：同一个「解耦前规则段 sha256」在本清单里**另登记一次**。R1 与冻结件比、R3 再拿本处与**批 D 独立锚点**（vendor/pipeline/profiles/control-theory-agent-kb.json 的 targets[0].frozen_sha256）三方交叉 ⇒ **只改一处即 FAIL**，⛔ 无法靠「自己比自己」拿绿灯。",
-        "captured_from_git_rev": "99e1dd8bbaeff58dc0e0eca6b052e36a345c70e0",
-        "pre_file_sha256": "a7213c872cbbac07b313b3c71d9980b30b775145616088fc23c163f733fb5c1c",
-        "root_block_sha256": "bdd8d575a98e517573b841cdc603531881276926557aa15be971c14de8b8bb46",
-        "rule_segment_sha256": "07952274ca6cfd325b7addd4938a6c06bba6dcedc1fafbfdeb629e47826d94c4",
-        "rule_segment_bytes": 16423,
-        "retired_artifact": "04-interactive/assets/design-tokens.css",
-        "anchor_note": "pre_file_sha256 与 **批 D**（早于本批、本批⛔ 未改）写入的 pipeline/profiles/control-theory-agent-kb.json 的 frozen_sha256 **逐字相同** ⇒ 冻结值不是按当前盘面反推的自证数。"
-      },
-      "not_enforced_here": [
-        "★ **像素/渲染层完全未测**：本站门控是**静态判据**。值改动（`--line` #DFE5EC→#7d8a9e、`warn` #C77700→#B45309）与新增可见令牌 `--ctrl-green` 会改变渲染 ⇒ 像素比对须由 AUD 侧的 pixel_compare 承担，并把 44 页登记为 expect=differs。",
-        "★ 对比度只算**令牌对令牌**：⛔ 不覆盖「元素实际取到的计算样式」（例如某元素被 JS 改色、或继承链上被覆盖）。",
-        "★ 背景集只取**在用的** surface 角色令牌（判据对象 == 断言对象）：本轮 = `--surface` / `--panel`。★ `--surface-2` / `--stripe` 是派生补齐但**零引用**的档位 ⇒ 不进背景集（它们不是任何页面上的真实底色）；一旦它们被接线，背景集自动扩张、T6 重判。",
-        "★ 布局件的**语义正确性**未判：R1 只证「规则段逐字节未变」，⛔ 不证这些规则在浏览器里渲染正确。",
-        "★ ⛔ 本门控不能防「同一批**协调**修改多处登记」（例如同时改冻结件与 gate-manifest）——那是审计层的问题（批 D 锚点 ＋ AUD 侧独立复验），不是门控层能解决的。如实登记。",
-        "★ 无障碍 / SEO / 响应式未纳入本门控的判据面（本步范围是令牌层解耦；批 H 已登记的同类缺口按 P3=B 另立一轮）。",
-        "★ 门控「真的在真实 CI 上跑过」未验：本站**无 CI**，只做到「构建脚本收尾内联调用 ＋ 确定性 gate-report.json 随产物入库」。"
-      ]
+     "id": "T1",
+     "name": "空集守卫（链接页 / 令牌文件 / 布局件 / 值件 / 令牌名 均非空）",
+     "blocking": "empty-set-guard"
     },
     {
-      "id": "manifest-check",
-      "script": "check_gate_manifest.py",
-      "reads": [
-        "本清单与 build/profile.json 的 gates.commands 的**双向**一致性（登记 ⇒ 被调用 ／ 被调用 ⇒ 登记）",
-        "清单项数、命令数、每项的 reads 与 selftest 声明、未覆盖面声明"
-      ],
-      "selftest": true,
-      "mode": "hard",
-      "note": "本项是清单自身的守门人（vendored 薄副本；AUD 侧 pipeline/check_gate_manifest.py 为唯一真相源）。★ M4 会主动拒绝任何豁免/白名单字段。"
+     "id": "T2",
+     "name": "派生一致性（派生产物 == 值件派生；归一化口径复用派生器本体）",
+     "blocking": "token-consistency"
+    },
+    {
+     "id": "T3",
+     "name": "角色/族覆盖/别名取值登记一致（三方对账）",
+     "blocking": "token-consistency"
+    },
+    {
+     "id": "T4",
+     "name": "未声明令牌（盘上 ⊆ 值件声明面）",
+     "blocking": "token-consistency"
+    },
+    {
+     "id": "T5",
+     "name": "引用完整性（布局件与链接页的每个 var(--X) 都有定义）——★ C1-N2 的缺陷类",
+     "blocking": "token-consistency"
+    },
+    {
+     "id": "T6",
+     "name": "成对对比度（逐档；用 vendor/tools/contrast.py —— 项目唯一实现）",
+     "blocking": "contrast"
+    },
+    {
+     "id": "T7",
+     "name": "零引用令牌登记（**双向**：声明须真零引用 ∧ 真零引用须已登记）",
+     "blocking": "token-consistency"
+    },
+    {
+     "id": "T8",
+     "name": "死代码登记（**双向**：登记项须真的在盘上 ∧ 真的零引用）",
+     "blocking": "token-consistency"
+    },
+    {
+     "id": "T9",
+     "name": "族归属登记（CT-Q2=A：content-kg 族的浅色变体）",
+     "blocking": "token-consistency"
+    },
+    {
+     "id": "R1",
+     "name": "★ 规则段 sha256：sha256(site.css) == **解耦前冻结值**（⛔ 不是自己比自己）",
+     "blocking": "artifact-existence"
+    },
+    {
+     "id": "R2",
+     "name": "退役件确实不在盘上（04-interactive/assets/design-tokens.css）",
+     "blocking": "artifact-existence"
+    },
+    {
+     "id": "R3",
+     "name": "冻结链三方交叉（gate-manifest 登记 · 冻结件 · 批 D 独立锚点 · 算术不变量）——反恒真装置",
+     "blocking": "artifact-existence"
+    },
+    {
+     "id": "R4",
+     "name": "页面两件套覆盖（== 登记页数）＋ 无残留引用（全仓任何页面都不得再链退役件）",
+     "blocking": "artifact-existence"
+    },
+    {
+     "id": "S1",
+     "name": "CT-Q5=A：归档页**不在判据对象内**（显式声明 ＋ 反向守卫：被扫到即 FAIL）",
+     "blocking": "empty-set-guard"
+    },
+    {
+     "id": "S2",
+     "name": "「无外链样式表」页**双向**登记（声明须真无 ∧ 真无须已登记）",
+     "blocking": "artifact-existence"
+    },
+    {
+     "id": "L1",
+     "name": "站点 *.py（排除 vendor/）无主机绝对路径字面量（L1 本地化的可回归判据）",
+     "blocking": "artifact-existence"
+    },
+    {
+     "id": "V1",
+     "name": "VENDOR-MANIFEST 登记的每个文件 sha256 == 盘上实测（薄副本不得漂移）",
+     "blocking": "token-consistency"
+    },
+    {
+     "id": "V2",
+     "name": "vendor/** 文件 ↔ VENDOR-MANIFEST 登记（**双向**）",
+     "blocking": "artifact-existence"
     }
-  ],
-  "not_covered": [
-    "★★ **像素层视觉回归未测**（站点侧是静态门控）⇒ 值改动与新增可见令牌的渲染影响由 AUD 侧 pixel_compare 承担；本门控的 0 FAIL ⛔ 不得读作「渲染没问题」。",
-    "★ 真实浏览器几何（四视口 documentElement.scrollWidth）与「侧栏覆盖画布」类缺陷未测。",
-    "★ 无障碍（skip link / :focus-visible / 地标）与 SEO（description / og / canonical / favicon）未纳入本门控判据面。",
-    "★ 对比度只到「令牌对令牌」层，未到「元素计算样式」层。",
-    "★ 门控未在真实 CI 上跑过（本站无 CI，属 ADR-003 的 5 站之一）；发布形态收敛是**常设排除项**，本轮不碰。",
-    "★ 归档页自带的内联令牌表未统一（CT-Q5=A：本轮不动）⇒ 归档页与主站的视觉一致性**未验**。",
-    "★ 站点侧**不调用** vendor/pipeline/check_site_tokens.py（其 C12 依赖仓外克隆与 fe-starter-kit，在他机必然 FAIL：判据成立但环境不成立）⇒ 骨架级契约门控留在 AUD 侧跑。"
-  ]
+   ],
+   "frozen_anchor": {
+    "why": "★★ **反恒真装置**：同一个「解耦前规则段 sha256」在本清单里**另登记一次**。R1 与冻结件比、R3 再拿本处与**批 D 独立锚点**（vendor/pipeline/profiles/control-theory-agent-kb.json 的 targets[0].frozen_sha256）三方交叉 ⇒ **只改一处即 FAIL**，⛔ 无法靠「自己比自己」拿绿灯。",
+    "captured_from_git_rev": "99e1dd8bbaeff58dc0e0eca6b052e36a345c70e0",
+    "pre_file_sha256": "a7213c872cbbac07b313b3c71d9980b30b775145616088fc23c163f733fb5c1c",
+    "root_block_sha256": "bdd8d575a98e517573b841cdc603531881276926557aa15be971c14de8b8bb46",
+    "rule_segment_sha256": "07952274ca6cfd325b7addd4938a6c06bba6dcedc1fafbfdeb629e47826d94c4",
+    "rule_segment_bytes": 16423,
+    "retired_artifact": "04-interactive/assets/design-tokens.css",
+    "anchor_note": "pre_file_sha256 与 **批 D**（早于本批、本批⛔ 未改）写入的 pipeline/profiles/control-theory-agent-kb.json 的 frozen_sha256 **逐字相同** ⇒ 冻结值不是按当前盘面反推的自证数。"
+   },
+   "not_enforced_here": [
+    "★ **像素/渲染层完全未测**：本站门控是**静态判据**。值改动（`--line` #DFE5EC→#7d8a9e、`warn` #C77700→#B45309）与新增可见令牌 `--ctrl-green` 会改变渲染 ⇒ 像素比对须由 AUD 侧的 pixel_compare 承担，并把 44 页登记为 expect=differs。",
+    "★ 对比度只算**令牌对令牌**：⛔ 不覆盖「元素实际取到的计算样式」（例如某元素被 JS 改色、或继承链上被覆盖）。",
+    "★ 背景集只取**在用的** surface 角色令牌（判据对象 == 断言对象）：本轮 = `--surface` / `--panel`。★ `--surface-2` / `--stripe` 是派生补齐但**零引用**的档位 ⇒ 不进背景集（它们不是任何页面上的真实底色）；一旦它们被接线，背景集自动扩张、T6 重判。",
+    "★ 布局件的**语义正确性**未判：R1 只证「规则段逐字节未变」，⛔ 不证这些规则在浏览器里渲染正确。",
+    "★ ⛔ 本门控不能防「同一批**协调**修改多处登记」（例如同时改冻结件与 gate-manifest）——那是审计层的问题（批 D 锚点 ＋ AUD 侧独立复验），不是门控层能解决的。如实登记。",
+    "★ 无障碍 / SEO / 响应式未纳入本门控的判据面（本步范围是令牌层解耦；批 H 已登记的同类缺口按 P3=B 另立一轮）。",
+    "★ 门控「真的在真实 CI 上跑过」未验：本站**无 CI**，只做到「构建脚本收尾内联调用 ＋ 确定性 gate-report.json 随产物入库」。"
+   ]
+  },
+  {
+   "id": "manifest-check",
+   "script": "check_gate_manifest.py",
+   "reads": [
+    "本清单与 build/profile.json 的 gates.commands 的**双向**一致性（登记 ⇒ 被调用 ／ 被调用 ⇒ 登记）",
+    "清单项数、命令数、每项的 reads 与 selftest 声明、未覆盖面声明"
+   ],
+   "selftest": true,
+   "mode": "hard",
+   "note": "本项是清单自身的守门人（vendored 薄副本；AUD 侧 pipeline/check_gate_manifest.py 为唯一真相源）。★ M4 会主动拒绝任何豁免/白名单字段。"
+  },
+  {
+   "id": "a11y",
+   "script": "gate_a11y.py",
+   "reads": [
+    "发布根全树 *.html（去 vendor/ 与 profile.a11y.not_products）的 <main> 计数",
+    "产物的 skip link（href=\"#main|#content|#skip…\" ＋ 目标 #id 同页存在 ＋ 锚文本/类名 skip 信号）",
+    "产物 CSS 语料（内联 <style> ∪ 页内 <link rel=stylesheet> 指向的**本地** CSS，剥注释）里的 :focus-visible",
+    "产物的 <img alt> 与 <svg role=\"img\"/aria-label/<title>（图件文本等价）",
+    "build/profile.json 的 a11y.not_products / main_landmark_exempt / skiplink_exempt（逐页登记，含 why）"
+   ],
+   "selftest": true,
+   "mode": "hard",
+   "judges": [
+    {
+     "id": "A1",
+     "name": "空集守卫（页数 > 0 且 <main> 与图件载体均非空）",
+     "class": "blind"
+    },
+    {
+     "id": "A2",
+     "name": "每页有且仅有 1 个 <main>（豁免项逐页登记）",
+     "class": "hard"
+    },
+    {
+     "id": "A3",
+     "name": "每页有 skip link（href 前缀命中 #main/#content/#skip ＋ 目标 #id 存在 ＋ skip 信号）",
+     "class": "hard"
+    },
+    {
+     "id": "A4",
+     "name": "每页 CSS 语料（内联 ∪ 本地外链）声明 :focus-visible",
+     "class": "hard"
+    },
+    {
+     "id": "A5",
+     "name": "图件文本等价（img 必有 alt；svg 必有 role=img ＋ 文本）",
+     "class": "hard"
+    },
+    {
+     "id": "A6",
+     "name": "豁免登记不得过期",
+     "class": "hard"
+    },
+    {
+     "id": "A7",
+     "name": "解析口径自检（每页 CSS 语料可解析；全站 CSS 源集合非空）",
+     "class": "blind"
+    }
+   ],
+   "mode_note": "★ 批 J 转硬档（批 H 为 report_only）：判据 A1–A7 与阈值一字未改，仅执行强度提到 hard；★ 三处判据硬化（形态感知 / 去注释 / skip link 目标须存在），均带负向夹具。空集守卫（A1/A7）不随模式放宽：致盲即 exit 1。"
+  },
+  {
+   "id": "metadata",
+   "script": "gate_seo_meta.py",
+   "reads": [
+    "发布根全树 *.html（去 vendor/ 与 profile.seo_meta.not_products）的 <head> 块",
+    "产物的 <title> / <html lang> / meta[name=description] / og:* / link[rel=canonical] / link[rel=icon]",
+    "profile.seo_meta.pages_base_url（canonical 自指判据的基准）",
+    "发布根的 sitemap.xml / robots.txt(含 Sitemap:) / favicon.{ico,png,svg}",
+    "build/profile.json 的 seo_meta.og_url_image_exempt / favicon_exempt（★ 批 J 目标＝为空）"
+   ],
+   "selftest": true,
+   "mode": "hard",
+   "judges": [
+    {
+     "id": "S1",
+     "name": "空集守卫（页数 / <title> / <html lang> 覆盖均非空）",
+     "class": "blind"
+    },
+    {
+     "id": "S2",
+     "name": "每页有 <title>",
+     "class": "hard"
+    },
+    {
+     "id": "S3",
+     "name": "每页有 <html lang>",
+     "class": "hard"
+    },
+    {
+     "id": "S4",
+     "name": "每页有非空 <meta name=description>",
+     "class": "hard"
+    },
+    {
+     "id": "S5",
+     "name": "每页有 og:title/description/type/url/image",
+     "class": "hard"
+    },
+    {
+     "id": "S6",
+     "name": "每页 canonical 绝对且自指",
+     "class": "hard"
+    },
+    {
+     "id": "S7",
+     "name": "favicon（每页 link[rel=icon] 或发布根有 favicon 文件）",
+     "class": "hard"
+    },
+    {
+     "id": "S8",
+     "name": "sitemap.xml ＋ robots.txt(含 Sitemap:)",
+     "class": "hard"
+    },
+    {
+     "id": "S9",
+     "name": "解析口径自检（每页解析出 ≥1 个 <head> 块）",
+     "class": "blind"
+    },
+    {
+     "id": "S10",
+     "name": "description 长度分布（仅报告）",
+     "class": "report"
+    },
+    {
+     "id": "S11",
+     "name": "canonical 自指偏差明细（仅报告）",
+     "class": "report"
+    }
+   ],
+   "mode_note": "★ 批 J 转硬档（批 H 为 report_only）：判据 S1–S11 与阈值一字未改；★ 四处判据硬化（去注释 / canonical 自指 / 发布根感知 / og 5 项全判），均带负向夹具。空集守卫（S1/S9）不随模式放宽：致盲即 exit 1。"
+  }
+ ],
+ "not_covered": [
+  "★★ **像素层视觉回归未测**（站点侧是静态门控）⇒ 值改动与新增可见令牌的渲染影响由 AUD 侧 pixel_compare 承担；本门控的 0 FAIL ⛔ 不得读作「渲染没问题」。",
+  "★ 真实浏览器几何（四视口 documentElement.scrollWidth）与「侧栏覆盖画布」类缺陷未测。",
+  "★ 无障碍（skip link / :focus-visible / 地标）与 SEO（description / og / canonical / favicon）未纳入本门控判据面。",
+  "★ 对比度只到「令牌对令牌」层，未到「元素计算样式」层。",
+  "★ 门控未在真实 CI 上跑过（本站无 CI，属 ADR-003 的 5 站之一）；发布形态收敛是**常设排除项**，本轮不碰。",
+  "★ 归档页自带的内联令牌表未统一（CT-Q5=A：本轮不动）⇒ 归档页与主站的视觉一致性**未验**。",
+  "★ 站点侧**不调用** vendor/pipeline/check_site_tokens.py（其 C12 依赖仓外克隆与 fe-starter-kit，在他机必然 FAIL：判据成立但环境不成立）⇒ 骨架级契约门控留在 AUD 侧跑。"
+ ]
 }

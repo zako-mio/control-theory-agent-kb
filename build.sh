@@ -40,6 +40,17 @@ python3 vendor/pipeline/derive_site_tokens.py \
 python3 vendor/pipeline/write_site_tokens.py \
   --profile build/profile.json --payloads build/payloads --site-root . --apply
 
+echo "=== [5b/7] ★ 批 J：页面骨架与元数据注入（a11y / SEO 实缺修实）==="
+# ★ 与批 I 的 `decouple_styles.py` 同型：对产物做**确定性后处理**，产物仍由生成器产出
+#   （⛔ 不是手改生成物）。逐页保证：head 元数据（description / og×5 / 自指 canonical / icon）
+#   ＋ body 后 skip link ＋ 有且仅有 1 个 <main id="main"> ＋ CSS 语料含 :focus-visible
+#   ＋ 每个 <svg> 有 role="img" 与 aria-label/<title>。★ 幂等：已合规的页一字节不动。
+python3 09-src-data/inject_page_shell.py --root . --repo control-theory-agent-kb
+
+echo "=== [5c/7] ★ 批 J：站点级元信息产物（sitemap.xml + robots.txt）==="
+# ★ 确定性：⛔ 无 lastmod / 无墙钟时间戳 / 无作者机绝对路径。
+python3 09-src-data/gen_sitemap_robots.py --root . --repo control-theory-agent-kb
+
 echo "=== [6/7] 覆盖度清单与既有结构门控 ==="
 python3 07-checkpoint/gen_coverage_manifest.py
 python3 07-checkpoint/quality-gate.py
@@ -47,6 +58,9 @@ python3 07-checkpoint/quality-gate.py
 echo "=== [7/7] ★ 站点侧门控（内联调用；无 CI ⇒ 这就是「跑没跑过」的痕迹）==="
 python3 gate_tokens.py --site-root . --manifest gate-manifest.json \
   --mode enforce --report gate-report.json
+# ★ 批 J 新增的两道门控（mode=hard；判据与阈值未改，仅执行强度提到 hard）
+python3 gate_a11y.py --site-root . --profile build/profile.json
+python3 gate_seo_meta.py --site-root . --profile build/profile.json
 python3 vendor/pipeline/check_gate_manifest.py \
   --manifest gate-manifest.json --profile build/profile.json
 

@@ -6,9 +6,9 @@
   "mode": "enforce",
   "inputs": {
     "gate_manifest": "gate-manifest.json",
-    "gate_manifest_sha256": "0f79b6bcb628fe7f26530ddcf79d3631768a3d5801766f688cba1608cbfd15ca",
+    "gate_manifest_sha256": "f24c5ab0a6310c4cc03faf9ad1f60225f8759ff838bdcd7c0cf2fa20e2a5ee51",
     "profile": "build/profile.json",
-    "profile_sha256": "c04f57b1046cc3d850af2b3c1f51c53f4fcd1e3c542b4eb673c10522b5d7479f",
+    "profile_sha256": "770c424c6d20ef1ebb928c4c6d833e742dcd1e3ec2273fea92dbe7e3bd134c0f",
     "value_file": "vendor/pipeline/values/control-theory-agent-kb.json",
     "value_file_sha256": "08a81271476364547b721cc523da15b6411d553db36f0b3cc1cffe33de800f06",
     "provenance": "build/decoupling-provenance.json",
@@ -127,7 +127,7 @@
       "name": "站点 `*.py`（排除 vendor/）无主机绝对路径字面量（L1 本地化的可回归判据）",
       "blocking": "artifact-existence",
       "ok": true,
-      "detail": "21 个 *.py 全部不含 POSIX 家目录 / Windows 盘符形态的路径字面量（URL 已先摘除，防假阳）"
+      "detail": "25 个 *.py 全部不含 POSIX 家目录 / Windows 盘符形态的路径字面量（URL 已先摘除，防假阳）"
     },
     {
       "id": "V1",
@@ -175,8 +175,8 @@
     "negative_control": "把 site.css 改一个字节 ⇒ R1 必 FAIL（--selftest 的 R1 负例已实跑）"
   },
   "tree": {
-    "file_count": 265,
-    "tree_digest": "b0133dcbc166ed8dd0c767bffe091da02cdd697a96013e5578ddd300c184e542",
+    "file_count": 273,
+    "tree_digest": "453542fdcd236d0c06c969213848fd9c220919df951153159dfefceb5ac8597a",
     "definition": "仓内文件（相对路径 + 内容）的 sha256 归并；★ 排除报告自身（否则自指）"
   },
   "determinism": "⛔ 无墙钟时间戳 · ⛔ 无作者机绝对路径 · ⛔ 无随机/网络；同输入两次运行逐字节相同",
