@@ -2,7 +2,7 @@
   "site": "control-theory-agent-kb",
   "schema": "vendor-manifest/1",
   "source": "AUD `pipeline/` 与 `tools/contrast.py`（唯一真相源）",
-  "generated_by": "evidence/i/tools/vendor_into_control_theory.py（⚠ 刻意不用批 E 的 vendor_into_site.py：它硬编码 12-factor 且 --site 要仓根绝对路径，传相对站名会在 AUD 根误建空壳目录）",
+  "generated_by": "AUD 侧的分发脚本 vendor_into_control_theory.py（⚠ 刻意不用批 E 的 vendor_into_site.py：它硬编码 12-factor 且 --site 要仓根绝对路径，传相对站名会在 AUD 根误建空壳目录）",
   "note": "薄副本：⛔ 不在此处改语义。sha256 由本清单登记，并由**站点侧门控 `gate_tokens.py` 的 V1/V2 判据**在每次构建时对盘面重算比对（登记⇒盘面一致 ／ 盘面文件⇒已登记，双向 fail-closed）。",
   "roles": {
     "薄副本": "与 AUD 侧源**逐字节相同**（分发纪律：本目录是唯一真相源）",
@@ -20,8 +20,8 @@
     "vendor/pipeline/workflow-3job.template.yml": "c7d6bd6d69a066d07e6ef6e0db917995cf805db541348cc8f4062b451603fb1f",
     "vendor/pipeline/profiles/control-theory-agent-kb.json": "ec8b8f0dd194884cfe4a856a051d313a2c7e1938abbea8d25f9620156211c2d3",
     "vendor/tools/contrast.py": "1b9291c935b0db1d8901f1cafcc1c29681b86061f4164496401af0b45b9e01c7",
-    "vendor/pipeline/values/control-theory-agent-kb.json": "3d5d3d6e387931b255667d5340a866d8398a48cc091a78597c1eaa5d9a6880b9",
-    "build/profile.json": "0b203ce2dad30a96b8952c89faf528e2f2ff087913393e749d94f8448bffe2b9"
+    "vendor/pipeline/values/control-theory-agent-kb.json": "08a81271476364547b721cc523da15b6411d553db36f0b3cc1cffe33de800f06",
+    "build/profile.json": "c04f57b1046cc3d850af2b3c1f51c53f4fcd1e3c542b4eb673c10522b5d7479f"
   },
   "details": [
     {
@@ -87,13 +87,13 @@
     {
       "path": "vendor/pipeline/values/control-theory-agent-kb.json",
       "role": "站点轮演化",
-      "sha256": "3d5d3d6e387931b255667d5340a866d8398a48cc091a78597c1eaa5d9a6880b9",
+      "sha256": "08a81271476364547b721cc523da15b6411d553db36f0b3cc1cffe33de800f06",
       "note": "🔸 站点轮演化件（AUD 侧批 D 值件 + 3 组差量：派生产物改名 / 补 --ctrl-green / 登记面推进）"
     },
     {
       "path": "build/profile.json",
       "role": "站点轮演化",
-      "sha256": "0b203ce2dad30a96b8952c89faf528e2f2ff087913393e749d94f8448bffe2b9",
+      "sha256": "c04f57b1046cc3d850af2b3c1f51c53f4fcd1e3c542b4eb673c10522b5d7479f",
       "note": "🔸 站点轮演化件（AUD 侧批 D profile + 解耦面/判据面/登记面）"
     }
   ]

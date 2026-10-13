@@ -18,7 +18,7 @@
       "light"
     ],
     "declared_forms_reason": "本站实测为**浅色单档**：全仓 grep prefers-color-scheme / color-scheme / data-theme 命中 0。⇒ ADR-002 的 D3 双档契约在本站**不适用**，按纪律登记为「不适用」而非「未做」。",
-    "declared_forms_evidence": "evidence/c/_poc/control-theory-agent-kb 全仓 grep（批 D）· 批 I 复验：解耦后站点仓内 `prefers-color-scheme`/`color-scheme`/`data-theme` 命中仍为 0",
+    "declared_forms_evidence": "批 D 对当时克隆的全仓 grep（`prefers-color-scheme` / `color-scheme` / `data-theme` 命中 0）· 批 I 复验：解耦后站点仓内同三项命中仍为 0",
     "family": "content-kg-swiss-light",
     "family_note": "本站方向为 Swiss / 工程可视化（浅色），与 ADR-002 新增的 content-kg 族（深色内容站）不同族。取值**沿用本站现有色**，只补齐角色与缺档，以验证**机制**而非混入视觉改版。",
     "family_ruling": "CT-Q2=A：登记为 **content-kg 族的浅色变体**（⛔ 不另立第五族、⛔ 不并入 content 族）"
@@ -353,7 +353,7 @@
   },
   "bootstrap": {
     "seeded_by": "批 D",
-    "seeded_from": "evidence/c/_poc/site-value-contract.json + evidence/c/_poc/control-theory-agent-kb",
+    "seeded_from": "批 C 的 PoC 值件与 PoC 克隆（均留在 AUD 侧，⛔ 不入站；本件是其**站点轮等价实现**）",
     "seeded_at": "2026-10-13",
     "purpose": "建立「站点现状 → 值件 → 派生产物」的可复现基线，且本轮**零改动被审计仓**（写入只发生在工作副本）"
   },
@@ -395,7 +395,7 @@
       "id": "C1-D5",
       "defect": "★ **批 I 实测新发现**：`04-interactive/exp-dsh-custom.html` 在 HEAD 上**落后于它的生成器输入**——`06-experiments/dsh-custom.md` 已含 v1.5 的实验 15–18，而该产物未随之重生成（实测：重跑 `gen_html.py` 产出 59750 B，提交态只有 45092 B；同批其余 41 个 04-interactive 页面重跑后逐字节不变）。",
       "handling": "★ 本轮把产物**重生成到与源一致**（内容追平，⛔ 非设计改动）——否则「重跑全部生成器后 `git status` 为空」这条硬要求不成立。★ 按 ROLLOUT-PLAN §6.1 的 **T7**，「L1 本地化后重跑生成器 ⇒ 产物越出预期」成立 ⇒ 本轨道**升级为「独立过门控」**，站点侧 `gate_tokens.py` + 随产物入库的 `gate-report.json` 即该独立门控的载体。",
-      "evidence": "evidence/i/measure/control-theory-agent-kb@post.json 与站点仓 gate-report.json"
+      "evidence": "★ 取证件在 AUD 侧本批的令牌面复测件与站点仓 gate-report.json（⛔ 路径不入站）"
     }
   ],
   "not_provided": [

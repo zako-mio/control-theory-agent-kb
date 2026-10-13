@@ -246,7 +246,8 @@
     "note": "★★ 本站**最贵的一类事故**是「解耦/派生把整站布局删掉」——解耦前原文 17648 B 里 `:root` 仅 1225 B（6.9%），规则段 16423 B（**93.1%**，162 条布局规则）。⇒ 非目标段判据落在**解耦面**：`sha256(site.css) == build/decoupling-provenance.json.rule_segment.sha256`（**解耦前冻结值**）。★ 负例：把 `site.css` 改一个字节即 FAIL（见 gate_tokens.py 的 R1 负向夹具）。"
   },
   "not_covered_here": [
-    "★ 像素层／渲染层未测（站点侧门控是静态判据）：本批的像素比对由 AUD 侧 `evidence/i/tools/pixel_compare.py` 承担。★ 值改动（`--line` #DFE5EC→#7d8a9e、`warn` #C77700→#B45309）与新增可见令牌 `--ctrl-green` 会改变渲染 ⇒ 44 页在像素层面均应登记为 expect=differs。",
+    "★ 像素层／渲染层未测（站点侧门控是静态判据）：本批的像素比对由 AUD 侧的像素比对件承担（⛔ 其路径不入站）。★ 值改动（`--line` #DFE5EC→#7d8a9e、`warn` #C77700→#B45309）与新增可见令牌 `--ctrl-green` 会改变渲染 ⇒ 44 页在像素层面均应登记为 expect=differs。",
+    "★★ CT-Q6=A 的残余（如实登记）：站点仓内**存在**两处指向 AUD 侧 `evidence/` 的**文本引用**，均来自**必须逐字节保持的薄副本**，⛔ 本批无权改：① `vendor/tools/contrast.py`（项目唯一对比度实现的薄副本，其 docstring 里的默认扫描路径）；② `vendor/pipeline/profiles/control-theory-agent-kb.json`（批 D 的冻结锚点副本，其 `local_clone` 字段）。两者在站点构建里都**不被执行**（门控只 import contrast 的两个纯函数、只读 profiles 的 frozen_sha256）。★ 其余 `evidence/` 字样全部是仓内**既有**内容（12 个 archive 留档文件自带的目录名）；本轮**新增文件里没有引入任何 `evidence/` 目录或 PoC 脚手架**。",
     "★ 真实浏览器下的几何（四视口 scrollWidth）与「侧栏覆盖画布」类缺陷未测。",
     "★ 无障碍／SEO 只到「标记与声明存在性」层未做（本步未纳入判据面）；批 H 已登记的同类缺口按 P3=B **另立一轮**。",
     "★ 门控「真的在真实 CI 上跑过」未验——本站**无 CI**（属 ADR-003 的 5 站之一），故门控以「构建脚本收尾内联调用 + `gate-report.json` 随产物入库」的形式留痕。"
