@@ -538,7 +538,8 @@ def run_judges(site, profile, manifest, contract, D, CT, gate_entry):
     add("L1", "站点 `*.py`（排除 vendor/）无主机绝对路径字面量（L1 本地化的可回归判据）",
         "artifact-existence", not bad_l,
         "；".join(bad_l) if bad_l else
-        "%d 个 *.py 全部不含 `/home/…`、`C:\\…` 形态的路径字面量（URL 已先摘除，防假阳）" % scanned)
+        "%d 个 *.py 全部不含 POSIX 家目录 / Windows 盘符形态的路径字面量（URL 已先摘除，防假阳）"
+        % scanned)
 
     # ======================= V1/V2 分发面
     man_rel = "vendor/pipeline/VENDOR-MANIFEST.json"

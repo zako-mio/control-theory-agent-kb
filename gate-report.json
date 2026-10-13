@@ -127,7 +127,7 @@
       "name": "站点 `*.py`（排除 vendor/）无主机绝对路径字面量（L1 本地化的可回归判据）",
       "blocking": "artifact-existence",
       "ok": true,
-      "detail": "21 个 *.py 全部不含 `/home/…`、`C:\\…` 形态的路径字面量（URL 已先摘除，防假阳）"
+      "detail": "21 个 *.py 全部不含 POSIX 家目录 / Windows 盘符形态的路径字面量（URL 已先摘除，防假阳）"
     },
     {
       "id": "V1",
@@ -176,7 +176,7 @@
   },
   "tree": {
     "file_count": 265,
-    "tree_digest": "fd83d841232e1f617a2d1a65e0e10af8dfa161c32e346dddaa7264b55398472a",
+    "tree_digest": "00b650d5807fbaba67347fa9a08f4056974439da0204a023d2a4aab72f70fe9a",
     "definition": "仓内文件（相对路径 + 内容）的 sha256 归并；★ 排除报告自身（否则自指）"
   },
   "determinism": "⛔ 无墙钟时间戳 · ⛔ 无作者机绝对路径 · ⛔ 无随机/网络；同输入两次运行逐字节相同",
