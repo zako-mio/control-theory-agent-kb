@@ -73,7 +73,8 @@ EXCLUDE_DIRS = (".git", "vendor", "node_modules", "__pycache__")
 # ★ 负向夹具要用的「作者机旧仓根」前缀：**用 os.sep.join 拼**，使本门控**自身源码**不含
 #   主机绝对路径字面量 —— 否则 L1 判据会把自己的夹具字符串判成违规（实测踩到过：
 #   gate_tokens.py:825 被自己抓到）。这既是纪律，也是「判据不得误伤实现件」的一处实证。
-_FIXTURE_HOST_PREFIX = os.sep.join(["", "home", "zako-mio", "opencode", "archive",
+#   ★ 用户名段同样**不写字面量**：避免把作者机的用户名带进站点仓（L2 口径的洁净度）。
+_FIXTURE_HOST_PREFIX = os.sep.join(["", "home", "some" + "-user", "opencode", "archive",
                                     "Mission-file", "2026-09", "0907-控制理论Agent设计知识库"])
 
 
@@ -872,17 +873,17 @@ def selftest(site):
         t = open(p, encoding="utf-8").read()
         w(r, p, 'BASE = "%s"\n' % _FIXTURE_HOST_PREFIX + t)
     case("★ L1 负例：生成器里写回主机绝对路径 ⇒ FAIL", l1_neg, ["L1"])
-    # ---------- L1 假阳样本 1：URL 里含 /home/ 不得判 L1
+    # ---------- L1 假阳样本 1：URL 里含 `/home/` 不得判 L1
     def l1_false_pos(r):
         p = os.path.join(r, "09-src-data/gen_dag_data.py")
         t = open(p, encoding="utf-8").read()
-        w(r, p, t + '\nDOC = "https://example.com/home/zako-mio/index.html"\n')
+        w(r, p, t + '\nDOC = "https://example.com/home/some-user/index.html"\n')
     case("★ L1 假阳 1：URL 里含 `/home/…` ⇒ 必须 PASS（不得误判）", l1_false_pos, [])
     # ---------- L1 假阳样本 2：相对路径里含 `/home/` 片段不得判 L1
     def l1_false_pos2(r):
         p = os.path.join(r, "09-src-data/nav_data.py")
         t = open(p, encoding="utf-8").read()
-        w(r, p, t + '\nALT = "docs/home/zako-mio/index.html"\n')
+        w(r, p, t + '\nALT = "docs/home/some-user/index.html"\n')
     case("★ L1 假阳 2：相对路径含 `/home/` 片段 ⇒ 必须 PASS", l1_false_pos2, [])
     # ---------- L1 空集守卫：站点里 0 个 .py（★ 连同门控自身一起移除才算真的空扫描面）
     def l1_empty(r):
