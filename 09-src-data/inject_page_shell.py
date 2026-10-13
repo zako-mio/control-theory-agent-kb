@@ -54,9 +54,16 @@ MAIN_ANY = re.compile(r"<main\b[^>]*>", re.I)
 SVG_FULL = re.compile(r"(<svg\b)([^>]*)(>)(.*?)(</svg\s*>)", re.I | re.S)
 HEADING = re.compile(r"<h[1-4][^>]*>(.*?)</h[1-4]\s*>", re.I | re.S)
 
-SHELL_CSS = (":focus-visible{outline:0.125rem solid var(--accent,#4f8cff);outline-offset:0.125rem}\n"
-             ".skip-link{position:absolute;left:-9999px;top:0;background:var(--accent,#4f8cff);"
-             "color:#fff;padding:.5rem 1rem;z-index:9999;border-radius:0 0 .375rem 0}\n"
+# ★★ 批 J 修缺陷（第二处）：首版用了 `var(--accent, …)`。对**定义了 `--accent` 的站**没问题，
+#   但 `control-theory-agent-kb` 的令牌集里**没有** `--accent` ⇒ 其站点门控 `gate_tokens.py` 的
+#   **T5「引用完整性」硬判 FAIL**（"布局件与链接页的每个 var(--X) 都在令牌文件里有定义"）。
+#   ⇒ 本件改为**完全不引入 var()**：`currentColor` ＋ CSS 系统色（`Canvas` / `CanvasText`）。
+#   ★ 这不是降低无障碍质量：焦点环用 `currentColor` 与正文同色，仍清晰可见；跳过链接用系统色
+#     在深浅两种主题下都取到系统配色。⛔ 且**不再给任何站的令牌面引入新引用**。
+SHELL_CSS = (":focus-visible{outline:0.125rem solid currentColor;outline-offset:0.125rem}\n"
+             ".skip-link{position:absolute;left:-9999px;top:0;background:Canvas;color:CanvasText;"
+             "padding:.5rem 1rem;z-index:9999;border-radius:0 0 .375rem 0;"
+             "border:1px solid currentColor}\n"
              ".skip-link:focus{left:0}\n")
 SKIP_LINK = '<a class="skip-link" href="#main">跳到主要内容</a>'
 
@@ -159,8 +166,16 @@ def inject(root, rel, repo, base_url, esc_attr=True):
 
     plain = HTML_COMMENT.sub("", out)
     corpus = load_corpus(root, rel, plain)
+    # ★★ 批 J 修缺陷：`:focus-visible` 与 `.skip-link` **必须分别判**。
+    #   首版把两者绑成一条（`if ":focus-visible" not in corpus: 补整块 SHELL_CSS`）⇒
+    #   在「CSS 语料已有 `:focus-visible`」的页（如 control-theory 的 48 页外链页）上
+    #   **整块都不补**，于是 `.skip-link` 没有 `position:absolute;left:-9999px`，
+    #   那个锚点**真的渲染出来**了 —— 像素实测：页高 5474 → 5501（+27px）。
+    #   ★ 这是**假绿**（标记层判据全绿、渲染层可见回归）⇒ 判据对象必须覆盖「渲染面」。
+    has_focus = ":focus-visible" in corpus
+    has_skip_css = ".skip-link" in corpus
     has_all = ('name="description"' in out and 'class="skip-link"' in out
-               and 'id="main"' in out and ":focus-visible" in corpus
+               and 'id="main"' in out and has_focus and has_skip_css
                and 'rel="canonical"' in out and 'rel="icon"' in out
                and not has_unlabeled_svg(out))
     if has_all:
@@ -185,7 +200,7 @@ def inject(root, rel, repo, base_url, esc_attr=True):
         meta_bits.append('<link rel="canonical" href="%s">' % attr(u))
     if 'rel="icon"' not in out:
         meta_bits.append('<link rel="icon" type="image/svg+xml" href="/%s/favicon.svg">' % repo)
-    if ":focus-visible" not in corpus:
+    if (not has_focus) or (not has_skip_css):
         meta_bits.append("<style>\n%s</style>" % SHELL_CSS)
 
     if meta_bits:
@@ -341,8 +356,28 @@ def selftest():
     cases.append(("a：无 <main> ⇒ 按 </header> 边界包一层",
                   "</header>\n<main id=\"main\">" in a and "</main>\n</body>" in a, ""))
     cases.append(("a：CSS 语料缺 :focus-visible ⇒ 补内联 <style>", ":focus-visible" in a, ""))
-    cases.append(("★ b：外链页已有 :focus-visible ⇒ **不重复**注入 <style>",
-                  b.count(":focus-visible") == 1, str(b.count(":focus-visible"))))
+    # ★★ 判据修正后的正确语义：b 页有 `:focus-visible` **但无 `.skip-link` 规则** ⇒
+    #    必须补 SHELL_CSS（否则 skip link 会真的渲染出来 —— 像素实测页高 +27px）。
+    cases.append(("★ b：有 :focus-visible 但**无 .skip-link 规则** ⇒ **必须**补 SHELL_CSS（防可见回归）",
+                  ".skip-link{position:absolute" in b and b.count(":focus-visible") >= 1,
+                  "skip_css=%s" % (".skip-link{position:absolute" in b)))
+    # 反向：两者都在 ⇒ 一字节不补
+    d = tempfile.mkdtemp(prefix="shell-b-")
+    os.makedirs(os.path.join(d, "sub"), exist_ok=True)
+    open(os.path.join(d, "sub", "e.html"), "w", encoding="utf-8").write(
+        '<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8">'
+        '<meta name="description" content="d"><meta property="og:type" content="website">'
+        '<meta property="og:title" content="t"><meta property="og:description" content="d">'
+        '<meta property="og:url" content="u"><meta property="og:image" content="i">'
+        '<link rel="canonical" href="https://zako-mio.github.io/demo-site/sub/e.html">'
+        '<link rel="icon" href="f.svg">'
+        '<style>:focus-visible{outline:1px solid red}'
+        '.skip-link{position:absolute;left:-9999px}</style></head>'
+        '<body>\n<a class="skip-link" href="#main">跳到主要内容</a>'
+        '<main id="main">x</main></body></html>\n')
+    r = run(d, "demo-site")
+    cases.append(("★ 反向：`:focus-visible` 与 `.skip-link` 都在 ⇒ 该页 0 变更",
+                  r["changed"] == 0, str(r["changed"])))
     cases.append(("b：已有一个 <main> ⇒ 只补 id，不新增第二个",
                   b.count("<main") == 1 and 'id="main"' in b, str(b.count("<main"))))
     r2 = run(tmp, "demo-site")

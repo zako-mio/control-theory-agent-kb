@@ -176,7 +176,7 @@
   },
   "tree": {
     "file_count": 273,
-    "tree_digest": "453542fdcd236d0c06c969213848fd9c220919df951153159dfefceb5ac8597a",
+    "tree_digest": "d75d67f9cb3ed09ddbc1dbda5e552a8e391d4d67ed9a2cd875e06e275331028a",
     "definition": "仓内文件（相对路径 + 内容）的 sha256 归并；★ 排除报告自身（否则自指）"
   },
   "determinism": "⛔ 无墙钟时间戳 · ⛔ 无作者机绝对路径 · ⛔ 无随机/网络；同输入两次运行逐字节相同",

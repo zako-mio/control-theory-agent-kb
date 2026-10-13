@@ -3,6 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+:focus-visible{outline:0.125rem solid currentColor;outline-offset:0.125rem}
+.skip-link{position:absolute;left:-9999px;top:0;background:Canvas;color:CanvasText;padding:.5rem 1rem;z-index:9999;border-radius:0 0 .375rem 0;border:1px solid currentColor}
+.skip-link:focus{left:0}
+</style>
 <meta name="description" content="控制理论 ⊗ Agent 设计知识库 ｜ 控制理论 ⊗ Agent 把 Agent 当作一架装了传感器、执行器、逻辑决断器的无人机去建模与控制。 入门 00 门户入口 概览 01 总览 02 交互DAG 核心 03 框架 理论 04 理论:闭环反馈 05 理论:状态估计 06 理论:PID 07 理。">
 <meta property="og:type" content="website">
 <meta property="og:title" content="控制理论 ⊗ Agent 设计知识库">
